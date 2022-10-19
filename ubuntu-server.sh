@@ -18,12 +18,12 @@ title "Performing system changes:"
 echo "Disabling auto-upgrades..."
 cp ./utils/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
 
+echo "Setting up hostname..."
+set-hostname "ubuntu-2204-server"
+
 echo "Setting up netplan..."
 #cp ./utils/netplan-server.yaml /etc/netplan/00-installer-config.yaml
 netplan apply
-
-echo "Setting up hostname..."
-set-hostname "ubuntu-2204-server"
 
 echo "Clearing bash history..."
 cat /dev/null > ~/.bash_history && history -c
