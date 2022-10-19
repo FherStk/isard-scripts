@@ -18,7 +18,7 @@ LCYAN='\033[1;36m'
 NC='\033[0m' # No Color
 
 #Other vars:
-REBOOT=true
+ASTEMPLATE=false
 
 abort()
 {
@@ -99,6 +99,15 @@ set-hostname()
   hostnamectl set-hostname ${1}  
   HOST=$(hostname)
   sed -i "s/'${HOST}'/'${1}'/g" /etc/hosts
+}
+
+clear-and-reboot(){
+  echo "Clearing bash history..."
+  cat /dev/null > ~/.bash_history && history -c
+
+  echo -e "${GREEN}DONE! Rebooting...${NC}"
+  trap : 0
+  reboot
 }
 
 info()
