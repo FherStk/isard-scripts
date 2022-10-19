@@ -58,7 +58,7 @@ auto-update()
     fi
 }
 
-apt_req()
+apt-req()
 {
   echo ""
   if [ $(dpkg-query -W -f='${Status}' ${1} 2>/dev/null | grep -c "ok installed") -eq 0 ];
@@ -70,7 +70,7 @@ apt_req()
   fi
 }
 
-pip_req()
+pip-req()
 {
   echo ""
   if [ $(pip3 list 2>/dev/null | grep -io -c "${1}") -eq 0 ];

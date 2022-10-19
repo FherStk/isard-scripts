@@ -11,7 +11,7 @@ info "$NAME" "$VERSION"
 auto-update `basename "$0"`
 
 apt-upgrade
-apt_req "openssh-server"
+apt-req "openssh-server"
 
 echo ""
 title "Disabling: " "auto-upgrades"
