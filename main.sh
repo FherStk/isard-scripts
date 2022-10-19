@@ -93,9 +93,9 @@ pip-req()
 
 hostname()
 {
-  hostnamectl set-hostname ${1}
+  hostnamectl set-hostname ${1}  
   HOST=$(hostname)
-  sed -i 's/${HOST}/${1}/g' /etc/hosts
+  sed -i "s/'${HOST}'/'${1}'/g" /etc/hosts
 }
 
 info()
