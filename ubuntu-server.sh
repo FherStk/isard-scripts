@@ -8,6 +8,8 @@ trap 'abort' 0
 set -e
 
 info "$NAME" "$VERSION"
+auto-update `basename "$0"`
+
 apt_req "openssh-server"
 
 title "Upgrading the installed apps: "
