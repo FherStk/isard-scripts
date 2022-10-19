@@ -91,6 +91,13 @@ pip-req()
   fi
 }
 
+hostname()
+{
+  hostnamectl set-hostname ${1}
+  HOST=$(hostname)
+  sed -i 's/${HOST}/${1}/g' /etc/hosts
+}
+
 info()
 {
     echo ""

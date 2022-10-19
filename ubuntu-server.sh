@@ -14,16 +14,21 @@ apt-upgrade
 apt-req "openssh-server"
 
 echo ""
-title "Disabling: " "auto-upgrades"
+title "Performing system changes:"
+echo "Disabling auto-upgrades..."
 cp ./utils/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
 
-title "Setting up: " "netplan"
+echo "Setting up netplan..."
 #cp ./utils/netplan-server.yaml /etc/netplan/00-installer-config.yaml
 netplan apply
 
-title "Clearing: " "bash history"
+echo "Setting up hostname..."
+hostname "ubuntu-2204-server"
+
+echo "Clearing bash history..."
 cat /dev/null > ~/.bash_history && history -c
 
 trap : 0
 echo ""
-echo -e "${GREEN}DONE!${NC}"
+echo -e "${GREEN}DONE! Rebooting...${NC}"
+reboot
