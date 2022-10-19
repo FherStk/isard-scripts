@@ -37,7 +37,7 @@ auto-update()
     git fetch --all
 
     if [ $(LC_ALL=C git status -uno | grep -c "Your branch is up to date with 'origin/main'") -eq 0 ];
-    then    
+    then     
         echo -e "${CYAN}Up to date, skipping...${NC}"
     else
         echo "" 
