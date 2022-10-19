@@ -35,14 +35,14 @@ auto-update()
     title "Checking for new script versions: "
     git fetch --all
 
+    echo ${1}
     if [ $(LC_ALL=C git status -uno | grep -c "Your branch is up to date with 'origin/main'") -eq 1 ];
     then     
         echo -e "Up to date, skipping..."
     else
         echo "" 
         echo -e "${CYAN}New version found, updating...${NC}"
-        git reset --hard origin/main
-        echo ${1}
+        git reset --hard origin/main        
         sh ${1}
         exit 0
     fi
