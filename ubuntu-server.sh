@@ -21,7 +21,7 @@ title "Disabling: " "auto-upgrades"
 cp ./utils/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
 
 title "Setting up: " "netplan"
-cp ./utils/netplan-server.yaml /etc/netplan/00-installer-config.yaml
+#cp ./utils/netplan-server.yaml /etc/netplan/00-installer-config.yaml
 netplan apply
 
 title "Clearing: " "bash history"
