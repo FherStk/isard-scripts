@@ -1,5 +1,4 @@
 #!/bin/bash
-export DEBIAN_FRONTEND=noninteractive
 
 # Terminal colors:
 # Black        0;30     Dark Gray     1;30

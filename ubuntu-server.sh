@@ -12,7 +12,9 @@ auto-update `basename "$0"`
 
 apt_req "openssh-server"
 
+echo ""
 title "Upgrading the installed apps: "
+export DEBIAN_FRONTEND=noninteractive
 sudo apt update
 sudo apt upgrade -y
 sudo apt autoremove -y
