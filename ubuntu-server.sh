@@ -23,7 +23,7 @@ echo "Setting up netplan..."
 netplan apply
 
 echo "Setting up hostname..."
-hostname "ubuntu-2204-server"
+set-hostname "ubuntu-2204-server"
 
 echo "Clearing bash history..."
 cat /dev/null > ~/.bash_history && history -c
