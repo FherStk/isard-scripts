@@ -10,7 +10,7 @@ set -e
 info "$NAME" "$VERSION"
 apt_req "openssh-server"
 
-title "Updating installed apps: "
+title "Upgrading the installed apps: "
 sudo apt update
 sudo apt upgrade -y
 sudo apt autoremove -y
@@ -24,4 +24,4 @@ cp ./utils/netplan-server.yaml /etc/netplan/00-installer-config.yaml
 title "Clearing: " "bash history"
 cat /dev/null > ~/.bash_history && history -c
 
- echo -e "${GREEN}DONE!${NC}"
+echo -e "${GREEN}DONE!${NC}"
