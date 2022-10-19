@@ -22,6 +22,6 @@ title "Setting up: " "netplan"
 cp ./utils/netplan-server.yaml /etc/netplan/00-installer-config.yaml
 
 title "Clearing: " "bash history"
-cat /dev/null > ~/.bash_history && history -c && exit
+cat /dev/null > ~/.bash_history && history -c
 
  echo -e "${GREEN}DONE!${NC}"
