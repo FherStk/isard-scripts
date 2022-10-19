@@ -17,9 +17,6 @@ CYAN='\033[0;36m'
 LCYAN='\033[1;36m'
 NC='\033[0m' # No Color
 
-#Other vars:
-ASTEMPLATE="FALSE"
-
 abort()
 {
   #Source: https://stackoverflow.com/a/22224317    
@@ -116,4 +113,27 @@ info()
     echo -e "${YELLOW}IsardVDI Template Generator:${NC} ${1} (v${2})"
     echo -e "${YELLOW}Copyright © 2022:${NC} Fernando Porrino Serrano"
     echo -e "${YELLOW}Under the AGPL license:${NC} https://github.com/FherStk/isard-scripts/blob/main/LICENSE"
+}
+
+main(){
+  trap 'abort' 0
+  set -e
+
+  info "$SCRIPT_NAME" "$SCRIPT_VERSION"
+  auto-update `basename "$0"`
+
+  apt-upgrade
+  apt-req "openssh-server"
+
+  echo ""
+  title "Performing system changes:"
+  echo "Disabling auto-upgrades..."
+  cp ./utils/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
+
+  echo "Setting up hostname..."
+  set-hostname ${HOST_NAME}
+
+  echo "Setting up netplan..."
+  #cp ./utils/netplan-server.yaml /etc/netplan/00-installer-config.yaml
+  netplan apply
 }
