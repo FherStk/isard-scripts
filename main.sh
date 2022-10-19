@@ -33,8 +33,10 @@ apt-upgrade()
 {
     echo ""
     title "Upgrading the installed apps: "
+    sed -i 's/#$nrconf{restart} = '"'"'i'"'"';/$nrconf{restart} = '"'"'a'"'"';/g' /etc/needrestart/needrestart.conf
+
     sudo apt update
-    DEBIAN_FRONTEND=noninteractive sudo apt upgrade -y
+    sudo apt upgrade -y
     sudo apt autoremove -y
 }
 
