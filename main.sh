@@ -36,7 +36,7 @@ auto-update()
     git remote update
     git fetch --all
 
-    if [ $(LC_ALL=C git status -uno) == "*Your branch is up to date with 'origin/main'*" ];
+    if [ $(LC_ALL=C git status -uno | grep -c "Your branch is up to date with 'origin/main'") -eq 0 ];
     then    
         echo -e "${CYAN}Up to date, skipping...${NC}"
     else
