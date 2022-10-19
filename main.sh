@@ -37,7 +37,7 @@ auto-update()
 
     if [ $(LC_ALL=C git status -uno | grep -c "Your branch is up to date with 'origin/main'") -eq 1 ];
     then     
-        echo -e "${CYAN}Up to date, skipping...${NC}"
+        echo -e "Up to date, skipping..."
     else
         echo "" 
         echo -e "${CYAN}New version found, updating...${NC}"
