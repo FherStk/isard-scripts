@@ -42,7 +42,6 @@ auto-update()
         echo "" 
         echo -e "${CYAN}New version found, updating...${NC}"
         git reset --hard origin/main
-        git pull
         sh ${1}
         exit 0
     fi
