@@ -17,6 +17,7 @@ sudo apt update
 sudo apt upgrade -y
 sudo apt autoremove -y
 
+echo ""
 title "Disabling: " "auto-upgrades"
 cp ./utils/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
 
@@ -28,4 +29,5 @@ title "Clearing: " "bash history"
 cat /dev/null > ~/.bash_history && history -c
 
 trap : 0
+echo ""
 echo -e "${GREEN}DONE!${NC}"
