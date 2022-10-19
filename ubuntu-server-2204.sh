@@ -1,7 +1,7 @@
 #!/bin/bash
 source ./main.sh
 
-if !$ASTEMPLATE then    
+if [ "$ASTEMPLATE"="FALSE" ]; then
     SCRIPT_VERSION="1.0.0"
     SCRIPT_NAME="Ubuntu Server"
     HOST_NAME="ubuntu-2204-server"
@@ -28,6 +28,6 @@ echo "Setting up netplan..."
 #cp ./utils/netplan-server.yaml /etc/netplan/00-installer-config.yaml
 netplan apply
 
-if !$ASTEMPLATE then        
+if [ "$ASTEMPLATE"="FALSE" ]; then
     clear-and-reboot
 fi

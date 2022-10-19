@@ -18,7 +18,7 @@ LCYAN='\033[1;36m'
 NC='\033[0m' # No Color
 
 #Other vars:
-ASTEMPLATE=false
+ASTEMPLATE="FALSE"
 
 abort()
 {
