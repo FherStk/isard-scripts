@@ -30,5 +30,7 @@ cat /dev/null > ~/.bash_history && history -c
 
 trap : 0
 echo ""
-echo -e "${GREEN}DONE! Rebooting...${NC}"
-reboot
+if $REBOOT; then    
+    echo -e "${GREEN}DONE! Rebooting...${NC}"
+    reboot
+fi  

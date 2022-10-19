@@ -17,6 +17,9 @@ CYAN='\033[0;36m'
 LCYAN='\033[1;36m'
 NC='\033[0m' # No Color
 
+#Other vars:
+REBOOT=true
+
 abort()
 {
   #Source: https://stackoverflow.com/a/22224317    
