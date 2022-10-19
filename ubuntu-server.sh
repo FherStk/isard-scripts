@@ -25,4 +25,5 @@ netplan apply
 title "Clearing: " "bash history"
 cat /dev/null > ~/.bash_history && history -c
 
+trap : 0
 echo -e "${GREEN}DONE!${NC}"
