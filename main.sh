@@ -41,7 +41,9 @@ auto-update()
     else
         echo "" 
         echo -e "${CYAN}New version found, updating...${NC}"
-        git reset --hard origin/main        
+        git reset --hard origin/main    
+        echo "Restarting the app..."    
+
         bash ${1}
         exit 0
     fi
