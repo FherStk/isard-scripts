@@ -33,6 +33,7 @@ apt-upgrade()
 {
     echo ""
     title "Upgrading the installed apps: "
+    #Note: this is needed in order to disable interactive prompts like service-restart...
     sed -i 's/#$nrconf{restart} = '"'"'i'"'"';/$nrconf{restart} = '"'"'a'"'"';/g' /etc/needrestart/needrestart.conf
 
     sudo apt update
