@@ -31,16 +31,18 @@ title(){
 
 auto-update()
 {    
+    echo ""
     title "Checking for new script versions: "
     git remote update
     git fetch --all
 
-    if [ $("LC_ALL=C git status -uno") == "Your branch is up to date with 'origin/master'" ];
+    if [ $("LC_ALL=C git status -uno") == "Your branch is up to date with 'origin/main'" ];
     then    
         echo -e "${CYAN}Up to date, skipping...${NC}"
-    else 
+    else
+        echo "" 
         echo -e "${CYAN}New version found, updating...${NC}"
-        git reset --hard origin/master
+        git reset --hard origin/main
         git pull
         sh ${1}
         exit 0
