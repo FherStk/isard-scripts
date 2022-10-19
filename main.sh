@@ -115,7 +115,7 @@ info()
     echo -e "${YELLOW}Under the AGPL license:${NC} https://github.com/FherStk/isard-scripts/blob/main/LICENSE"
 }
 
-main(){
+setup-base(){
   trap 'abort' 0
   set -e
 
