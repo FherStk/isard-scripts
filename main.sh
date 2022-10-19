@@ -29,6 +29,15 @@ title(){
     echo -e "${LCYAN}${1}${CYAN}${2}${NC}"
 }
 
+apt-upgrade()
+{
+    echo ""
+    title "Upgrading the installed apps: "
+    sudo apt update
+    DEBIAN_FRONTEND=noninteractive sudo apt upgrade -y
+    sudo apt autoremove -y
+}
+
 auto-update()
 {    
     echo ""
