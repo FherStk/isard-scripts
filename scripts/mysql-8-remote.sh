@@ -12,7 +12,7 @@ apt-req "unzip"
 
 echo ""
 title "Setting up the demo database:"
-wget https://github.com/datacharmer/test_db/archive/refs/heads/master.zip -N master.zip
+wget https://github.com/datacharmer/test_db/archive/refs/heads/master.zip -O master.zip
 unzip master.zip
 rm master.zip
 
