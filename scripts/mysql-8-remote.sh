@@ -6,9 +6,9 @@ HOST_NAME="mysql-server"
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 source $SCRIPT_PATH/../utils/main.sh
 
-base-setup
-apt-req "mysql-server-8.0"
-apt-req "unzip"
+#base-setup
+#apt-req "mysql-server-8.0"
+#apt-req "unzip"
 
 echo ""
 title "Setting up the demo database:"
@@ -26,7 +26,6 @@ sed -i "s|127.0.0.1|*|g" /etc/mysql/mysql.conf.d/mysqld.cnf
 service mysql restart
 
 echo "Creating the remote user 'root@%'..."
-sudo -H -u root bash -c "mysql -e \"CREATE USER 'root'@'%' IDENTIFIED BY 'root'; GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';\""
-service mysql restart
+sudo -H -u root bash -c "mysql -e \"CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY 'root'; GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';\""
 
 #clear-and-reboot
