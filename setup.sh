@@ -17,12 +17,12 @@ apt-req "dialog"
 echo ""
 title "Setting up the first launch after user logon (just once):"
 COMMAND="./${DIR}/run.sh"
-grep -qxF "'${COMMAND}'" ~.profile || echo "'${COMMAND}'" >> ~.profile
+grep -qxF "'${COMMAND}'" ~/.profile || echo "'${COMMAND}'" >> ~/.profile
 
 echo ""
 title "Setting up the auto-update after user logon:"
 COMMAND="./${DIR}/update.sh"
-grep -qxF "'${COMMAND}'" ~.profile || echo "'${COMMAND}'" >> ~.profile
+grep -qxF "'${COMMAND}'" ~/.profile || echo "'${COMMAND}'" >> ~/.profile
 
 #TODO: this does not work...
 echo ""
