@@ -9,5 +9,5 @@ clear
 
 for f in $selected_files
 do
- source ./scripts/$f
+    source ./scripts/$f
 done
