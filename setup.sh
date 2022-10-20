@@ -26,7 +26,7 @@ title "Setting up the first launch after user logon (just once):"
 #echo "Copying rc.local file..."
 COMMAND="sudo bash ${INSTALL_PATH}/run.sh"
 PROFILE="/home/$SUDO_USER/.profile"
-grep -qxF "'${COMMAND}'" "${PROFILE}" || echo "'${COMMAND}'" >> ${PROFILE}
+grep -qxF "${COMMAND}" "${PROFILE}" || echo "${COMMAND}" >> ${PROFILE}
 echo "Setting up the ${PROFILE} entry..."
 
 echo ""
