@@ -191,6 +191,15 @@ system-changes()
   cp ${BASE_PATH}/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
 }
 
+install-dependencies()
+{
+  echo ""
+  title "Installing dependencies:"
+  sudo apt update
+  apt-req "dialog"
+  apt-req "ipcalc"
+}
+
 base-setup(){
   trap 'abort' 0
   set -e

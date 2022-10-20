@@ -10,6 +10,7 @@ set -e
 
 auto-update true `basename "$0"`
 check-sudo
+install-dependencies
 
 echo ""
 trap 'clear' 0
