@@ -45,7 +45,9 @@ auto-update()
 {    
     echo ""
     title "Checking for a new app version: "
-    git fetch --all
+
+    DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+    git -C ${DIR} fetch --all
 
     if [ $(LC_ALL=C git status -uno | grep -c "Your branch is up to date with 'origin/main'") -eq 1 ];
     then     
@@ -53,7 +55,7 @@ auto-update()
     else
         echo "" 
         echo -e "${CYAN}New version found, updating...${NC}"
-        git reset --hard origin/main    
+        git -C ${DIR} reset --hard origin/main    
         echo "Update completed." 
 
         if [ $1 = true ]; 

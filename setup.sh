@@ -22,16 +22,6 @@ COMMAND="bash ${DIR}/run.sh"
 grep -qxF "${COMMAND}" ${PROFILE} || echo "${COMMAND}" >> ${PROFILE}
 
 echo ""
-title "Setting up the auto-update after user logon:"
-COMMAND="bash ${DIR}/update.sh"
-grep -qxF "${COMMAND}" ${PROFILE} || echo "${COMMAND}" >> ${PROFILE}
-
-#TODO: this does not work...
-echo ""
-title "Setting up git safe directory:"
-git config --global --add safe.directory /home/usuario/isard-scripts
-
-echo ""
 echo -e "${GREEN}DONE!${NC}"
 echo ""
 trap : 0

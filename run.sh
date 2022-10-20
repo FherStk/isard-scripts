@@ -21,6 +21,7 @@ clear
 
 for f in $selected_files
 do
-    #sudo systemctl disable isard-scripts-first-run.service
+    #TODO: change run for update within .profile
+    #sed -i "s|<PATH>|${DIR}|g" /etc/systemd/system/isard-scripts-first-run.service
     source ./scripts/$f
 done
