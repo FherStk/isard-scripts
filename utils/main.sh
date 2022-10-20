@@ -161,15 +161,15 @@ base-setup(){
   echo "Setting up hostname..."
   set-hostname ${HOST_NAME}
 
-  OPTIONS=$(1 DHCP on\n2 "Static IP address" off\n);  
-  SELECTED=$(dialog --title "Network Configuration: Personal" --radiolist "\nSelect a configuration for the 'personal' network interface (enp3s0)." 20 70 25 $OPTIONS --output-fd 1);
+  SELECTED=$(dialog --nocancel --title "Network Configuration: enp3s0" --radiolist "\nSelect a configuration for the 'personal' network interface." 20 70 25 1 DHCP on 2 'Static IP address' off --output-fd 1);
 
+  #TODO: perform actions
   for f in $SELECTED
   do        
       if [$f -eq "DHCP"]; 
       then
         echo "DHCP"
-      else
+      else  
         echo "Static"
       fi
   done
