@@ -146,22 +146,36 @@ base-setup(){
   set -e
 
   info "$SCRIPT_NAME" "$SCRIPT_VERSION"
-  auto-update true `basename "$0"`
+  #auto-update true `basename "$0"`
   check-sudo
 
-  apt-upgrade
-  apt-req "openssh-server"
+  #apt-upgrade
+  #apt-req "openssh-server"
 
   echo ""
   title "Performing system changes:"
   echo "Disabling auto-upgrades..."
   cp ${BASE_PATH}/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
 
+  #TODO: allow changing the default one
   echo "Setting up hostname..."
   set-hostname ${HOST_NAME}
 
+  OPTIONS=$(1 DHCP on\n2 "Static IP address" off\n);  
+  SELECTED=$(dialog --title "Network Configuration: Personal" --radiolist "\nSelect a configuration for the 'personal' network interface (enp3s0)." 20 70 25 $OPTIONS --output-fd 1);
+
+  for f in $SELECTED
+  do        
+      if [$f -eq "DHCP"]; 
+      then
+        echo "DHCP"
+      else
+        echo "Static"
+      fi
+  done
+
   echo "Setting up netplan..."
-  cp ${BASE_PATH}/netplan-server.yaml /etc/netplan/00-installer-config.yaml
-  netplan apply
+  #cp ${BASE_PATH}/netplan-server.yaml /etc/netplan/00-installer-config.yaml
+  #netplan apply
   sleep 10s
 }

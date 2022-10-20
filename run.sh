@@ -12,7 +12,7 @@ auto-update true `basename "$0"`
 check-sudo
 
 echo ""
-#trap 'clear' 0
+trap 'clear' 0
 
 unset OPTIONS
 FOLDER="$SCRIPT_PATH/scripts"
@@ -20,7 +20,7 @@ OPTIONS=$(find $FOLDER -mindepth 1 -maxdepth 1 -type f -name '*.sh' -printf "%f 
 OPTIONS+=$(echo " NONE 1900-01-01 off")
 
 SELECTED=$(dialog --title "${SCRIPT_NAME}" --radiolist "\nPick an IsardVDI script in order to install" 60 70 25 $OPTIONS --output-fd 1);
-#clear
+clear
 
 for f in $SELECTED
 do        
