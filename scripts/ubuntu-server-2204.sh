@@ -5,6 +5,6 @@ HOST_NAME="ubuntu-2204-server"
 
 echo $pwd
 
-source ../utils/main.sh
+source ./../utils/main.sh
 base-setup
 clear-and-reboot
