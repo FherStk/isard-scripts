@@ -17,7 +17,7 @@ apt-req "dialog"
 echo ""
 title "Installing into /etc/isard-scripts:"
 rm -rf /etc/isard-scripts
-git clone https://github.com/FherStk/AutoCheck.git /etc/isard-scripts
+git clone https://github.com/FherStk/isard-scripts.git /etc/isard-scripts
 
 echo ""
 title "Setting up the first launch after user logon (just once):"
