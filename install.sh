@@ -1,18 +1,11 @@
 #!/bin/bash
-SCRIPT_VERSION="1.0.0"
+SCRIPT_VERSION="1.1.0"
 SCRIPT_NAME="App Install"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 source $SCRIPT_PATH/utils/main.sh
 
-trap 'abort' 0
-set -e
-
-info "$SCRIPT_NAME" "$SCRIPT_VERSION"
-auto-update true `basename "$0"`
-check-sudo
-
-apt-req "dialog"
+startup
 
 echo ""
 title "Installing into ${INSTALL_PATH}:"

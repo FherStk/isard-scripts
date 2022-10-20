@@ -30,7 +30,7 @@ abort()
 }
 
 title(){
-    echo -e "${LCYAN}${1}${CYAN}${2}${NC}"
+  echo -e "${LCYAN}${1}${CYAN}${2}${NC}"
 }
 
 apt-upgrade()
@@ -105,17 +105,63 @@ pip-req()
 
 set-hostname()
 {
-  hostnamectl set-hostname ${1}  
-  HOST=$(hostname)
-  sed -i "s/'${HOST}'/'${1}'/g" /etc/hosts
+  echo ""
+  echo "Setting up hostname..."  
+
+  OLDHOSTNAME=$(hostname)
+  NEWHOSTNAME=$(dialog --nocancel --title "Hostname Configuration" --inputbox "\nEnter the hostname:" 8 40 ${1} --output-fd 1) 
+  clear
+    
+  hostnamectl set-hostname ${NEWHOSTNAME}  
+  sed -i "s/'${OLDHOSTNAME}'/'${NEWHOSTNAME}'/g" /etc/hosts
+}
+
+set-address()
+{
+  echo ""
+  echo "Setting up host address..."
+
+  SELECTED=$(dialog --nocancel --title "Network Configuration: enp3s0" --radiolist "\nSelect a configuration for the 'personal' network interface." 20 70 25 1 DHCP on 2 'Static IP address' off --output-fd 1);
+  clear
+
+  echo "Setting up network data..."
+  for f in $SELECTED
+  do      
+      if [[ "$f" == 1 ]];
+      then        
+        cp ${BASE_PATH}/netplan-dhcp-server.yaml /etc/netplan/00-installer-config.yaml
+        echo
+      else  
+        request-ip ${1}
+
+        cp ${BASE_PATH}/netplan-static-server.yaml /etc/netplan/00-installer-config.yaml
+        sed -i "s|x.x.x.x/yy|${ADDRESS}|g" /etc/netplan/00-installer-config.yaml
+      fi
+  done
+
+  echo "Setting up netplan..."
+  netplan apply
+  sleep 10s
+}
+
+request-ip()
+{
+  ADDRESS=$(dialog --nocancel --title "Network Configuration: enp3s0" --inputbox "\nEnter an IP address:" 8 40 ${1} --output-fd 1)  
+  if [ $(ipcalc -b ${ADDRESS} | grep -c "INVALID ADDRESS") -eq 1 ];
+  then
+    request-ip   
+  else
+    clear
+  fi
 }
 
 clear-and-reboot(){
   echo "Clearing bash history..."
   cat /dev/null > ~/.bash_history && history -c
 
+  echo ""
   echo -e "${GREEN}DONE! Rebooting...${NC}"
-  trap : 0
+  trap : 0  
   reboot
 }
 
@@ -125,8 +171,6 @@ info()
     echo -e "${YELLOW}IsardVDI Template Generator:${NC} ${1} [v${2}]"
     echo -e "${YELLOW}Copyright © 2022:${NC} Fernando Porrino Serrano"
     echo -e "${YELLOW}Under the AGPL license:${NC} https://github.com/FherStk/isard-scripts/blob/main/LICENSE"
-
-    
 }
 
 check-sudo()
@@ -141,27 +185,41 @@ check-sudo()
   fi
 }
 
-base-setup(){
+system-changes()
+{
+  echo ""
+  title "Performing system changes:"
+  echo "Disabling auto-upgrades..."
+  cp ${BASE_PATH}/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
+}
+
+install-dependencies()
+{
+  echo ""
+  title "Installing dependencies:"
+  sudo apt update
+  apt-req "dialog"
+  apt-req "ipcalc"
+}
+
+startup(){
   trap 'abort' 0
   set -e
 
   info "$SCRIPT_NAME" "$SCRIPT_VERSION"
   auto-update true `basename "$0"`
   check-sudo
+  install-dependencies  
+}
+
+base-setup(){
+  trap 'abort' 0
+  set -e
+  
+  set-hostname "${HOST_NAME}"  
+  set-address "192.168.1.1/24"
 
   apt-upgrade
-  apt-req "openssh-server"
-
-  echo ""
-  title "Performing system changes:"
-  echo "Disabling auto-upgrades..."
-  cp ${BASE_PATH}/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
-
-  echo "Setting up hostname..."
-  set-hostname ${HOST_NAME}
-
-  echo "Setting up netplan..."
-  cp ${BASE_PATH}/netplan-server.yaml /etc/netplan/00-installer-config.yaml
-  netplan apply
-  sleep 10s
+  apt-req "openssh-server"  
+  system-changes
 }
