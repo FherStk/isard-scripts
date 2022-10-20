@@ -120,7 +120,7 @@ clear-and-reboot(){
 info()
 {
     echo ""
-    echo -e "${YELLOW}IsardVDI Template Generator:${NC} ${1} (v${2})"
+    echo -e "${YELLOW}IsardVDI Template Generator:${NC} ${1} [v${2}]"
     echo -e "${YELLOW}Copyright © 2022:${NC} Fernando Porrino Serrano"
     echo -e "${YELLOW}Under the AGPL license:${NC} https://github.com/FherStk/isard-scripts/blob/main/LICENSE"
 
@@ -160,6 +160,6 @@ base-setup(){
 
   echo "Setting up netplan..."
   #TODO: enable this in production
-  #cp ./utils/netplan-server.yaml /etc/netplan/00-installer-config.yaml
+  #cp ${BASE_PATH}/netplan-server.yaml /etc/netplan/00-installer-config.yaml
   netplan apply
 }
