@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_VERSION="1.0.1"
+SCRIPT_VERSION="1.0.2"
 SCRIPT_NAME="Ubuntu Server 22.04 LTS (MySQL v8 - With remote connections)"
 HOST_NAME="mysql-server"
 
