@@ -2,8 +2,16 @@
 SCRIPT_VERSION="1.0.0"
 SCRIPT_NAME="IsardVDI Script App"
 
+source ./utils/main.sh
+
+trap 'abort' 0
+set -e
+
 auto-update true `basename "$0"`
 check-sudo
+
+echo ""
+trap : 0
 
 directory="./scripts"
 options=$(find $directory -mindepth 1 -maxdepth 1 -type f -not -name '*.exe' -printf "%f %TY-%Tm-%Td off\n");
