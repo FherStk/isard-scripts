@@ -12,7 +12,7 @@ auto-update true `basename "$0"`
 check-sudo
 
 echo ""
-trap 'clear' 0
+#trap 'clear' 0
 
 FOLDER="$SCRIPT_PATH/scripts"
 OPTIONS=$(find $FOLDER -mindepth 1 -maxdepth 1 -type f -not -name '*.exe' -printf "%f %TY-%Tm-%Td off\n");
