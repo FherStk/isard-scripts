@@ -21,7 +21,6 @@ clear
 
 for f in $SELECTED
 do
-    #TODO: change run for update within .profile
-    #sed -i "s|<PATH>|${DIR}|g" /etc/systemd/system/isard-scripts-first-run.service
+    rm -f /etc/rc.local
     source $SCRIPT_PATH/scripts/$f
 done

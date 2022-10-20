@@ -28,6 +28,3 @@ echo ""
 echo -e "${GREEN}DONE!${NC}"
 echo ""
 trap : 0
-
-#TODO: there is a lot of problems with the relative paths, should be installed outside /home???
-# or just do "cd /home... and return to cd $HOME when finished?"
