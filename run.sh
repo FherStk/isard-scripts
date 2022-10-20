@@ -13,8 +13,6 @@ check-sudo
 echo ""
 trap : 0
 
-sudo systemctl disable isard-scripts-first-run.service
-
 directory="./scripts"
 options=$(find $directory -mindepth 1 -maxdepth 1 -type f -not -name '*.exe' -printf "%f %TY-%Tm-%Td off\n");
 selected_files=$(dialog --radiolist "Pick files out of $directory" 60 70 25 $options --output-fd 1);
@@ -22,5 +20,6 @@ clear
 
 for f in $selected_files
 do
+    sudo systemctl disable isard-scripts-first-run.service
     source ./scripts/$f
 done
