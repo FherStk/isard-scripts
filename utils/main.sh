@@ -128,7 +128,8 @@ base-setup(){
 
   info "$SCRIPT_NAME" "$SCRIPT_VERSION"
   auto-update true `basename "$0"`
-
+  sudo -v
+  
   apt-upgrade
   apt-req "openssh-server"
 
