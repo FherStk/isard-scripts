@@ -12,6 +12,8 @@ info "$SCRIPT_NAME" "$SCRIPT_VERSION"
 auto-update true `basename "$0"`
 check-sudo
 
+apt-req "dialog"
+
 echo ""
 title "Installing into ${INSTALL_PATH}:"
 rm -rf ${INSTALL_PATH}
