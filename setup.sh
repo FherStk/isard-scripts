@@ -1,11 +1,9 @@
 #!/bin/bash
 SCRIPT_VERSION="1.0.0"
 SCRIPT_NAME="App Setup"
-DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-REALUSER=$(echo $DIR | cut -d "/" -f3) #TODO: this fails if not installed within /home/user_name
-PROFILE=/home/${REALUSER}/.profile
 
-source $DIR/utils/main.sh
+SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+source $SCRIPT_PATH/utils/main.sh
 
 trap 'abort' 0
 set -e
@@ -16,10 +14,13 @@ check-sudo
 
 apt-req "dialog"
 
+title "Installing into /etc/isard-scripts:"
+git clone https://github.com/FherStk/AutoCheck.git /etc/isard-scripts
+
 echo ""
 title "Setting up the first launch after user logon (just once):"
-COMMAND="bash ${DIR}/run.sh"
-grep -qxF "${COMMAND}" ${PROFILE} || echo "${COMMAND}" >> ${PROFILE}
+cp $SCRIPT_PATH/utils/rc.local /etc/rc.local
+echo "Copying rc.local file..."
 
 echo ""
 echo -e "${GREEN}DONE!${NC}"

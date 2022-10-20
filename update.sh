@@ -1,9 +1,9 @@
 #!/bin/bash
 SCRIPT_VERSION="1.0.0"
 SCRIPT_NAME="App Update"
-DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-source $DIR/utils/main.sh
+SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+source $SCRIPT_PATH/utils/main.sh
 
 trap 'abort' 0
 set -e
