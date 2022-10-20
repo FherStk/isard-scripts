@@ -19,6 +19,7 @@ title "Setting up the first launch after user logon (just once):"
 COMMAND="bash ${DIR}/run.sh"
 grep -qxF "${COMMAND}" ~/.profile || echo "${COMMAND}" >> ~/.profile
 grep -qxF "${COMMAND}" ~/.profile || echo "${COMMAND}"
+cat ~/.profile
 
 echo ""
 title "Setting up the auto-update after user logon:"
