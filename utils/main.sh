@@ -209,6 +209,7 @@ base-setup(){
   info "$SCRIPT_NAME" "$SCRIPT_VERSION"
   auto-update true `basename "$0"`
   check-sudo
+  install-dependencies
   
   set-hostname "${HOST_NAME}"  
   set-address "192.168.1.1/24"

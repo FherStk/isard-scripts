@@ -8,6 +8,7 @@ source $SCRIPT_PATH/utils/main.sh
 trap 'abort' 0
 set -e
 
+info "$SCRIPT_NAME" "$SCRIPT_VERSION"
 auto-update true `basename "$0"`
 check-sudo
 install-dependencies
