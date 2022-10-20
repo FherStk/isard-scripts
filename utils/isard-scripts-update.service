@@ -2,6 +2,7 @@
 After=network.target
 
 [Service]
+WorkingDirectory=<PATH>
 ExecStart=<PATH>/update.sh
 
 [Install]
