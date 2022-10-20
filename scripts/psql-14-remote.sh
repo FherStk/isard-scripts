@@ -35,7 +35,6 @@ rm -f dvdrental.zip
 PGPASSWORD=postgres psql -U postgres -h localhost -c "CREATE DATABASE dvdrental;"
 PGPASSWORD=postgres pg_restore -U postgres -h localhost -d dvdrental dvdrental.tar;
 
-sudo -i -u postgres bash -c "pg_restore -d dvdrental dvdrental.tar;"
 rm -f dvdrental.tar
 
 clear-and-reboot
