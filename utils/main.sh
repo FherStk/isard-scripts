@@ -61,6 +61,7 @@ auto-update()
           echo "Restarting the app..."
 
           bash ${2}
+          trap : 0
           exit 0
         fi
     fi
