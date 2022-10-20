@@ -16,6 +16,7 @@ sed -i "s|<PATH>|${HOME}|g" /etc/systemd/system/isard-scripts-update.service
 
 systemctl daemon-reload
 sudo systemctl enable isard-scripts-update.service
+echo -e "${GREEN}DONE!${NC}"
 
 echo ""
 trap : 0
