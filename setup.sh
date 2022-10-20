@@ -8,6 +8,7 @@ trap 'abort' 0
 set -e
 
 info "$SCRIPT_NAME" "$SCRIPT_VERSION"
+auto-update true `basename "$0"`
 
 echo ""
 title "Setting up the isard-scripts-update service:"

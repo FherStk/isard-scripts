@@ -118,6 +118,8 @@ info()
     echo -e "${YELLOW}IsardVDI Template Generator:${NC} ${1} (v${2})"
     echo -e "${YELLOW}Copyright © 2022:${NC} Fernando Porrino Serrano"
     echo -e "${YELLOW}Under the AGPL license:${NC} https://github.com/FherStk/isard-scripts/blob/main/LICENSE"
+
+    
 }
 
 base-setup(){
