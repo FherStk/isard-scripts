@@ -9,7 +9,7 @@ set -e
 
 info "$SCRIPT_NAME" "$SCRIPT_VERSION"
 auto-update true `basename "$0"`
-sudo -v
+check-sudo
 
 echo ""
 title "Setting up the isard-scripts-update service:"

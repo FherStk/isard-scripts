@@ -122,14 +122,22 @@ info()
     
 }
 
+check-sudo()
+{
+  if [ "$EUID" -ne 0 ]
+    then echo "Please, run with 'sudo'."
+    exit
+  fi
+}
+
 base-setup(){
   trap 'abort' 0
   set -e
 
   info "$SCRIPT_NAME" "$SCRIPT_VERSION"
   auto-update true `basename "$0"`
-  sudo -v
-  
+  check-sudo
+
   apt-upgrade
   apt-req "openssh-server"
 
