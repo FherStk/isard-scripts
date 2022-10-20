@@ -23,8 +23,6 @@ sed -i "s|<EXECUSER>|${REALUSER}|g" /etc/systemd/system/isard-scripts-first-run.
 systemctl daemon-reload
 sudo systemctl enable isard-scripts-first-run.service
 
-echo ${REALUSER}
-
 echo ""
 title "Setting up the isard-scripts-update service:"
 cp ./utils/isard-scripts-update.service /etc/systemd/system/isard-scripts-update.service
