@@ -12,14 +12,21 @@ apt-req "unzip"
 
 echo ""
 title "Setting up the demo database:"
-rm -Rf test_db
-git clone https://github.com/datacharmer/test_db.git
+#rm -Rf test_db
+#git clone https://github.com/datacharmer/test_db.git
 
-sudo -H -u root bash -c "mysql -t < ${PWD}/test_db/employees.sql"
-rm -R test_db
+#cd test_db
+#sudo -H -u root bash -c "mysql -t < employees.sql"
+#rm -R test_db
 
-#sed -i "s|#bind-address|g" /etc/mysql/mysql.conf.d/mysqld.cnf 
+echo ""
+title "Setting up remote connections:"
+echo "Opening the binding address to '*'..."
+sed -i "s|#bind-address|g" /etc/mysql/mysql.conf.d/mysqld.cnf 
+service mysql restart
 
-#sudo nano /etc/mysql/mysql.conf.d/mysqld.cnf 
+echo "Creating the remote user 'root@%'..."
+sudo -H -u root bash -c "mysql -e \"CREATE USER 'root'@'%' IDENTIFIED BY 'root'; GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';\""
+service mysql restart
 
 #clear-and-reboot
