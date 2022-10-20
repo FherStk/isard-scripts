@@ -1,5 +1,8 @@
 #!/bin/bash
 BASE_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+INSTALL_PATH="/etc/isard-scripts"
+AUTOSTART="bash ${INSTALL_PATH}/utils/autostart.sh"
+PROFILE="/home/$SUDO_USER/.profile"
 
 # Terminal colors:
 # Black        0;30     Dark Gray     1;30

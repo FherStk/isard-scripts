@@ -1,4 +1,0 @@
-#!/bin/bash
-
-bash /etc/isard-scripts/run.sh
-exit 0
