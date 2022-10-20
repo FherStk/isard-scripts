@@ -159,7 +159,6 @@ base-setup(){
   set-hostname ${HOST_NAME}
 
   echo "Setting up netplan..."
-  #TODO: enable this in production
   cp ${BASE_PATH}/netplan-server.yaml /etc/netplan/00-installer-config.yaml
   netplan apply
   sleep 10s
