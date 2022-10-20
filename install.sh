@@ -21,8 +21,6 @@ git clone https://github.com/FherStk/isard-scripts.git ${INSTALL_PATH}
 
 echo ""
 title "Setting up the first launch after user logon (just once):"
-#cp $SCRIPT_PATH/utils/rc.local /etc/rc.local
-#echo "Copying rc.local file..."
 grep -qxF "${AUTOSTART}" "${PROFILE}" || echo "${AUTOSTART}" >> ${PROFILE}
 echo "Setting up the ${PROFILE} entry..."
 
