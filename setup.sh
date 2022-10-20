@@ -18,6 +18,7 @@ echo ""
 title "Setting up the isard-scripts-first-run service:"
 cp ./utils/isard-scripts-first-run.service /etc/systemd/system/isard-scripts-first-run.service
 sed -i "s|<PATH>|${DIR}|g" /etc/systemd/system/isard-scripts-first-run.service
+sed -i "s|<EXECUSER>|${USER}|g" /etc/systemd/system/isard-scripts-first-run.service
 systemctl daemon-reload
 sudo systemctl enable isard-scripts-first-run.service
 
@@ -25,6 +26,7 @@ echo ""
 title "Setting up the isard-scripts-update service:"
 cp ./utils/isard-scripts-update.service /etc/systemd/system/isard-scripts-update.service
 sed -i "s|<PATH>|${DIR}|g" /etc/systemd/system/isard-scripts-update.service
+sed -i "s|<EXECUSER>|${USER}|g" /etc/systemd/system/isard-scripts-update.service
 systemctl daemon-reload
 sudo systemctl enable isard-scripts-update.service
 
