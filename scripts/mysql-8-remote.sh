@@ -12,12 +12,11 @@ apt-req "unzip"
 
 echo ""
 title "Setting up the demo database:"
-#wget https://github.com/datacharmer/test_db/archive/refs/heads/master.zip -O master.zip
-unzip master.zip
-rm master.zip
+rm -Rf test_db
+git clone https://github.com/datacharmer/test_db.git
 
-sudo -H -u root bash -c "mysql -t < ${PWD}/test_db-master/employees.sql"
-rm -R ${PWD}/test_db-master
+sudo -H -u root bash -c "mysql -t < ${PWD}/test_db/employees.sql"
+rm -R test_db
 
 #sed -i "s|#bind-address|g" /etc/mysql/mysql.conf.d/mysqld.cnf 
 
