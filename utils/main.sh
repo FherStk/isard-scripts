@@ -57,7 +57,7 @@ auto-update()
 
         if [ $1 = true ]; 
         then
-          echo "Restarting the app..."    
+          echo "Restarting the app..."
 
           bash ${2}
           exit 0
