@@ -1,6 +1,5 @@
 #!/bin/bash
-
-SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+BASE_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 # Terminal colors:
 # Black        0;30     Dark Gray     1;30
@@ -47,7 +46,7 @@ auto-update()
 {    
     echo ""
     title "Checking for a new app version: "
-    git -C ${SCRIPT_PATH} fetch --all
+    git -C ${BASE_PATH} fetch --all
 
     if [ $(LC_ALL=C git status -uno | grep -c "Your branch is up to date with 'origin/main'") -eq 1 ];
     then     
@@ -55,7 +54,7 @@ auto-update()
     else
         echo "" 
         echo -e "${CYAN}New version found, updating...${NC}"
-        git -C ${SCRIPT_PATH} reset --hard origin/main    
+        git -C ${BASE_PATH} reset --hard origin/main    
         echo "Update completed." 
 
         if [ $1 = true ]; 
@@ -151,7 +150,7 @@ base-setup(){
   echo ""
   title "Performing system changes:"
   echo "Disabling auto-upgrades..."
-  cp ${SCRIPT_PATH}/utils/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
+  cp ${BASE_PATH}/utils/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
 
   echo "Setting up hostname..."
   set-hostname ${HOST_NAME}

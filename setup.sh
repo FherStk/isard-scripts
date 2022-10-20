@@ -14,6 +14,7 @@ check-sudo
 
 apt-req "dialog"
 
+echo ""
 title "Installing into /etc/isard-scripts:"
 git clone https://github.com/FherStk/AutoCheck.git /etc/isard-scripts
 
