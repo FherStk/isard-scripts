@@ -162,5 +162,5 @@ base-setup(){
   #TODO: enable this in production
   #cp ${BASE_PATH}/netplan-server.yaml /etc/netplan/00-installer-config.yaml
   netplan apply
-  sleep 5s
+  sleep 10s
 }
