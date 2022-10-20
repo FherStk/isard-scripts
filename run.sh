@@ -20,7 +20,10 @@ SELECTED=$(dialog --title "${SCRIPT_NAME}" --radiolist "\nPick an IsardVDI scrip
 clear
 
 for f in $SELECTED
-do
+do    
+    echo ${AUTOSTART}
+    echo ${PROFILE}
+
     sed -i "s|'${AUTOSTART}'|'#${AUTOSTART}'|g" ${PROFILE}
     source $SCRIPT_PATH/scripts/$f
 done
