@@ -2,6 +2,7 @@
 SCRIPT_VERSION="1.0.0"
 SCRIPT_NAME="App Setup"
 
+INSTALL_PATH="/etc/isard-scripts"
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 source $SCRIPT_PATH/utils/main.sh
 
@@ -13,16 +14,21 @@ auto-update true `basename "$0"`
 check-sudo
 
 apt-req "dialog"
+echo $SUDO_USER
+whoami
 
 echo ""
-title "Installing into /etc/isard-scripts:"
-rm -rf /etc/isard-scripts
-git clone https://github.com/FherStk/isard-scripts.git /etc/isard-scripts
+title "Installing into ${INSTALL_PATH}:"
+rm -rf ${INSTALL_PATH}
+git clone https://github.com/FherStk/isard-scripts.git ${INSTALL_PATH}
 
 echo ""
 title "Setting up the first launch after user logon (just once):"
-cp $SCRIPT_PATH/utils/rc.local /etc/rc.local
-echo "Copying rc.local file..."
+#cp $SCRIPT_PATH/utils/rc.local /etc/rc.local
+#echo "Copying rc.local file..."
+COMMAND="bash ${INSTALL_PATH}/run.sh"
+grep -qxF "'${COMMAND}'" ~/.profile || echo "'${COMMAND}'" >> ~/.profile
+echo "Setting up the .profile entry..."
 
 echo ""
 echo -e "${GREEN}DONE!${NC}"
