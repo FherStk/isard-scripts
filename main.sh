@@ -54,10 +54,14 @@ auto-update()
         echo "" 
         echo -e "${CYAN}New version found, updating...${NC}"
         git reset --hard origin/main    
-        echo "Restarting the app..."    
 
-        bash ${1}
-        exit 0
+        if [${1}];
+        then
+          echo "Restarting the app..."    
+
+          bash ${2}
+          exit 0
+        fi
     fi
 }
 
@@ -120,7 +124,7 @@ setup-base(){
   set -e
 
   info "$SCRIPT_NAME" "$SCRIPT_VERSION"
-  auto-update `basename "$0"`
+  auto-update true `basename "$0"`
 
   apt-upgrade
   apt-req "openssh-server"
