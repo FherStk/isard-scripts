@@ -30,7 +30,7 @@ abort()
 }
 
 title(){
-    echo -e "${LCYAN}${1}${CYAN}${2}${NC}"
+  echo -e "${LCYAN}${1}${CYAN}${2}${NC}"
 }
 
 apt-upgrade()
@@ -105,17 +105,55 @@ pip-req()
 
 set-hostname()
 {
-  hostnamectl set-hostname ${1}  
-  HOST=$(hostname)
-  sed -i "s/'${HOST}'/'${1}'/g" /etc/hosts
+  OLDHOSTNAME=$(HOSTNAME)
+  NEWHOSTNAME=$(dialog --nocancel --title "Hostname Configuration" --inputbox "\nEnter the hostname:" 8 40 ${1} --output-fd 1) 
+  clear
+    
+  hostnamectl set-hostname ${NEWHOSTNAME}  
+  sed -i "s/'${OLDHOSTNAME}'/'${NEWHOSTNAME}'/g" /etc/hosts
+}
+
+set-address()
+{
+  SELECTED=$(dialog --nocancel --title "Network Configuration: enp3s0" --radiolist "\nSelect a configuration for the 'personal' network interface." 20 70 25 1 DHCP on 2 'Static IP address' off --output-fd 1);
+  clear
+
+  echo "Setting up network data..."
+  for f in $SELECTED
+  do      
+      if [[ "$f" == 1 ]];
+      then        
+        cp ${BASE_PATH}/netplan-dhcp-server.yaml /etc/netplan/00-installer-config.yaml
+        echo
+      else  
+        request-ip ${1}
+
+        cp ${BASE_PATH}/netplan-static-server.yaml /etc/netplan/00-installer-config.yaml
+        sed -i "s|x.x.x.x/yy|${ADDRESS}|g" /etc/netplan/00-installer-config.yaml
+      fi
+  done
+
+  echo "Setting up netplan..."
+  netplan apply
+  sleep 10s
+}
+
+request-ip()
+{
+  ADDRESS=$(dialog --nocancel --title "Network Configuration: enp3s0" --inputbox "\nEnter an IP address:" 8 40 ${1} --output-fd 1)
+  if [ $(ipcalc -b ${ADDRESS} | grep -c "INVALID ADDRESS") -eq 1 ];
+  then
+    request-ip   
+  fi
 }
 
 clear-and-reboot(){
   echo "Clearing bash history..."
   cat /dev/null > ~/.bash_history && history -c
 
+  echo ""
   echo -e "${GREEN}DONE! Rebooting...${NC}"
-  trap : 0
+  trap : 0  
   reboot
 }
 
@@ -125,8 +163,6 @@ info()
     echo -e "${YELLOW}IsardVDI Template Generator:${NC} ${1} [v${2}]"
     echo -e "${YELLOW}Copyright © 2022:${NC} Fernando Porrino Serrano"
     echo -e "${YELLOW}Under the AGPL license:${NC} https://github.com/FherStk/isard-scripts/blob/main/LICENSE"
-
-    
 }
 
 check-sudo()
@@ -146,36 +182,21 @@ base-setup(){
   set -e
 
   info "$SCRIPT_NAME" "$SCRIPT_VERSION"
-  #auto-update true `basename "$0"`
+  auto-update true `basename "$0"`
   check-sudo
 
-  #apt-upgrade
-  #apt-req "openssh-server"
+  apt-upgrade
+  apt-req "openssh-server"
+  apt-req "ipcalc"
 
   echo ""
   title "Performing system changes:"
   echo "Disabling auto-upgrades..."
   cp ${BASE_PATH}/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
 
-  #TODO: allow changing the default one
-  echo "Setting up hostname..."
-  set-hostname ${HOST_NAME}
+  echo "Setting up hostname..."  
+  set-hostname "${HOST_NAME}"
 
-  SELECTED=$(dialog --nocancel --title "Network Configuration: enp3s0" --radiolist "\nSelect a configuration for the 'personal' network interface." 20 70 25 1 DHCP on 2 'Static IP address' off --output-fd 1);
-
-  #TODO: perform actions
-  for f in $SELECTED
-  do        
-      if [$f -eq "DHCP"]; 
-      then
-        echo "DHCP"
-      else  
-        echo "Static"
-      fi
-  done
-
-  echo "Setting up netplan..."
-  #cp ${BASE_PATH}/netplan-server.yaml /etc/netplan/00-installer-config.yaml
-  #netplan apply
-  sleep 10s
+  echo "Setting up host address..."
+  set-address "192.168.1.1/24"
 }
