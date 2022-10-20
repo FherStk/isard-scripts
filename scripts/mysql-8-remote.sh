@@ -26,6 +26,6 @@ sed -i "s|127.0.0.1|*|g" /etc/mysql/mysql.conf.d/mysqld.cnf
 service mysql restart
 
 echo "Creating the remote user 'root@%'..."
-sudo -H -u root bash -c "mysql -e \"CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY 'root'; GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';\""
+sudo -H -u root bash -c "mysql -e \"CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY 'root'; ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root'; GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';\""
 
 #clear-and-reboot
