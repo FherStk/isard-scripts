@@ -57,7 +57,7 @@ auto-update()
     else
         echo "" 
         echo -e "${CYAN}New version found, updating...${NC}"
-        git -C ${BASE_PATH} reset --hard origin/main    
+        git -C ${BASE_PATH} reset --hard origin/$(git rev-parse --abbrev-ref HEAD)    
         echo "Update completed." 
 
         if [ $1 = true ]; 

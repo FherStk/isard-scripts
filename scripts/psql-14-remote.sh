@@ -11,17 +11,9 @@ apt-req "postgresql-14"
 apt-req "unzip"
 
 echo ""
-title "Setting up the demo database:"
-wget https://www.postgresqltutorial.com/wp-content/uploads/2019/05/dvdrental.zip -O /root/dvdrental.zip
-unzip /root/dvdrental.zip
-rm -f /root/dvdrental.zip
-
-sudo -i -u postgres bash -c "psql -c \"CREATE DATABASE dvdrental;\""
-sudo -i -u postgres bash -c "pg_restore -d dvdrental /root/dvdrental.tar;"
-rm -f /root/dvdrental.tar
-
-echo ""
 title "Setting up remote connections:"
+echo "Preparing the localhost 'postgres' user..."
+sudo -i -u postgres bash -c "psql -c \"ALTER USER postgres WITH PASSWORD 'postgres';\""
 
 echo "Opening the binding address to '*'..."
 sed -i "s|#listen_addresses = 'localhost'|listen_addresses = '*'|g" /etc/postgresql/14/main/postgresql.conf
@@ -34,7 +26,16 @@ grep -qxF "${PGHBALINE2}" "${PGHBAFILE}" || echo "${PGHBALINE2}" >> ${PGHBAFILE}
 
 service postgresql restart
 
-echo "Creating the remote user 'root@%'..."
-sudo -H -u root bash -c "psql -c \"ALTER USER postgres WITH PASSWORD 'postgres';\""
+echo ""
+title "Setting up the demo database:"
+wget https://www.postgresqltutorial.com/wp-content/uploads/2019/05/dvdrental.zip -O dvdrental.zip
+unzip dvdrental.zip
+rm -f dvdrental.zip
+
+PGPASSWORD=postgres psql -U postgres -h localhost -c "CREATE DATABASE dvdrental;"
+PGPASSWORD=postgres pg_restore -U postgres -h localhost -d dvdrental dvdrental.tar;
+
+sudo -i -u postgres bash -c "pg_restore -d dvdrental dvdrental.tar;"
+rm -f dvdrental.tar
 
 clear-and-reboot
