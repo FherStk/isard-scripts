@@ -203,7 +203,6 @@ base-setup(){
   set-address "192.168.1.1/24"
 
   apt-upgrade
-  apt-req "openssh-server"
-  apt-req "ipcalc"
+  apt-req "openssh-server"  
   system-changes
 }

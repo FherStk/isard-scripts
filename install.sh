@@ -12,7 +12,11 @@ info "$SCRIPT_NAME" "$SCRIPT_VERSION"
 auto-update true `basename "$0"`
 check-sudo
 
+echo ""
+title "Installing dependencies:"
+sudo apt update
 apt-req "dialog"
+apt-req "ipcalc"
 
 echo ""
 title "Installing into ${INSTALL_PATH}:"
