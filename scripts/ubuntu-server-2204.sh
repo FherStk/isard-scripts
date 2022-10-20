@@ -6,5 +6,6 @@ HOST_NAME="ubuntu-2204-server"
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 source $SCRIPT_PATH/../utils/main.sh
 
+startup
 base-setup
 clear-and-reboot

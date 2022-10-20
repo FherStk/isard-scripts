@@ -6,6 +6,7 @@ HOST_NAME="mysql-server"
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 source $SCRIPT_PATH/../utils/main.sh
 
+startup
 base-setup
 apt-req "mysql-server-8.0"
 clear-and-reboot

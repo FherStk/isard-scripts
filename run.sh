@@ -5,13 +5,7 @@ SCRIPT_NAME="Script Installer"
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 source $SCRIPT_PATH/utils/main.sh
 
-trap 'abort' 0
-set -e
-
-info "$SCRIPT_NAME" "$SCRIPT_VERSION"
-auto-update true `basename "$0"`
-check-sudo
-install-dependencies
+startup
 
 echo ""
 trap 'clear' 0

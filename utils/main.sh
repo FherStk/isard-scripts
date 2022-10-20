@@ -202,14 +202,19 @@ install-dependencies()
   apt-req "ipcalc"
 }
 
-base-setup(){
+startup(){
   trap 'abort' 0
   set -e
 
   info "$SCRIPT_NAME" "$SCRIPT_VERSION"
   auto-update true `basename "$0"`
   check-sudo
-  install-dependencies
+  install-dependencies  
+}
+
+base-setup(){
+  trap 'abort' 0
+  set -e
   
   set-hostname "${HOST_NAME}"  
   set-address "192.168.1.1/24"
