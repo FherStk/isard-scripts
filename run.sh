@@ -11,6 +11,8 @@ set -e
 auto-update true `basename "$0"`
 check-sudo
 
+apt-req "dialog"
+
 echo ""
 #trap 'clear' 0
 
