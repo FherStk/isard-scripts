@@ -3,8 +3,7 @@ After=network.target
 
 [Service]
 WorkingDirectory=<PATH>
-ExecStart=sudo <PATH>/run.sh
-User=<EXECUSER>
+ExecStart=<PATH>/run.sh
 
 [Install]
 WantedBy=default.target
