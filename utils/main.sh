@@ -146,10 +146,12 @@ set-address()
 
 request-ip()
 {
-  ADDRESS=$(dialog --nocancel --title "Network Configuration: enp3s0" --inputbox "\nEnter an IP address:" 8 40 ${1} --output-fd 1)
+  ADDRESS=$(dialog --nocancel --title "Network Configuration: enp3s0" --inputbox "\nEnter an IP address:" 8 40 ${1} --output-fd 1)  
   if [ $(ipcalc -b ${ADDRESS} | grep -c "INVALID ADDRESS") -eq 1 ];
   then
     request-ip   
+  else
+    clear
   fi
 }
 
