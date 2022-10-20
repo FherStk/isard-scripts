@@ -1,0 +1,8 @@
+[Unit]
+After=network.target
+
+[Service]
+ExecStart=<PATH>/isard-scripts/update.sh
+
+[Install]
+WantedBy=default.target
