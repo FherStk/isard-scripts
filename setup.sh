@@ -2,7 +2,7 @@
 SCRIPT_VERSION="1.0.0"
 SCRIPT_NAME="App Setup"
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-REALUSER=$(echo $DIR | cut -d "/" -f3)
+REALUSER=$(sudo who am i | awk '{print $1}')
 
 source $DIR/utils/main.sh
 
