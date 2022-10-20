@@ -17,6 +17,7 @@ git clone https://github.com/datacharmer/test_db.git
 
 cd test_db
 sudo -H -u root bash -c "mysql -t < employees.sql"
+cd ..
 rm -R test_db
 
 echo ""
