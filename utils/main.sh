@@ -62,7 +62,7 @@ auto-update()
           echo "Restarting the app..."
 
           trap : 0
-          bash ${BASE_PATH}/${2}          
+          bash ${SCRIPT_PATH}/${2}          
           exit 0
         fi
     fi
