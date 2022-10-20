@@ -14,8 +14,6 @@ auto-update true `basename "$0"`
 check-sudo
 
 apt-req "dialog"
-echo $SUDO_USER
-whoami
 
 echo ""
 title "Installing into ${INSTALL_PATH}:"
@@ -27,7 +25,7 @@ title "Setting up the first launch after user logon (just once):"
 #cp $SCRIPT_PATH/utils/rc.local /etc/rc.local
 #echo "Copying rc.local file..."
 COMMAND="bash ${INSTALL_PATH}/run.sh"
-grep -qxF "'${COMMAND}'" ~/.profile || echo "'${COMMAND}'" >> ~/.profile
+grep -qxF "'${COMMAND}'" /home/$SUDO_USER/.profile || echo "'${COMMAND}'" >> /home/$SUDO_USER/.profile
 echo "Setting up the .profile entry..."
 
 echo ""
