@@ -11,6 +11,8 @@ info "$SCRIPT_NAME" "$SCRIPT_VERSION"
 auto-update true `basename "$0"`
 check-sudo
 
+apt-req "dialog"
+
 echo ""
 title "Setting up the isard-scripts-update service:"
 cp ./utils/isard-scripts-update.service /etc/systemd/system/isard-scripts-update.service
