@@ -21,7 +21,7 @@ clear
 
 for f in $SELECTED
 do
-    sed -i "s/'"${AUTOSTART}"'/'#"${AUTOSTART}"'/g" ${PROFILE}
+    sed -i "s/'${AUTOSTART}'/'#${AUTOSTART}'/g" ${PROFILE}
     source $SCRIPT_PATH/scripts/$f
 done
 
