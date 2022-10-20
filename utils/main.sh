@@ -125,8 +125,11 @@ info()
 check-sudo()
 {
   if [ "$EUID" -ne 0 ]
-    then echo "Please, run with 'sudo'."
-    exit
+    then 
+      echo ""
+      echo -e "${RED}Please, run with 'sudo'.${NC}"
+
+      exit 0
   fi
 }
 
