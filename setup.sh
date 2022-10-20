@@ -20,7 +20,7 @@ COMMAND="bash ${DIR}/run.sh"
 grep -qxF "'${COMMAND}'" ~/.profile || echo "'${COMMAND}'" >> ~/.profile
 
 echo ${COMMAND}
-grep -qxF "'${COMMAND}'" ~/.profile || echo "'${COMMAND}'"
+grep -qxF "${COMMAND}" ~/.profile || echo "${COMMAND}"
 
 echo ""
 title "Setting up the auto-update after user logon:"
