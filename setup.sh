@@ -2,7 +2,7 @@
 SCRIPT_VERSION="1.0.0"
 SCRIPT_NAME="App Setup"
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-REALUSER=$(sudo env | grep SUDO_USER | cut -d "=" -f2)
+REALUSER=$(echo $DIR | cut -d "/" -f3)
 
 source $DIR/utils/main.sh
 
