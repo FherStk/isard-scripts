@@ -105,6 +105,9 @@ pip-req()
 
 set-hostname()
 {
+  echo ""
+  echo "Setting up hostname..."  
+
   OLDHOSTNAME=$(HOSTNAME)
   NEWHOSTNAME=$(dialog --nocancel --title "Hostname Configuration" --inputbox "\nEnter the hostname:" 8 40 ${1} --output-fd 1) 
   clear
@@ -115,6 +118,9 @@ set-hostname()
 
 set-address()
 {
+  echo ""
+  echo "Setting up host address..."
+
   SELECTED=$(dialog --nocancel --title "Network Configuration: enp3s0" --radiolist "\nSelect a configuration for the 'personal' network interface." 20 70 25 1 DHCP on 2 'Static IP address' off --output-fd 1);
   clear
 
@@ -177,6 +183,14 @@ check-sudo()
   fi
 }
 
+system-changes()
+{
+  echo ""
+  title "Performing system changes:"
+  echo "Disabling auto-upgrades..."
+  cp ${BASE_PATH}/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
+}
+
 base-setup(){
   trap 'abort' 0
   set -e
@@ -184,19 +198,12 @@ base-setup(){
   info "$SCRIPT_NAME" "$SCRIPT_VERSION"
   auto-update true `basename "$0"`
   check-sudo
+  
+  set-hostname "${HOST_NAME}"  
+  set-address "192.168.1.1/24"
 
   apt-upgrade
   apt-req "openssh-server"
   apt-req "ipcalc"
-
-  echo ""
-  title "Performing system changes:"
-  echo "Disabling auto-upgrades..."
-  cp ${BASE_PATH}/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
-
-  echo "Setting up hostname..."  
-  set-hostname "${HOST_NAME}"
-
-  echo "Setting up host address..."
-  set-address "192.168.1.1/24"
+  system-changes
 }
