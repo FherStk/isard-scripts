@@ -14,7 +14,7 @@ check-sudo
 echo ""
 trap : 0
 
-FOLDER="./scripts"
+FOLDER="$SCRIPT_PATH/scripts"
 OPTIONS=$(find $FOLDER -mindepth 1 -maxdepth 1 -type f -not -name '*.exe' -printf "%f %TY-%Tm-%Td off\n");
 SELECTED=$(dialog --radiolist "Pick files out of $FOLDER" 60 70 25 $OPTIONS --output-fd 1);
 clear
