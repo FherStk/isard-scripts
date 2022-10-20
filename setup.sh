@@ -3,7 +3,7 @@ SCRIPT_VERSION="1.0.0"
 SCRIPT_NAME="App Setup"
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-source ./utils/main.sh
+source $DIR/utils/main.sh
 
 trap 'abort' 0
 set -e
