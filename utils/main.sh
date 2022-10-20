@@ -54,6 +54,7 @@ auto-update()
         echo "" 
         echo -e "${CYAN}New version found, updating...${NC}"
         git reset --hard origin/main    
+        echo "Update completed." 
 
         if [ $1 = true ]; 
         then
