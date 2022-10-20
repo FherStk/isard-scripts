@@ -44,7 +44,7 @@ apt-upgrade()
 auto-update()
 {    
     echo ""
-    title "Checking for new script versions: "
+    title "Checking for a new app version: "
     git fetch --all
 
     if [ $(LC_ALL=C git status -uno | grep -c "Your branch is up to date with 'origin/main'") -eq 1 ];
@@ -119,7 +119,7 @@ info()
     echo -e "${YELLOW}Under the AGPL license:${NC} https://github.com/FherStk/isard-scripts/blob/main/LICENSE"
 }
 
-setup-base(){
+base-setup(){
   trap 'abort' 0
   set -e
 
