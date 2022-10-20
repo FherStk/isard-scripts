@@ -129,6 +129,7 @@ check-sudo()
       echo ""
       echo -e "${RED}Please, run with 'sudo'.${NC}"
 
+      trap : 0
       exit 0
   fi
 }
