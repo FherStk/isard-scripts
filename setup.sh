@@ -19,6 +19,7 @@ title "Setting up the first launch after user logon (just once):"
 COMMAND="./${DIR}/run.sh"
 grep -qxF "'${COMMAND}'" ~/.profile || echo "'${COMMAND}'" >> ~/.profile
 
+echo ${COMMAND}
 grep -qxF "'${COMMAND}'" ~/.profile || echo "'${COMMAND}'"
 
 echo ""
