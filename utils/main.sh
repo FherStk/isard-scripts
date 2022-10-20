@@ -50,14 +50,15 @@ auto-update()
     echo ""
     title "Checking for a new app version: "
     git -C ${BASE_PATH} fetch --all
+    BRANCH=$(git rev-parse --abbrev-ref HEAD) 
 
-    if [ $(LC_ALL=C git -C ${BASE_PATH} status -uno | grep -c "Your branch is up to date with 'origin/main'") -eq 1 ];
+    if [ $(LC_ALL=C git -C ${BASE_PATH} status -uno | grep -c "Your branch is up to date with 'origin/${BRANCH}'") -eq 1 ];
     then     
         echo -e "Up to date, skipping..."
     else
         echo "" 
         echo -e "${CYAN}New version found, updating...${NC}"
-        git -C ${BASE_PATH} reset --hard origin/$(git rev-parse --abbrev-ref HEAD)    
+        git -C ${BASE_PATH} reset --hard origin/${BRANCH}
         echo "Update completed." 
 
         if [ $1 = true ]; 
