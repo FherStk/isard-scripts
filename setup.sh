@@ -24,7 +24,7 @@ echo ""
 title "Setting up the first launch after user logon (just once):"
 #cp $SCRIPT_PATH/utils/rc.local /etc/rc.local
 #echo "Copying rc.local file..."
-COMMAND="sudo bash ${INSTALL_PATH}/utils/autostart.sh"
+COMMAND="bash ${INSTALL_PATH}/utils/autostart.sh"
 PROFILE="/home/$SUDO_USER/.profile"
 grep -qxF "${COMMAND}" "${PROFILE}" || echo "${COMMAND}" >> ${PROFILE}
 echo "Setting up the ${PROFILE} entry..."
