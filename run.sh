@@ -21,6 +21,6 @@ clear
 
 for f in $selected_files
 do
-    sudo systemctl disable isard-scripts-first-run.service
+    #sudo systemctl disable isard-scripts-first-run.service
     source ./scripts/$f
 done

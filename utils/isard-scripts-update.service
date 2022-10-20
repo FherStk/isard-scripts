@@ -1,9 +1,0 @@
-[Unit]
-After=network.target
-
-[Service]
-WorkingDirectory=<PATH>
-ExecStart=<PATH>/update.sh
-
-[Install]
-WantedBy=default.target

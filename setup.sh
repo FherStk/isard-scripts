@@ -15,19 +15,16 @@ check-sudo
 apt-req "dialog"
 
 echo ""
-title "Setting up the isard-scripts-first-run service:"
-cp ./utils/isard-scripts-first-run.service /etc/systemd/system/isard-scripts-first-run.service
-sed -i "s|<PATH>|${DIR}|g" /etc/systemd/system/isard-scripts-first-run.service
-systemctl daemon-reload
-sudo systemctl enable isard-scripts-first-run.service
+title "Setting up the first launch after user logon (just once):"
+COMMAND="./${DIR}/run.sh"
+grep -qxF "'${COMMAND}'" ~.profile || echo "'${COMMAND}'" >> ~.profile
 
 echo ""
-title "Setting up the isard-scripts-update service:"
-cp ./utils/isard-scripts-update.service /etc/systemd/system/isard-scripts-update.service
-sed -i "s|<PATH>|${DIR}|g" /etc/systemd/system/isard-scripts-update.service
-systemctl daemon-reload
-sudo systemctl enable isard-scripts-update.service
+title "Setting up the auto-update after user logon:"
+COMMAND="./${DIR}/update.sh"
+grep -qxF "'${COMMAND}'" ~.profile || echo "'${COMMAND}'" >> ~.profile
 
+#TODO: this does not work...
 echo ""
 title "Setting up git safe directory:"
 git config --global --add safe.directory /home/usuario/isard-scripts
