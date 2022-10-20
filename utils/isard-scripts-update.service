@@ -3,7 +3,7 @@ After=network.target
 
 [Service]
 WorkingDirectory=<PATH>
-ExecStart=<PATH>/update.sh
+ExecStart=sudo <PATH>/update.sh
 User=<EXECUSER>
 
 [Install]
