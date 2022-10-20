@@ -48,7 +48,7 @@ auto-update()
     title "Checking for a new app version: "
     git -C ${BASE_PATH} fetch --all
 
-    if [ $(LC_ALL=C git status -uno | grep -c "Your branch is up to date with 'origin/main'") -eq 1 ];
+    if [ $(LC_ALL=C git -C ${BASE_PATH} status -uno | grep -c "Your branch is up to date with 'origin/main'") -eq 1 ];
     then     
         echo -e "Up to date, skipping..."
     else
