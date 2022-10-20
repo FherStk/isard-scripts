@@ -2,28 +2,12 @@
 SCRIPT_VERSION="1.0.0"
 SCRIPT_NAME="IsardVDI Script App"
 
-source ./utils/main.sh
+directory="./scripts"
+options=$(find $directory -mindepth 1 -maxdepth 1 -type f -not -name '*.exe' -printf "%f %TY-%Tm-%Td off\n");
+selected_files=$(dialog --radiolist "Pick files out of $directory" 60 70 25 $options --output-fd 1);
+clear
 
-trap 'abort' 0
-set -e
-
-declare -a scripts
-for file in ./scipts/*.sh
+for f in $selected_files
 do
-    scripts=("${scripts[@]}" "$file")
+ source ./scripts/$f
 done
-
-while choice=$(dialog --title "$SCRIPT_NAME" \
-                 --menu "Please select" 10 40 3 "${scripts[@]}" \
-                 2>&1 >/dev/tty)
-    do
-    case $choice in
-        1) ;; # some action on 1
-        2) ;; # some action on 2
-        *) ;; # some action on other
-    esac
-done
-clear # clear after user pressed Cancel
-
-echo ""
-trap : 0
