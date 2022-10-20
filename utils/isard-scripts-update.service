@@ -2,7 +2,7 @@
 After=network.target
 
 [Service]
-ExecStart=<PATH>/isard-scripts/update.sh
+ExecStart=<PATH>/update.sh
 
 [Install]
 WantedBy=default.target
