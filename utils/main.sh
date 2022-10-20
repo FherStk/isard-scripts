@@ -108,7 +108,7 @@ set-hostname()
   echo ""
   echo "Setting up hostname..."  
 
-  OLDHOSTNAME=$(HOSTNAME)
+  OLDHOSTNAME=$(hostname)
   NEWHOSTNAME=$(dialog --nocancel --title "Hostname Configuration" --inputbox "\nEnter the hostname:" 8 40 ${1} --output-fd 1) 
   clear
     
