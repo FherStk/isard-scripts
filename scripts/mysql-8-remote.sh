@@ -8,6 +8,8 @@ source $SCRIPT_PATH/../utils/main.sh
 
 base-setup
 apt-req "mysql-server-8.0"
+
+title "Setting up the demo database:"
 wget https://github.com/datacharmer/test_db/archive/refs/heads/master.zip
 unzip master.zip
 rm master.zip

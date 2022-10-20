@@ -153,12 +153,13 @@ base-setup(){
   echo ""
   title "Performing system changes:"
   echo "Disabling auto-upgrades..."
-  cp ${BASE_PATH}/utils/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
+  cp ${BASE_PATH}/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
 
   echo "Setting up hostname..."
   set-hostname ${HOST_NAME}
 
   echo "Setting up netplan..."
+  #TODO: enable this in production
   #cp ./utils/netplan-server.yaml /etc/netplan/00-installer-config.yaml
   netplan apply
 }
