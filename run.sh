@@ -12,7 +12,7 @@ auto-update true `basename "$0"`
 check-sudo
 
 echo ""
-trap 'clear' 0
+#trap 'clear' 0
 
 unset OPTIONS
 FOLDER="$SCRIPT_PATH/scripts"
