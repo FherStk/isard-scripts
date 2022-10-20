@@ -29,6 +29,10 @@ systemctl daemon-reload
 sudo systemctl enable isard-scripts-update.service
 
 echo ""
+title "Setting up git safe directory:"
+git config --global --add safe.directory /home/usuario/isard-scripts
+
+echo ""
 echo -e "${GREEN}DONE!${NC}"
 echo ""
 trap : 0
