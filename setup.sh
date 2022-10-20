@@ -16,7 +16,7 @@ apt-req "dialog"
 
 echo ""
 title "Setting up the first launch after user logon (just once):"
-COMMAND="./${DIR}/run.sh"
+COMMAND="bash ${DIR}/run.sh"
 grep -qxF "'${COMMAND}'" ~/.profile || echo "'${COMMAND}'" >> ~/.profile
 
 echo ${COMMAND}
