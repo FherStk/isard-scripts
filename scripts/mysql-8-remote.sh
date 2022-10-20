@@ -22,7 +22,7 @@ title "Setting up the demo database:"
 echo ""
 title "Setting up remote connections:"
 echo "Opening the binding address to '*'..."
-sed -i "s|#bind-address|g" /etc/mysql/mysql.conf.d/mysqld.cnf 
+sed -i "s|bind-address            = 127.0.0.1|bind-address            = *|g" /etc/mysql/mysql.conf.d/mysqld.cnf 
 service mysql restart
 
 echo "Creating the remote user 'root@%'..."
