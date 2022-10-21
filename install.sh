@@ -19,7 +19,7 @@ then
     #Ubuntu Desktop
     mkdir -p ${AUTOSTART}
     cp ${BASE_PATH}/isard-scripts.desktop ${DESKTOPFILE}
-    sed -i "s|SCRIPT_PATH|${RUNSCRIPT}|g" ${DESKTOPFILE}
+    sed -i "s|<SCRIPT_PATH>|${RUNSCRIPT}|g" ${DESKTOPFILE}
     echo "Setting up the ${DESKTOPFILE} entry..."
 else
     #Ubuntu Server
