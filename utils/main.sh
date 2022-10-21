@@ -210,13 +210,13 @@ startup(){
 
       trap : 0
       exit 0
-  fi  
-  echo ""
+  fi    
 
-  #Update if new versions
+  #Update if new versions  
   auto-update true `basename "$0"`
 
   #Some packages are needed
+  echo ""
   title "Installing dependencies:"
   sudo apt update
   apt-req "dialog"  #for requesting information
