@@ -221,7 +221,7 @@ system-setup()
   title "Performing system setup:"
   echo "Disabling auto-upgrades..."
   cp ${BASE_PATH}/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
-  sudo dpkg-reconfigure unattended-upgrades -pmedium unattended-upgrades
+  dpkg-reconfigure -f noninteractive unattended-upgrades
 }
 
 script-setup(){
