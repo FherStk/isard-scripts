@@ -109,7 +109,7 @@ set-hostname()
   echo "Setting up hostname..."  
 
   OLDHOSTNAME=$(hostname)
-  NEWHOSTNAME=$(dialog --nocancel --title "Hostname Configuration" --inputbox "\nEnter the hostname:" 8 40 ${1} --output-fd 1) 
+  NEWHOSTNAME=$(dialog --nocancel --title "Hostname Configuration" --inputbox "\nEnter the host name:" 8 40 ${1} --output-fd 1) 
   clear
     
   hostnamectl set-hostname ${NEWHOSTNAME}  
@@ -123,30 +123,44 @@ set-address()
 
   SELECTED=$(dialog --nocancel --title "Network Configuration: enp3s0" --radiolist "\nSelect a configuration for the 'personal' network interface." 20 70 25 1 DHCP on 2 'Static IP address' off --output-fd 1);
   clear
-
-  echo "Setting up network data..."
+  
   for f in $SELECTED
   do      
       if [[ "$f" == 1 ]];
       then        
-        cp ${BASE_PATH}/netplan-dhcp-server.yaml /etc/netplan/00-installer-config.yaml
-        echo
+        set-address-dhcp
       else  
-        request-ip ${1}
-
-        cp ${BASE_PATH}/netplan-static-server.yaml /etc/netplan/00-installer-config.yaml
-        sed -i "s|x.x.x.x/yy|${ADDRESS}|g" /etc/netplan/00-installer-config.yaml
+        set-address-static ${1}
       fi
   done
+}
+
+set-address-dhcp()
+{
+  #Some scripts could force this
+  echo "Setting up network data..."
+  cp ${BASE_PATH}/netplan-dhcp-server.yaml /etc/netplan/00-installer-config.yaml
+  
+  echo "Setting up netplan..."
+  netplan apply
+}
+
+set-address-static()
+{
+  #Some scripts could force this (like dhcp-server.sh)  
+  request-ip ${1}
+  echo "Setting up network data..."
+
+  cp ${BASE_PATH}/netplan-static-server.yaml /etc/netplan/00-installer-config.yaml
+  sed -i "s|x.x.x.x/yy|${ADDRESS}|g" /etc/netplan/00-installer-config.yaml
 
   echo "Setting up netplan..."
   netplan apply
-  sleep 10s
 }
 
 request-ip()
 {
-  ADDRESS=$(dialog --nocancel --title "Network Configuration: enp3s0" --inputbox "\nEnter an IP address:" 8 40 ${1} --output-fd 1)  
+  ADDRESS=$(dialog --nocancel --title "Network Configuration: enp3s0" --inputbox "\nEnter the host address:" 8 40 ${1} --output-fd 1)  
   if [ $(ipcalc -b ${ADDRESS} | grep -c "INVALID ADDRESS") -eq 1 ];
   then
     request-ip   
@@ -173,8 +187,14 @@ info()
     echo -e "${YELLOW}Under the AGPL license:${NC} https://github.com/FherStk/isard-scripts/blob/main/LICENSE"
 }
 
-check-sudo()
-{
+startup(){
+  trap 'abort' 0
+  set -e
+
+  #Splash "screen"
+  info "$SCRIPT_NAME" "$SCRIPT_VERSION"  
+  
+  #Checking for "sudo"
   if [ "$EUID" -ne 0 ]
     then 
       echo ""
@@ -182,44 +202,34 @@ check-sudo()
 
       trap : 0
       exit 0
-  fi
-}
+  fi    
 
-system-changes()
-{
-  echo ""
-  title "Performing system changes:"
-  echo "Disabling auto-upgrades..."
-  cp ${BASE_PATH}/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
-}
+  #Update if new versions  
+  auto-update true `basename "$0"`
 
-install-dependencies()
-{
+  #Some packages are needed
   echo ""
   title "Installing dependencies:"
   sudo apt update
-  apt-req "dialog"
-  apt-req "ipcalc"
+  apt-req "dialog"  #for requesting information
+  apt-req "ipcalc"  #for static address validation
 }
 
-startup(){
-  trap 'abort' 0
-  set -e
-
-  info "$SCRIPT_NAME" "$SCRIPT_VERSION"
-  auto-update true `basename "$0"`
-  check-sudo
-  install-dependencies  
+system-setup()
+{
+  echo ""
+  title "Performing system setup:"
+  echo "Disabling auto-upgrades..."
+  cp ${BASE_PATH}/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
+  dpkg-reconfigure -f noninteractive unattended-upgrades
 }
 
-base-setup(){
-  trap 'abort' 0
-  set -e
-  
+script-setup(){
+  #This is the common script setup, but not for all (dhcp-server forces an static host address)  
+  system-setup #must be the first one in order to prevent dpkg blockings
   set-hostname "${HOST_NAME}"  
   set-address "192.168.1.1/24"
 
   apt-upgrade
-  apt-req "openssh-server"  
-  system-changes
+  apt-req "openssh-server"    
 }
