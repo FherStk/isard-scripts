@@ -14,8 +14,18 @@ git clone https://github.com/FherStk/isard-scripts.git ${INSTALL_PATH}
 
 echo ""
 title "Setting up the first launch after user logon (just once):"
-grep -qxF "${AUTOSTART}" "${PROFILE}" || echo "${AUTOSTART}" >> ${PROFILE}
-echo "Setting up the ${PROFILE} entry..."
+if [ $(dpkg -l ubuntu-desktop | grep -c "ubuntu-desktop") -eq 1 ];
+then     
+    #Ubuntu Desktop
+    mkdir -p ${CONFIG}/autostart
+    DESKTOP="${CONFIG}/autostart/isard-scripts.desktop"
+    cp ${BASE_PATH}/utils/isard-scripts.desktop ${DESKTOP}
+    sed -i "s|SCRIPT_PATH|${AUTOSTART}|g" ${DESKTOP}
+else
+    #Ubuntu Server
+    grep -qxF "${AUTOSTART}" "${PROFILE}" || echo "${AUTOSTART}" >> ${PROFILE}
+    echo "Setting up the ${PROFILE} entry..."
+fi
 
 echo ""
 echo -e "${GREEN}DONE!${NC}"
