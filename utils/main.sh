@@ -200,8 +200,7 @@ startup(){
   set -e
 
   #Splash "screen"
-  info "$SCRIPT_NAME" "$SCRIPT_VERSION"
-  auto-update true `basename "$0"`
+  info "$SCRIPT_NAME" "$SCRIPT_VERSION"  
   
   #Checking for "sudo"
   if [ "$EUID" -ne 0 ]
@@ -213,6 +212,9 @@ startup(){
       exit 0
   fi  
   echo ""
+
+  #Update if new versions
+  auto-update true `basename "$0"`
 
   #Some packages are needed
   title "Installing dependencies:"
