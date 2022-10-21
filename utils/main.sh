@@ -187,15 +187,6 @@ info()
     echo -e "${YELLOW}Under the AGPL license:${NC} https://github.com/FherStk/isard-scripts/blob/main/LICENSE"
 }
 
-system-setup()
-{
-  echo ""
-  title "Performing system setup:"
-  echo "Disabling auto-upgrades..."
-  cp ${BASE_PATH}/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
-  sudo dpkg-reconfigure unattended-upgrades
-}
-
 startup(){
   trap 'abort' 0
   set -e
@@ -224,7 +215,16 @@ startup(){
   apt-req "ipcalc"  #for static address validation
 }
 
-base-setup(){
+system-setup()
+{
+  echo ""
+  title "Performing system setup:"
+  echo "Disabling auto-upgrades..."
+  cp ${BASE_PATH}/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
+  sudo dpkg-reconfigure unattended-upgrades
+}
+
+script-setup(){
   #This is the common script setup, but not for all (dhcp-server forces an static host address)  
   system-setup #must be the first one in order to prevent dpkg blockings
   set-hostname "${HOST_NAME}"  
