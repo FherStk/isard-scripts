@@ -187,12 +187,13 @@ info()
     echo -e "${YELLOW}Under the AGPL license:${NC} https://github.com/FherStk/isard-scripts/blob/main/LICENSE"
 }
 
-system-changes()
+system-setup()
 {
   echo ""
-  title "Performing system changes:"
+  title "Performing system setup:"
   echo "Disabling auto-upgrades..."
   cp ${BASE_PATH}/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
+  sudo dpkg-reconfigure unattended-upgrades
 }
 
 startup(){
@@ -225,10 +226,10 @@ startup(){
 
 base-setup(){
   #This is the common script setup, but not for all (dhcp-server forces an static host address)  
+  system-setup #must be the first one in order to prevent dpkg blockings
   set-hostname "${HOST_NAME}"  
   set-address "192.168.1.1/24"
 
   apt-upgrade
-  apt-req "openssh-server"  
-  system-changes
+  apt-req "openssh-server"    
 }

@@ -12,6 +12,6 @@ set-address-static "192.168.1.1/24"
 
 apt-upgrade
 apt-req "openssh-server"  
-system-changes
+system-setup
 
 clear-and-reboot
