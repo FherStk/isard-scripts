@@ -17,13 +17,13 @@ title "Setting up the first launch after user logon (just once):"
 if [ $(dpkg -l ubuntu-desktop | grep -c "ubuntu-desktop") -eq 1 ];
 then     
     #Ubuntu Desktop
-    mkdir -p ${CONFIG}/autostart
-    DESKTOP="${CONFIG}/autostart/isard-scripts.desktop"
-    cp ${BASE_PATH}/utils/isard-scripts.desktop ${DESKTOP}
-    sed -i "s|SCRIPT_PATH|${AUTOSTART}|g" ${DESKTOP}
+    mkdir -p ${AUTOSTART}
+    cp ${BASE_PATH}/utils/isard-scripts.desktop ${DESKTOPFILE}
+    sed -i "s|SCRIPT_PATH|${RUNSCRIPT}|g" ${DESKTOPFILE}
+    echo "Setting up the ${DESKTOPFILE} entry..."
 else
     #Ubuntu Server
-    grep -qxF "${AUTOSTART}" "${PROFILE}" || echo "${AUTOSTART}" >> ${PROFILE}
+    grep -qxF "${RUNSCRIPT}" "${PROFILE}" || echo "${RUNSCRIPT}" >> ${PROFILE}
     echo "Setting up the ${PROFILE} entry..."
 fi
 

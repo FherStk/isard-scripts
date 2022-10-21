@@ -1,9 +1,10 @@
 #!/bin/bash
 BASE_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 INSTALL_PATH="/etc/isard-scripts"
-AUTOSTART="sudo bash ${INSTALL_PATH}/run.sh"
+RUNSCRIPT="sudo bash ${INSTALL_PATH}/run.sh"
 PROFILE="/home/$SUDO_USER/.profile"
-CONFIG="/home/$SUDO_USER/.config"
+AUTOSTART="/home/$SUDO_USER/.config/autostart"
+DESKTOPFILE="${AUTOSTART}/isard-scripts.desktop"
 
 # Terminal colors:
 # Black        0;30     Dark Gray     1;30

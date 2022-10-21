@@ -20,7 +20,12 @@ clear
 
 for f in $SELECTED
 do        
-    sed -i "s|${AUTOSTART}|#${AUTOSTART}|g" ${PROFILE}
+    #For Ubuntu Server
+    sed -i "s|${RUNSCRIPT}|#${RUNSCRIPT}|g" ${PROFILE}
+
+    #For Ubuntu Desktop
+    rm -f ${DESKTOPFILE}
+
     source $SCRIPT_PATH/scripts/$f
 done
 
