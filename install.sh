@@ -18,7 +18,7 @@ if [ $(dpkg -l ubuntu-desktop | grep -c "ubuntu-desktop") -eq 1 ];
 then     
     #Ubuntu Desktop
     mkdir -p ${AUTOSTART}
-    cp ${BASE_PATH}/utils/isard-scripts.desktop ${DESKTOPFILE}
+    cp ${BASE_PATH}/isard-scripts.desktop ${DESKTOPFILE}
     sed -i "s|SCRIPT_PATH|${RUNSCRIPT}|g" ${DESKTOPFILE}
     echo "Setting up the ${DESKTOPFILE} entry..."
 else

@@ -211,7 +211,7 @@ startup(){
 
   #Some packages are needed
   echo ""
-  title "Installing dependencies:"
+  title "Installing requirements:"
   sudo apt update
   apt-req "dialog"  #for requesting information
   apt-req "ipcalc"  #for static address validation
