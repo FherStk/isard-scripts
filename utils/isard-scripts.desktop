@@ -1,6 +1,7 @@
 [Desktop Entry]
 Type=Application
-Exec=gnome-terminal --window --full-screen -- bash -c "<RUNSCRIPT>"
+Path=<INSTALL_PATH>
+Exec=gnome-terminal --window --full-screen -- bash -c "<RUN_SCRIPT>"
 Hidden=false
 NoDisplay=false
 X-GNOME-Autostart-enabled=true

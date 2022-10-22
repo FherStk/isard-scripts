@@ -25,7 +25,7 @@ else
     for f in $SELECTED
     do        
         #For Ubuntu Server
-        sed -i "s|${RUNSCRIPT}|#${RUNSCRIPT}|g" ${PROFILE}
+        sed -i "s|${RUN_SCRIPT}|#${RUN_SCRIPT}|g" ${PROFILE}
 
         #For Ubuntu Desktop
         rm -f ${DESKTOPFILE}

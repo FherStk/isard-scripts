@@ -19,11 +19,12 @@ then
     #Ubuntu Desktop
     mkdir -p ${AUTOSTART}
     cp ${BASE_PATH}/isard-scripts.desktop ${DESKTOPFILE}
-    sed -i "s|<RUNSCRIPT>|${RUNSCRIPT}|g" ${DESKTOPFILE}
+    sed -i "s|<INSTALL_PATH>|${INSTALL_PATH}|g" ${DESKTOPFILE}
+    sed -i "s|<RUN_SCRIPT>|${RUN_SCRIPT}|g" ${DESKTOPFILE}
     echo "Setting up the ${DESKTOPFILE} entry..."
 else
     #Ubuntu Server
-    grep -qxF "${RUNSCRIPT}" "${PROFILE}" || echo "${RUNSCRIPT}" >> ${PROFILE}
+    grep -qxF "${RUN_SCRIPT}" "${PROFILE}" || echo "${RUN_SCRIPT}" >> ${PROFILE}
     echo "Setting up the ${PROFILE} entry..."
 fi
 
