@@ -7,7 +7,7 @@ source $SCRIPT_PATH/utils/main.sh
 
 if [ "$1" == "only-splash" ];
 then
-    info
+    info "$SCRIPT_NAME" "$SCRIPT_VERSION"
 else
     startup $1    
 
