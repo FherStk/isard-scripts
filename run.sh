@@ -6,6 +6,7 @@ SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 source $SCRIPT_PATH/utils/main.sh
 
 if [ "$1" != "only-splash" ];
+then
     info
 else
     startup $1    
