@@ -12,7 +12,7 @@ trap 'clear' 0
 
 unset OPTIONS
 FOLDER="$SCRIPT_PATH/scripts"
-OPTIONS=$(find $FOLDER -mindepth 1 -maxdepth 1 -type f -name '*.sh' -printf "%f %TY-%Tm-%Td off\n");
+OPTIONS=$(find $FOLDER -mindepth 1 -maxdepth 1 -type f -name '*.sh' -printf "%f %TY-%Tm-%Td off\n" | sort -z | xargs -r0 sha256sum > sha256SumOutput);
 OPTIONS+=$(echo " NONE 1900-01-01 off")
 
 SELECTED=$(dialog --title "${SCRIPT_NAME} v${SCRIPT_VERSION}" --radiolist "\nPick an IsardVDI script in order to install" 60 70 25 $OPTIONS --output-fd 1);
