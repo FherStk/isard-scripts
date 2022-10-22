@@ -200,7 +200,7 @@ startup(){
   set -e
 
   #Splash "screen"
-  if [ "$1" -ne "no-splash" ];
+  if [ "$1" != "no-splash" ];
   then 
     info "$SCRIPT_NAME" "$SCRIPT_VERSION"  
   fi
