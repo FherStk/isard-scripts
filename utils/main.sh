@@ -129,7 +129,7 @@ set-address()
   echo ""
   echo "Setting up host address..."
 
-  SELECTED=$(dialog --nocancel --title "Network Configuration: enp3s0" --radiolist "\nSelect a configuration for the 'personal' network interface." 20 70 25 1 DHCP on 2 'Static IP address' off --output-fd 1);
+  SELECTED=$(dialog --nocancel --title "Network Configuration: enp3s0" --radiolist "\nSelect a configuration for the 'personal' network interface." 20 70 25 1 DHCP off 2 'Static IP address' off --output-fd 1);
   clear
   
   for f in $SELECTED
