@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Exec=gnome-terminal --command "<SCRIPT_PATH>"
+Exec=gnome-terminal --window --full-screen --command "<SCRIPT_PATH>"
 Hidden=false
 NoDisplay=false
 X-GNOME-Autostart-enabled=true
