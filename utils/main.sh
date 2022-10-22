@@ -1,4 +1,5 @@
 #!/bin/bash
+#Global vars:
 BASE_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 INSTALL_PATH="/etc/isard-scripts"
 RUNSCRIPT="bash ${INSTALL_PATH}/run.sh only-splash \&\& sudo bash ${INSTALL_PATH}/run.sh no-splash"
