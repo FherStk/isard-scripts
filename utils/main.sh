@@ -2,7 +2,7 @@
 #Global vars:
 BASE_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 INSTALL_PATH="/etc/isard-scripts"
-RUNSCRIPT="bash ${INSTALL_PATH}/run.sh only-splash \&\& echo \&\& echo 'The installer needs SUDO permissions...' \&\& sudo bash ${INSTALL_PATH}/run.sh no-splash"
+RUNSCRIPT="bash ${INSTALL_PATH}/run.sh only-splash \&\& echo \&\& echo 'The installer needs sudo permissions...' \&\& sudo bash ${INSTALL_PATH}/run.sh no-splash"
 PROFILE="/home/$SUDO_USER/.profile"
 AUTOSTART="/home/$SUDO_USER/.config/autostart"
 DESKTOPFILE="${AUTOSTART}/isard-scripts.desktop"
