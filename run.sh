@@ -5,7 +5,7 @@ SCRIPT_NAME="Script Installer"
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 source $SCRIPT_PATH/utils/main.sh
 
-if [ "$1" -eq "only-splash" ]
+if [ "$1" -eq "only-splash" ];
     info
 else
     startup $1    
