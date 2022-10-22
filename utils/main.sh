@@ -1,7 +1,7 @@
 #!/bin/bash
 BASE_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 INSTALL_PATH="/etc/isard-scripts"
-RUNSCRIPT="sudo bash ${INSTALL_PATH}/run.sh"
+RUNSCRIPT="bash ${INSTALL_PATH}/run.sh only-splash && sudo bash ${INSTALL_PATH}/run.sh no-splash"
 PROFILE="/home/$SUDO_USER/.profile"
 AUTOSTART="/home/$SUDO_USER/.config/autostart"
 DESKTOPFILE="${AUTOSTART}/isard-scripts.desktop"
@@ -200,7 +200,10 @@ startup(){
   set -e
 
   #Splash "screen"
-  info "$SCRIPT_NAME" "$SCRIPT_VERSION"  
+  if [ "$1" -ne "no-splash" ]
+  then 
+    info "$SCRIPT_NAME" "$SCRIPT_VERSION"  
+  fi
   
   #Checking for "sudo"
   if [ "$EUID" -ne 0 ]
