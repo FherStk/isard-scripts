@@ -9,8 +9,11 @@ source $SCRIPT_PATH/../utils/main.sh
 startup
 script-setup
 
-#TODO:
-#   disable screen energy saving
-#   remove some items from the side bar
+title "Setting up the desktop:"
+echo "Disabling the session timeout..."
+gsettings set org.gnome.desktop.session idle-delay 0
+
+echo "Attaching favourite apps to the dash..."
+gsettings set org.gnome.shell favorite-apps "['firefox_firefox.desktop', 'thunderbird.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop']"
 
 clear-and-reboot

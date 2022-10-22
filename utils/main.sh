@@ -36,17 +36,19 @@ title(){
 }
 
 apt-upgrade()
-{
-    echo ""
-    title "Upgrading the installed apps: "
-        
+{              
     FILE="/etc/needrestart/needrestart.conf"
     if test -f "$FILE"; then
       #Note: this is needed in order to disable interactive prompts like service-restart on server systems
+      echo ""
+      title "Enabling non-interactive mode:"
+      echo "Disabling kernel restart warnings..."
       sed -i 's/#$nrconf{restart} = '"'"'i'"'"';/$nrconf{restart} = '"'"'a'"'"';/g' ${FILE}
       sed -i 's/#$nrconf{kernelhints} = -1;/$nrconf{kernelhints} = -1;/g' ${FILE}
     fi
 
+    echo ""
+    title "Upgrading the installed apps: "
     sudo apt update
     sudo apt upgrade -y
     sudo apt autoremove -y
