@@ -10,6 +10,8 @@ startup
 echo ""
 title "Installing into ${INSTALL_PATH}:"
 rm -rf ${INSTALL_PATH}
+
+get-branch
 git clone https://github.com/FherStk/isard-scripts.git --branch ${CURRENT_BRANCH} ${INSTALL_PATH}
 
 echo ""
