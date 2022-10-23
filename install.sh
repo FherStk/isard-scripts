@@ -24,12 +24,12 @@ then
     mkdir -p $AUTOSTART
     cp $BASE_PATH/isard-scripts.desktop $DESKTOPFILE
     sed -i "s|<INSTALL_PATH>|$INSTALL_PATH|g" $DESKTOPFILE
-    sed -i "s|<RUN_SCRIPT>|$RUN_SCRIPT//&/\\&|g" $DESKTOPFILE
-    #sed -i "s|&|\\\\&|g" $DESKTOPFILE
+    sed -i "s|<RUN_SCRIPT>|$RUN_SCRIPT|g" $DESKTOPFILE    
 else
     #Ubuntu Server
     echo "Setting up the $PROFILE entry..."
-    grep -qxF "$RUN_SCRIPT" "$PROFILE" || echo "$RUN_SCRIPT" >> $PROFILE    
+    grep -qxF "$RUN_SCRIPT" "$PROFILE" || echo "$RUN_SCRIPT" >> $PROFILE
+    sed -i "s|\\\\&|&|g" $PROFILE    
 fi
 
 echo ""

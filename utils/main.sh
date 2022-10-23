@@ -3,7 +3,7 @@
 BASE_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 CURRENT_BRANCH="main"
 INSTALL_PATH="/etc/isard-scripts"
-RUN_SCRIPT="bash $INSTALL_PATH/run.sh only-splash && echo && echo 'The installer needs sudo permissions...' && sudo bash $INSTALL_PATH/run.sh no-splash"
+RUN_SCRIPT="bash $INSTALL_PATH/run.sh only-splash \&\& echo \&\& echo 'The installer needs sudo permissions...' \&\& sudo bash $INSTALL_PATH/run.sh no-splash"
 PROFILE="/home/$SUDO_USER/.profile"
 AUTOSTART="/home/$SUDO_USER/.config/autostart"
 DESKTOPFILE="$AUTOSTART/isard-scripts.desktop"
