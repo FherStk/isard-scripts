@@ -38,4 +38,4 @@ PGPASSWORD=postgres psql -U postgres -h localhost -c "CREATE DATABASE dvdrental;
 PGPASSWORD=postgres pg_restore -U postgres -h localhost -d dvdrental dvdrental.tar;
 rm -f dvdrental.tar
 
-clear-and-reboot
+done-and-reboot

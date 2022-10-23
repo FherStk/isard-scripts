@@ -21,4 +21,4 @@ cp $SCRIPT_PATH/../utils/dhcpd.conf /etc/dhcp/dhcpd.conf
 sed -i 's|INTERFACESv4=""|INTERFACESv4="enp3s0"|g' /etc/default/isc-dhcp-server
 systemctl restart isc-dhcp-server.service
 
-clear-and-reboot
+done-and-reboot

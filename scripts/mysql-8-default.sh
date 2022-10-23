@@ -10,4 +10,4 @@ source $SCRIPT_PATH/../utils/main.sh
 startup
 script-setup
 apt-req "mysql-server-8.0"
-clear-and-reboot
+done-and-reboot

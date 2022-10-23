@@ -10,4 +10,4 @@ source $SCRIPT_PATH/../utils/main.sh
 startup
 script-setup
 apt-req "postgresql-14"
-clear-and-reboot
+done-and-reboot

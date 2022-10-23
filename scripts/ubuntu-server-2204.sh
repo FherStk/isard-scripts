@@ -9,4 +9,4 @@ source $SCRIPT_PATH/../utils/main.sh
 
 startup
 script-setup
-clear-and-reboot
+done-and-reboot

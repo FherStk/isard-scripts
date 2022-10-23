@@ -200,14 +200,28 @@ request-ip()
   fi
 }
 
-clear-and-reboot(){
-  echo "Clearing bash history..."
-  cat /dev/null > ~/.bash_history && history -c
+done-no-reboot(){
+  clean
+
+  echo ""
+  echo -e "${GREEN}DONE$NC"
+  echo ""
+  trap : 0  
+}
+
+done-and-reboot(){
+  clean
 
   echo ""
   echo -e "${GREEN}DONE! Rebooting...$NC"
   trap : 0  
   reboot
+}
+
+clean()
+{
+  echo "Clearing bash history..."
+  cat /dev/null > ~/.bash_history && history -c
 }
 
 run-in-user-session() {

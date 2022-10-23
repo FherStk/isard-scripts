@@ -32,7 +32,4 @@ else
     sed -i "s|\\\\&|\&|g" $PROFILE    
 fi
 
-echo ""
-echo -e "${GREEN}DONE!$NC"
-echo ""
-trap : 0
+done-no-reboot
