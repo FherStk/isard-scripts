@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_VERSION="1.0.0"
+SCRIPT_VERSION="1.0.1"
 SCRIPT_NAME="Ubuntu Desktop 22.04 LTS (GanttProject v3)"
 HOST_NAME="gantt-project"
 
@@ -20,5 +20,10 @@ echo ""
 title "Installing GanttProject:"
 dpkg -i ganttproject.deb
 run-in-user-session gsettings set org.gnome.shell favorite-apps "['firefox_firefox.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop', 'ganttproject.desktop']"
+
+echo ""
+title "Cleaning:"
+echo "Removing downloaded data..."
+rm -f ganttproject.deb
 
 done-and-reboot
