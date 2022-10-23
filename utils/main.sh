@@ -85,7 +85,7 @@ auto-update()
         fi
     fi
 }
-
+ 
 get-branch()
 {
   echo -e "Getting the current branch info..."
