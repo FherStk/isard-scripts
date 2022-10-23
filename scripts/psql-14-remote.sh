@@ -19,11 +19,11 @@ sudo -i -u postgres bash -c "psql -c \"ALTER USER postgres WITH PASSWORD 'postgr
 echo "Opening the binding address to '*'..."
 sed -i "s|#listen_addresses = 'localhost'|listen_addresses = '*'|g" /etc/postgresql/14/main/postgresql.conf
 
-PGHBAFILE="/etc/postgresql/14/main/pg_hba.conf"
-PGHBALINE1="host	all		all		192.168.1.1/16		md5" #personal
-PGHBALINE2="host	all		all		10.0.0.1/8		    md5" #vpn
-grep -qxF "${PGHBALINE1}" "${PGHBAFILE}" || echo "${PGHBALINE1}" >> ${PGHBAFILE}
-grep -qxF "${PGHBALINE2}" "${PGHBAFILE}" || echo "${PGHBALINE2}" >> ${PGHBAFILE}
+_pghba_file="/etc/postgresql/14/main/pg_hba.conf"
+_pghba_line1="host	all		all		192.168.1.1/16		md5" #personal
+_pghba_line2="host	all		all		10.0.0.1/8		    md5" #vpn
+grep -qxF "${_pghba_line1}" "${_pghba_file}" || echo "${_pghba_line1}" >> ${_pghba_file}
+grep -qxF "${_pghba_line2}" "${_pghba_file}" || echo "${_pghba_line2}" >> ${_pghba_file}
 
 service postgresql restart
 
