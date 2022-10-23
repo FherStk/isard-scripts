@@ -29,7 +29,7 @@ else
     #Ubuntu Server
     echo "Setting up the $PROFILE entry..."
     grep -qxF "$RUN_SCRIPT" "$PROFILE" || echo "$RUN_SCRIPT" >> $PROFILE
-    sed -i "s|\\\\&|&|g" $PROFILE    
+    sed -i "s|\\\\&|\&|g" $PROFILE    
 fi
 
 echo ""
