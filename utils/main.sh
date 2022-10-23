@@ -74,11 +74,7 @@ auto-update()
         if [ $1 = true ]; 
         then
           echo "Restarting the app..."
-
-          echo "PATH":
-          echo $SCRIPT_PATH 
-
-
+        
           trap : 0
           bash $SCRIPT_PATH/$SCRIPT_FILE
           exit 0
