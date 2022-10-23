@@ -1,6 +1,7 @@
 #!/bin/bash
 #Global vars:
 BASE_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+CURRENT_BRANCH="main"
 INSTALL_PATH="/etc/isard-scripts"
 RUN_SCRIPT="bash ${INSTALL_PATH}/run.sh only-splash \&\& echo \&\& echo 'The installer needs sudo permissions...' \&\& sudo bash ${INSTALL_PATH}/run.sh no-splash"
 PROFILE="/home/$SUDO_USER/.profile"
@@ -59,8 +60,7 @@ auto-update()
 {    
     echo ""
     title "Checking for a new app version: "
-    git -C ${BASE_PATH} fetch --all
-    BRANCH=$(git -C ${BASE_PATH} rev-parse --abbrev-ref HEAD) 
+    get-branch
 
     if [ $(LC_ALL=C git -C ${BASE_PATH} status -uno | grep -c "Your branch is up to date with 'origin/${BRANCH}'") -eq 1 ];
     then     
@@ -80,6 +80,13 @@ auto-update()
           exit 0
         fi
     fi
+}
+
+get-branch()
+{
+  echo -e "Getting the current branch info..."
+  git -C ${BASE_PATH} fetch --all
+  CURRENT_BRANCH=$(git -C ${BASE_PATH} rev-parse --abbrev-ref HEAD)
 }
 
 apt-req()

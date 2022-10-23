@@ -10,7 +10,7 @@ startup
 echo ""
 title "Installing into ${INSTALL_PATH}:"
 rm -rf ${INSTALL_PATH}
-git clone https://github.com/FherStk/isard-scripts.git ${INSTALL_PATH}
+git clone https://github.com/FherStk/isard-scripts.git --branch ${CURRENT_BRANCH} ${INSTALL_PATH}
 
 echo ""
 title "Setting up the first launch after user logon (just once):"
