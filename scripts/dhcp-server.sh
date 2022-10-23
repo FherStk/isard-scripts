@@ -9,7 +9,7 @@ source $SCRIPT_PATH/../utils/main.sh
 
 startup
 system-setup
-set-hostname "${HOST_NAME}"  
+set-hostname "$HOST_NAME"  
 set-address-static "192.168.1.1/24"
 
 apt-upgrade
