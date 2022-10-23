@@ -57,7 +57,7 @@ apt-upgrade()
 }
 
 auto-update()
-{    
+{     
     echo ""
     title "Checking for a new app version: "
     get-branch
