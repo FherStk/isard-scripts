@@ -62,13 +62,13 @@ auto-update()
     title "Checking for a new app version: "
     get-branch
 
-    if [ $(LC_ALL=C git -C ${BASE_PATH} status -uno | grep -c "Your branch is up to date with 'origin/${BRANCH}'") -eq 1 ];
+    if [ $(LC_ALL=C git -C ${BASE_PATH} status -uno | grep -c "Your branch is up to date with 'origin/${CURRENT_BRANCH}'") -eq 1 ];
     then     
         echo -e "Up to date, skipping..."
     else
         echo "" 
         echo -e "${CYAN}New version found, updating...${NC}"
-        git -C ${BASE_PATH} reset --hard origin/${BRANCH}
+        git -C ${BASE_PATH} reset --hard origin/${CURRENT_BRANCH}
         echo "Update completed." 
 
         if [ $1 = true ]; 
