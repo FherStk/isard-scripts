@@ -295,6 +295,7 @@ script-setup(){
   if [ $(dpkg -l ubuntu-desktop | grep -c "ubuntu-desktop") -eq 1 ];
   then     
     #Ubuntu Desktop
+    echo ""
     title "Setting up the desktop:"
     echo "Disabling the session timeout..."
     run-in-user-session gsettings set org.gnome.desktop.session idle-delay 0
