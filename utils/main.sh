@@ -204,7 +204,7 @@ done-no-reboot(){
   clean
 
   echo ""
-  echo -e "${GREEN}DONE$NC"
+  echo -e "${GREEN}DONE!$NC"
   echo ""
   trap : 0  
 }
