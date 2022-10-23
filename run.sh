@@ -6,7 +6,7 @@ SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 source $SCRIPT_PATH/utils/main.sh
 
 echo "PATH":
-echo $SCRIPT_PATH
+echo $SCRIPT_PATH 
 
 if [ "$1" == "only-splash" ];
 then
