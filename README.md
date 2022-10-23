@@ -2,7 +2,7 @@
 Template generation scripts for IsardVDI
 
 ## How to install
-The app can be installed within any IsardVDI machine running an Ubuntu Server 22.04 LTS:
+The app can be installed within any IsardVDI machine running an Ubuntu (Server and Desktop) 22.04 LTS:
 
 1. Deploy the app cloning the repo: `git clone https://github.com/FherStk/isard-scripts.git`
 2. Then, install the app with **sudo** (it will be installed at /etc/isard-scripts):
