@@ -24,7 +24,7 @@ then
     mkdir -p $AUTOSTART
     cp $BASE_PATH/isard-scripts.desktop $DESKTOPFILE
     sed -i "s|<INSTALL_PATH>|$INSTALL_PATH|g" $DESKTOPFILE
-    sed -i "s|<RUN_SCRIPT>|$RUN_SCRIPT|g" $DESKTOPFILE
+    sed -i "s|'<RUN_SCRIPT>'|$RUN_SCRIPT|g" $DESKTOPFILE
     #sed -i "s|&|\\\\&|g" $DESKTOPFILE
 else
     #Ubuntu Server
