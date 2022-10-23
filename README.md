@@ -9,6 +9,7 @@ The app can be installed within any IsardVDI machine running an Ubuntu Server 22
 ```
 cd isard-scripts
 sudo ./install.sh
+history -c
 ```
 
 3. The installation prompt will be displayed on first boot (won't be disabled if the promt is cancelled), so the user will be able to choose which template must be deployed. The prompt can be forced by running `sudo ./run.sh`.
