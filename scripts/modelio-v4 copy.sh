@@ -15,8 +15,8 @@ apt-req "libgdk-pixbuf2.0-0"
 
 echo ""
 title "Downloading Modelio and dependencies:"
-#wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=18WmlOhV-qRjSwl-5nBLjCXwTi9wW73DU' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=18WmlOhV-qRjSwl-5nBLjCXwTi9wW73DU" -O modelio_v4.zip && rm -rf /tmp/cookies.txt
-download-from-gdrive "18WmlOhV-qRjSwl-5nBLjCXwTi9wW73DU" "modelio_v4.zip"
+wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=18WmlOhV-qRjSwl-5nBLjCXwTi9wW73DU' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=18WmlOhV-qRjSwl-5nBLjCXwTi9wW73DU" -O modelio_v4.zip && rm -rf /tmp/cookies.txt
+#download-from-gdrive "18WmlOhV-qRjSwl-5nBLjCXwTi9wW73DU" "modelio_v4.zip"
 
 echo ""
 title "Uncompressing Modelio:"
