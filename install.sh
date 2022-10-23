@@ -3,6 +3,7 @@ SCRIPT_VERSION="1.1.0"
 SCRIPT_NAME="App Install"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+SCRIPT_FILE=$(basename $BASH_SOURCE)
 source $SCRIPT_PATH/utils/main.sh
 
 startup

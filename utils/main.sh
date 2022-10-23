@@ -80,7 +80,7 @@ auto-update()
 
 
           trap : 0
-          bash ${SCRIPT_PATH}/${2}
+          bash ${SCRIPT_PATH}/${SCRIPT_FILE}
           exit 0
         fi
     fi
@@ -238,7 +238,7 @@ startup(){
   fi    
 
   #Update if new versions  
-  auto-update true `basename "$0"`
+  auto-update true
 
   #Some packages are needed
   echo ""
