@@ -39,14 +39,14 @@ title(){
 
 apt-upgrade()
 {              
-    FILE="/etc/needrestart/needrestart.conf"
-    if test -f "$FILE"; then
+    _file="/etc/needrestart/needrestart.conf"
+    if test -f "$_file"; then
       #Note: this is needed in order to disable interactive prompts like service-restart on server systems
       echo ""
       title "Enabling non-interactive mode:"
       echo "Disabling kernel restart warnings..."
-      sed -i 's/#$nrconf{restart} = '"'"'i'"'"';/$nrconf{restart} = '"'"'a'"'"';/g' ${FILE}
-      sed -i 's/#$nrconf{kernelhints} = -1;/$nrconf{kernelhints} = -1;/g' ${FILE}
+      sed -i 's/#$nrconf{restart} = '"'"'i'"'"';/$nrconf{restart} = '"'"'a'"'"';/g' ${_file}
+      sed -i 's/#$nrconf{kernelhints} = -1;/$nrconf{kernelhints} = -1;/g' ${_file}
     fi
 
     echo ""
@@ -124,12 +124,12 @@ set-hostname()
   echo ""
   echo "Setting up hostname..."  
 
-  OLDHOSTNAME=$(hostname)
-  NEWHOSTNAME=$(dialog --nocancel --title "Hostname Configuration" --inputbox "\nEnter the host name:" 8 40 ${1} --output-fd 1) 
+  _old_hostname=$(hostname)
+  _new_hostname=$(dialog --nocancel --title "Hostname Configuration" --inputbox "\nEnter the host name:" 8 40 ${1} --output-fd 1) 
   clear
     
-  hostnamectl set-hostname ${NEWHOSTNAME}  
-  sed -i "s/'${OLDHOSTNAME}'/'${NEWHOSTNAME}'/g" /etc/hosts
+  hostnamectl set-hostname ${_new_hostname}  
+  sed -i "s/'${_old_hostname}'/'${_new_hostname}'/g" /etc/hosts
 }
 
 set-address()
@@ -137,10 +137,10 @@ set-address()
   echo ""
   echo "Setting up host address..."
 
-  SELECTED=$(dialog --nocancel --title "Network Configuration: enp3s0" --radiolist "\nSelect a configuration for the 'personal' network interface." 20 70 25 1 DHCP on 2 'Static IP address' off --output-fd 1);
+  _selected=$(dialog --nocancel --title "Network Configuration: enp3s0" --radiolist "\nSelect a configuration for the 'personal' network interface." 20 70 25 1 DHCP on 2 'Static IP address' off --output-fd 1);
   clear
   
-  for f in $SELECTED
+  for f in $_selected
   do      
       if [[ "$f" == 1 ]];
       then        
