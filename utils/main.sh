@@ -159,8 +159,15 @@ set-address-dhcp()
 {
   #Some scripts could force this
   echo "Setting up network data..."
-  cp $BASE_PATH/netplan-dhcp-server.yaml /etc/netplan/00-installer-config.yaml
-  
+  if [ $(dpkg -l ubuntu-desktop | grep -c "ubuntu-desktop") -eq 1 ];
+  then     
+    #Ubuntu Desktop
+    cp $BASE_PATH/netplan-dhcp-desktop.yaml /etc/netplan/01-network-manager-all.yaml
+  else
+    #Ubuntu Server
+    cp $BASE_PATH/netplan-dhcp-server.yaml /etc/netplan/00-installer-config.yaml
+  fi
+
   echo "Setting up netplan..."
   netplan apply
 }
@@ -171,8 +178,16 @@ set-address-static()
   request-ip $1
   echo "Setting up network data..."
 
-  cp $BASE_PATH/netplan-static-server.yaml /etc/netplan/00-installer-config.yaml
-  sed -i "s|x.x.x.x/yy|$ADDRESS|g" /etc/netplan/00-installer-config.yaml
+  if [ $(dpkg -l ubuntu-desktop | grep -c "ubuntu-desktop") -eq 1 ];
+  then     
+    #Ubuntu Desktop
+    cp $BASE_PATH/netplan-static-desktop.yaml /etc/netplan/01-network-manager-all.yaml
+    sed -i "s|x.x.x.x/yy|$ADDRESS|g" /etc/netplan/01-network-manager-all.yaml
+  else
+    #Ubuntu Server
+    cp $BASE_PATH/netplan-static-server.yaml /etc/netplan/00-installer-config.yaml
+    sed -i "s|x.x.x.x/yy|$ADDRESS|g" /etc/netplan/00-installer-config.yaml
+  fi
 
   echo "Setting up netplan..."
   netplan apply
