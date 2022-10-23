@@ -221,7 +221,7 @@ done-and-reboot(){
 clean()
 {
   echo "Clearing bash history..."
-  cat /dev/null > ~/.bash_history && history -c
+  run-in-user-session cat /dev/null > ~/.bash_history && history -c
 }
 
 run-in-user-session() {
