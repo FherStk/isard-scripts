@@ -75,6 +75,10 @@ auto-update()
         then
           echo "Restarting the app..."
 
+          echo "PATH":
+          echo $SCRIPT_PATH 
+
+
           trap : 0
           bash ${SCRIPT_PATH}/${2}
           exit 0
