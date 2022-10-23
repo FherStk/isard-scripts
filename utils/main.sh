@@ -300,7 +300,7 @@ script-setup(){
     run-in-user-session gsettings set org.gnome.desktop.session idle-delay 0
 
     echo "Attaching favourite apps to the dash..."
-    run-in-user-session gsettings set org.gnome.shell favorite-apps "['firefox_firefox.desktop', 'thunderbird.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop']"
+    run-in-user-session gsettings set org.gnome.shell favorite-apps "['firefox_firefox.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop']"
 
   #else
     #Ubuntu Server   
