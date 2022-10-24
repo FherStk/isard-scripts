@@ -7,7 +7,8 @@ SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SCRIPT_FILE=$(basename $BASH_SOURCE)
 source $SCRIPT_PATH/../utils/main.sh
 
-startup
 echo "AAA"
+startup
+echo "BBB"
 script-setup
 done-and-reboot
