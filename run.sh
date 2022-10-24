@@ -6,7 +6,6 @@ SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SCRIPT_FILE=$(basename $BASH_SOURCE)
 source $SCRIPT_PATH/utils/main.sh
 
-echo "AAA"
 if [ "$1" == "only-splash" ];
 then
     info "$SCRIPT_NAME" "$SCRIPT_VERSION"
@@ -22,7 +21,9 @@ else
     _options+=$(echo " NONE 1900-01-01 off")
 
     _selected=$(dialog --title "$SCRIPT_NAME v$SCRIPT_VERSION" --radiolist "\nPick an IsardVDI script in order to install" 60 70 25 $_options --output-fd 1);
-    clear
+    #clear
+
+    echo "AAA"
 
     for f in $_selected
     do        
