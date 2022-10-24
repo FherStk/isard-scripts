@@ -8,6 +8,7 @@ RUN_SCRIPT="sudo bash $INSTALL_PATH/run.sh"
 PROFILE="/home/$SUDO_USER/.profile"
 AUTOSTART="/home/$SUDO_USER/.config/autostart"
 DESKTOPFILE="$AUTOSTART/isard-scripts.desktop"
+PASSWORDS="/home/$SUDO_USER/password.info"
 
 # Terminal colors:
 # Black        0;30     Dark Gray     1;30
@@ -322,12 +323,14 @@ request-ip()
 
 done-no-reboot(){
   ####################################################################################
-  #Description: Cleans the temp data and the bash history, prompts a DONE!.
+  #Description: Cleans the temp data and the bash history, sets the background
+  #             passwords (for desktop only) and prompts an ending message.
   #Input:  N/A
   #Output: N/A
   #################################################################################### 
 
   clean
+  passwords-background
 
   echo ""
   echo -e "${GREEN}DONE!$NC"
@@ -337,12 +340,14 @@ done-no-reboot(){
 
 done-and-reboot(){
   ####################################################################################
-  #Description: Cleans the temp data and the bash history, then reboots the system.
+  #Description: Cleans the temp data and the bash history, sets the background
+  #             passwords (for desktop only) and reboots the system.
   #Input:  N/A
   #Output: N/A
   #################################################################################### 
 
   clean
+  passwords-background
 
   echo ""
   echo -e "${GREEN}DONE! Rebooting...$NC"
@@ -460,6 +465,37 @@ auto-login-disable()
   fi
 }
 
+passwords-background()
+{
+  ####################################################################################
+  #Description: Writes the passwords file content into the background image
+  #             on desktop systems.
+  #Input:  N/A
+  #Output: N/A
+  #################################################################################### 
+
+  if [ $IS_DESKTOP -eq 1 ];
+  then     
+    _source="/usr/share/backgrounds/warty-final-ubuntu-text.png"
+    _dest="/usr/share/backgrounds/warty-final-ubuntu.png"      
+    _text=$(echo $PASSWORDS)
+    convert $_source -font helvetica -fill white -pointsize 36 -draw "text 50,50 '$_text'" $_dest
+    run-in-user-session gsettings set org.gnome.desktop.background picture-uri file:///$_dest
+  fi
+}
+
+passwords-add(){
+  ####################################################################################
+  #Description: Adds a password entry to the passwords file
+  #Input:  $1 => Header | $2 => Username | $3 => Password
+  #Output: N/A
+  #################################################################################### 
+  
+  echo "$1:" >> $PASSWORDS
+  echo "  - Username: $2" >> $PASSWORDS
+  echo "  - Password: $3" >> $PASSWORDS
+}
+
 info()
 {
   ####################################################################################
@@ -511,6 +547,11 @@ startup(){
   sudo apt update
   apt-req "dialog"  #for requesting information
   apt-req "ipcalc"  #for static address validation
+
+  if [ $IS_DESKTOP -eq 1 ];
+  then    
+    apt-req "imagemagick-6.q16" #background passwords
+  fi
 }
 
 script-setup(){
@@ -558,4 +599,13 @@ script-setup(){
   #else
     #Ubuntu Server   
   fi
+
+  title "Setting up the passwords file:"
+  echo "Creating the file..."
+  rm -f $PASSWORDS
+  touch $PASSWORDS
+
+  echo "Storing basic data..."
+  echo "---System credentials---" >> $PASSWORDS
+  passwords-add "Ubuntu" "usuario" "usuario"
 }
