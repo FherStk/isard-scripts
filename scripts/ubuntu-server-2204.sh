@@ -8,5 +8,6 @@ SCRIPT_FILE=$(basename $BASH_SOURCE)
 source $SCRIPT_PATH/../utils/main.sh
 
 startup
+echo "AAA"
 script-setup
 done-and-reboot
