@@ -28,7 +28,7 @@ then
     _file="/etc/gdm3/custom.conf"
     echo "Setting up the file '$1'"
     sed -i "s|#  AutomaticLoginEnable = true|  AutomaticLoginEnable = true|g" $_file
-    sed -i "s|#  AutomaticLogin = $SUDO_USER|  AutomaticLogin = $SUDO_USER|g" $_file
+    sed -i "s|#  AutomaticLogin = user1|  AutomaticLogin = $SUDO_USER|g" $_file
 
 else
     #Ubuntu Server    
