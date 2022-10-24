@@ -23,16 +23,17 @@ else
     _selected=$(dialog --title "$SCRIPT_NAME v$SCRIPT_VERSION" --radiolist "\nPick an IsardVDI script in order to install" 60 70 25 $_options --output-fd 1);
     #clear
 
-    echo "AAA"
-
     for f in $_selected
     do        
+        echo "AAA"
         #For Ubuntu Server
         sed -i "s|$RUN_SCRIPT|#$RUN_SCRIPT|g" $PROFILE
 
+        echo "BBB"
         #For Ubuntu Desktop
         rm -f $DESKTOPFILE
 
+        echo "CCC"
         source $SCRIPT_PATH/scripts/$f
     done
 
