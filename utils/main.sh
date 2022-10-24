@@ -436,31 +436,9 @@ startup(){
   apt-req "ipcalc"  #for static address validation
 }
 
-system-setup()
-{
-  ####################################################################################
-  #Description: This setups the basic Server & Desktop system behaviour
-  #               1. Disables the automatic updates
-  #
-  #Input:  N/A
-  #Output: N/A
-  #################################################################################### 
-
-  echo ""
-  title "Performing system setup:"
-  echo "Disabling auto-upgrades..."
-  cp $BASE_PATH/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
-  dpkg-reconfigure -f noninteractive unattended-upgrades
-
-  echo "Disabling sudo password..."
-  _file="/etc/sudoers"
-  _line="%sudo   ALL=(ALL:ALL) NOPASSWD:ALL"
-  grep -qxF "$_line" "$_file" || echo "$_line" >> $_file
-}
-
 script-setup(){
   ####################################################################################
-  #Description: This method must be executed by any script at some point
+  #Description: This method should be executed by any script at some point. 
   #               1. Calls system-setup
   #               2. Setups the host name and address
   #               3. Updates all the installed apps
@@ -468,14 +446,23 @@ script-setup(){
   #               5. For desktop systems: disabled the lockdown time and setups the
   #                  dash favourites icons.
   #
-  #Input:  N/A
+  #Input:  $1 => If 'ignore-address' the address setup will be ignored
   #Output: N/A
   #################################################################################### 
 
-  #This is the common script setup, but not for all (dhcp-server forces an static host address)  
-  system-setup #must be the first one in order to prevent dpkg blockings
-  set-hostname "$HOST_NAME"  
-  set-address "192.168.1.1/24"
+  #must be the first one in order to prevent dpkg blockings
+  echo ""
+  title "Performing system setup:"
+  echo "Disabling auto-upgrades..."
+  cp $BASE_PATH/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
+  dpkg-reconfigure -f noninteractive unattended-upgrades  
+
+  set-hostname "$HOST_NAME"
+
+  if [ "$1" != "ignore-address" ];
+  then       
+    set-address "192.168.1.1/24"
+  fi
 
   apt-upgrade
   apt-req "openssh-server"    
