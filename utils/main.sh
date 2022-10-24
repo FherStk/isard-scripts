@@ -405,8 +405,8 @@ startup(){
   #Input:  $1 => Disable splash (no-splash)
   #Output: N/A
   #################################################################################### 
-
-  #trap 'abort' 0
+  echo "HIKA"
+  trap 'abort' 0
   set -e
 
   #Splash "screen"
