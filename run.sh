@@ -20,13 +20,14 @@ _selected=$(dialog --title "$SCRIPT_NAME v$SCRIPT_VERSION" --radiolist "\nPick a
 clear
 
 for f in $_selected
-do        
+do  
+    #Disabling auto-install only if some script has been selected (or "NONE" one)
     #For Ubuntu Server
     sed -i "s|$RUN_SCRIPT|#$RUN_SCRIPT|g" $PROFILE
-
     #For Ubuntu Desktop
     rm -f $DESKTOPFILE
-
+    
+    #Running the script
     source $SCRIPT_PATH/scripts/$f
 done
 
