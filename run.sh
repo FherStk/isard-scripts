@@ -13,7 +13,7 @@ else
     startup $1    
 
     echo ""
-    trap 'clear' 0
+    #trap 'clear' 0
 
     unset _options
     _folder="$SCRIPT_PATH/scripts"
@@ -34,5 +34,5 @@ else
         source $SCRIPT_PATH/scripts/$f
     done
 
-    trap : 0
+    #trap : 0
 fi
