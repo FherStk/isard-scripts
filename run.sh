@@ -6,7 +6,7 @@ SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SCRIPT_FILE=$(basename $BASH_SOURCE)
 source $SCRIPT_PATH/utils/main.sh
 
-startup $1    
+startup
 
 echo ""
 trap 'clear' 0

@@ -15,31 +15,8 @@ rm -rf $INSTALL_PATH
 get-branch
 git clone https://github.com/FherStk/isard-scripts.git --branch $CURRENT_BRANCH $INSTALL_PATH
 
-title "Disabling sudo password..."
-_file="/etc/sudoers"
-_line="%sudo   ALL=(ALL:ALL) NOPASSWD:ALL"
-grep -qxF "$_line" "$_file" || echo "$_line" >> $_file
-echo "Done"
-
-title "Enabling auto-login..."
-if [ $IS_DESKTOP -eq 1 ];
-then    
-    #Ubuntu Desktop
-    _file="/etc/gdm3/custom.conf"
-    echo "Setting up the file '$1'"
-    sed -i "s|#  AutomaticLoginEnable = true|  AutomaticLoginEnable = true|g" $_file
-    sed -i "s|#  AutomaticLogin = user1|  AutomaticLogin = $SUDO_USER|g" $_file
-
-else
-    #Ubuntu Server    
-    echo "Creating the folder..."
-    mkdir -p /etc/systemd/system/getty@tty1.service.d        
-
-    echo "Creating the file '$1'"
-    _file="/etc/systemd/system/getty@tty1.service.d/override.conf"
-    cp $BASE_PATH/auto-login.conf $_file
-    sed -i "s|<USERNAME>|$SUDO_USER|g" $_file    
-fi
+sudo-password-disable
+auto-login-enable
 
 echo ""
 title "Setting up the first launch after user logon (just once):"

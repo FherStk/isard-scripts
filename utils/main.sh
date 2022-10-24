@@ -1,5 +1,6 @@
 #!/bin/bash
 #Global vars:
+FIRST_RUN=1
 BASE_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 IS_DESKTOP=$(dpkg -l ubuntu-desktop 2>/dev/null | grep -c "ubuntu-desktop")
 CURRENT_BRANCH="main"
@@ -379,6 +380,89 @@ run-in-user-session() {
   sudo -Hu "$_username" env "${_environment[@]}" "$@"
 }
 
+sudo-password-enable()
+{
+  ####################################################################################
+  #Description: Enables the sudo password (the sudo password will be requested).
+  #Input:  N/A
+  #Output: N/A
+  #################################################################################### 
+
+  title "Enabling sudo password..."
+  _file="/etc/sudoers"
+  _line="%sudo   ALL=(ALL:ALL) NOPASSWD:ALL"
+  grep -qxF "$_line" "$_file" || echo "$_line" >> $_file
+  echo "Done"
+}
+
+sudo-password-disable()
+{
+  ####################################################################################
+  #Description: Disables the sudo password (no sudo password will be requested).
+  #Input:  N/A
+  #Output: N/A
+  #################################################################################### 
+
+  title "Disabling sudo password..."
+  _file="/etc/sudoers"
+  _line="%sudo   ALL=(ALL:ALL) NOPASSWD:ALL"  
+  sed -i "s|$_line||g" $_file    
+  echo "Done"
+}
+
+auto-login-enable()
+{
+  ####################################################################################
+  #Description: Enables auto-login (no user/password will be prompted).
+  #Input:  N/A
+  #Output: N/A
+  #################################################################################### 
+
+  title "Enabling auto-login..."
+  if [ $IS_DESKTOP -eq 1 ];
+  then    
+      #Ubuntu Desktop
+      _file="/etc/gdm3/custom.conf"
+      echo "Setting up the file '$1'"
+      sed -i "s|#  AutomaticLoginEnable = true|  AutomaticLoginEnable = true|g" $_file
+      sed -i "s|#  AutomaticLogin = user1|  AutomaticLogin = $SUDO_USER|g" $_file
+
+  else
+      #Ubuntu Server    
+      echo "Creating the folder..."
+      mkdir -p /etc/systemd/system/getty@tty1.service.d        
+
+      echo "Creating the file '$1'"
+      _file="/etc/systemd/system/getty@tty1.service.d/override.conf"
+      cp $BASE_PATH/auto-login.conf $_file
+      sed -i "s|<USERNAME>|$SUDO_USER|g" $_file    
+  fi
+}
+
+auto-login-disable()
+{
+  ####################################################################################
+  #Description: Disables auto-login (user/password will be prompted).
+  #Input:  N/A
+  #Output: N/A
+  #################################################################################### 
+
+  title "Disabling auto-login..."
+  if [ $IS_DESKTOP -eq 1 ];
+  then    
+      #Ubuntu Desktop
+      _file="/etc/gdm3/custom.conf"
+      echo "Setting up the file '$1'"
+      sed -i "s|  AutomaticLoginEnable = true|#  AutomaticLoginEnable = true|g" $_file
+      sed -i "s|  AutomaticLogin = $SUDO_USER|  AutomaticLogin = user1|g" $_file
+
+  else
+      #Ubuntu Server    
+      echo "Removing files..."
+      rm -Rf /etc/systemd/system/getty@tty1.service.d        
+  fi
+}
+
 info()
 {
   ####################################################################################
@@ -402,34 +486,39 @@ startup(){
   #               4. Updates all the installed apps
   #               5. Install the installer requirements.
   #
-  #Input:  $1 => Disable splash (no-splash)
+  #Input:  $1 => first-launch: when 0, avoids some redundant calls (like apt-update, etc.)
   #Output: N/A
   #################################################################################### 
   
-  trap 'abort' 0
+  trap 'abort' 0  
 
   #Splash "screen"  
   info "$SCRIPT_NAME" "$SCRIPT_VERSION"    
   
   #Checking for "sudo"
   if [ "$EUID" -ne 0 ]
-    then 
+  then 
       echo ""
       echo -e "${RED}Please, run with 'sudo'.$NC"
 
       trap : 0
       exit 0
   fi    
+  
+  if [ "$FIRST_RUN" -eq 1 ]
+  then 
+    #Update if new versions  
+    auto-update true
 
-  #Update if new versions  
-  auto-update true
+    #Some packages are needed
+    echo ""
+    title "Installing requirements:"
+    sudo apt update
+    apt-req "dialog"  #for requesting information
+    apt-req "ipcalc"  #for static address validation
+  fi
 
-  #Some packages are needed
-  echo ""
-  title "Installing requirements:"
-  sudo apt update
-  apt-req "dialog"  #for requesting information
-  apt-req "ipcalc"  #for static address validation
+  $FIRST_RUN=0
 }
 
 script-setup(){
