@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_VERSION="1.1.0"
+SCRIPT_VERSION="1.2.0"
 SCRIPT_NAME="App Install"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
@@ -25,10 +25,13 @@ title "Enabling auto-login..."
 if [ $IS_DESKTOP -eq 1 ];
 then    
     #Ubuntu Desktop
-    echo
+    _file="/etc/gdm3/custom.conf"
+    echo "Setting up the file '$1'"
+    sed -i "s|#  AutomaticLoginEnable = true|  AutomaticLoginEnable = true|g" $_file
+    sed -i "s|#  AutomaticLogin = user1|  AutomaticLogin = user1|g" $_file
+
 else
-    #Ubuntu Server
-    
+    #Ubuntu Server    
     echo "Creating the folder..."
     mkdir -p /etc/systemd/system/getty@tty1.service.d        
 
