@@ -386,11 +386,10 @@ sudo-password-enable()
   #Input:  N/A
   #Output: N/A
   #################################################################################### 
-
-  title "Enabling sudo password..."
+  title "Disabling sudo password..."
   _file="/etc/sudoers"
-  _line="%sudo   ALL=(ALL:ALL) NOPASSWD:ALL"
-  grep -qxF "$_line" "$_file" || echo "$_line" >> $_file
+  _line="%sudo   ALL=(ALL:ALL) NOPASSWD:ALL"  
+  sed -i "s|$_line||g" $_file    
   echo "Done"
 }
 
@@ -400,12 +399,11 @@ sudo-password-disable()
   #Description: Disables the sudo password (no sudo password will be requested).
   #Input:  N/A
   #Output: N/A
-  #################################################################################### 
-
-  title "Disabling sudo password..."
+  ####################################################################################   
+  title "Enabling sudo password..."
   _file="/etc/sudoers"
-  _line="%sudo   ALL=(ALL:ALL) NOPASSWD:ALL"  
-  sed -i "s|$_line||g" $_file    
+  _line="%sudo   ALL=(ALL:ALL) NOPASSWD:ALL"
+  grep -qxF "$_line" "$_file" || echo "$_line" >> $_file
   echo "Done"
 }
 
