@@ -6,9 +6,7 @@ HOST_NAME="ubuntu-2204-server"
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SCRIPT_FILE=$(basename $BASH_SOURCE)
 
-echo "AAA"
 source $SCRIPT_PATH/../utils/main.sh
-echo "BBB"
 
 startup
 script-setup

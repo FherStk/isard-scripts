@@ -406,8 +406,8 @@ startup(){
   #Output: N/A
   #################################################################################### 
   
-  #trap 'abort' 0
-  #set -e
+  trap 'abort' 0
+  set -e
 
   #Splash "screen"
   if [ "$1" != "no-splash" ];
