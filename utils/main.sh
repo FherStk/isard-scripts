@@ -119,6 +119,20 @@ pip-req()
   fi
 }
 
+snap-req()
+{
+  #$1: app to install
+  #$2: arguments (--classic)
+  echo ""
+  if [ $(snap list | grep -c $1) -eq 0 ];
+  then    
+    title "Installing requirements: " "$1"
+    snap install $1 $2;
+  else 
+    echo -e "${CYAN}Requirement ${LCYAN}${1}${CYAN} already satisfied, skipping...$NC"
+  fi
+}
+
 set-hostname()
 {
   echo ""
