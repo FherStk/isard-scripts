@@ -25,15 +25,12 @@ else
 
     for f in $_selected
     do        
-        echo "AAA"
         #For Ubuntu Server
         sed -i "s|$RUN_SCRIPT|#$RUN_SCRIPT|g" $PROFILE
 
-        echo "BBB"
         #For Ubuntu Desktop
         rm -f $DESKTOPFILE
 
-        echo "CCC"
         source $SCRIPT_PATH/scripts/$f
     done
 
