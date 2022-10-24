@@ -4,6 +4,7 @@ SCRIPT_NAME="Ubuntu Server 22.04 LTS (Default setup)"
 HOST_NAME="ubuntu-2204-server"
 
 echo "AAA"
+trap : 0
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SCRIPT_FILE=$(basename $BASH_SOURCE)

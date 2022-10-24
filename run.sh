@@ -13,7 +13,7 @@ else
     startup $1    
 
     echo ""
-    #trap 'clear' 0
+    trap 'clear' 0
 
     unset _options
     _folder="$SCRIPT_PATH/scripts"
@@ -21,7 +21,7 @@ else
     _options+=$(echo " NONE 1900-01-01 off")
 
     _selected=$(dialog --title "$SCRIPT_NAME v$SCRIPT_VERSION" --radiolist "\nPick an IsardVDI script in order to install" 60 70 25 $_options --output-fd 1);
-    #clear
+    clear
 
     for f in $_selected
     do        
