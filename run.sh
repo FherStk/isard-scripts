@@ -34,5 +34,5 @@ else
         source $SCRIPT_PATH/scripts/$f
     done
 
-    trap : 0
+    #trap : 0
 fi
