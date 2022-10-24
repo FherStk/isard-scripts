@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_VERSION="1.1.0"
+SCRIPT_VERSION="1.2.0"
 SCRIPT_NAME="App Install"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
@@ -15,9 +15,12 @@ rm -rf $INSTALL_PATH
 get-branch
 git clone https://github.com/FherStk/isard-scripts.git --branch $CURRENT_BRANCH $INSTALL_PATH
 
+sudo-password-disable
+auto-login-enable
+
 echo ""
 title "Setting up the first launch after user logon (just once):"
-if [ $(dpkg -l ubuntu-desktop | grep -c "ubuntu-desktop") -eq 1 ];
+if [ $IS_DESKTOP -eq 1 ];
 then     
     #Ubuntu Desktop
     echo "Setting up the $DESKTOPFILE entry..."
@@ -29,7 +32,6 @@ else
     #Ubuntu Server
     echo "Setting up the $PROFILE entry..."
     grep -qxF "$RUN_SCRIPT" "$PROFILE" || echo "$RUN_SCRIPT" >> $PROFILE
-    sed -i "s|\\\\&|\&|g" $PROFILE    
 fi
 
 done-no-reboot
