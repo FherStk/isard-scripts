@@ -13,7 +13,7 @@ else
     startup $1    
 
     echo ""
-    trap 'clear' 0
+    #trap 'clear' 0
 
     unset _options
     _folder="$SCRIPT_PATH/scripts"
