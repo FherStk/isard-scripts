@@ -25,6 +25,7 @@ title "Enabling auto-login..."
 if [ $IS_DESKTOP -eq 1 ];
 then    
     #Ubuntu Desktop
+    echo
 else
     #Ubuntu Server
     
