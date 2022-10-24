@@ -55,7 +55,6 @@ else
     #Ubuntu Server
     echo "Setting up the $PROFILE entry..."
     grep -qxF "$RUN_SCRIPT" "$PROFILE" || echo "$RUN_SCRIPT" >> $PROFILE
-    sed -i "s|\\\\&|\&|g" $PROFILE    #TODO: this must be done also in the prior line to detect it
 fi
 
 done-no-reboot

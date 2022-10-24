@@ -4,7 +4,7 @@ BASE_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 IS_DESKTOP=$(dpkg -l ubuntu-desktop 2>/dev/null | grep -c "ubuntu-desktop")
 CURRENT_BRANCH="main"
 INSTALL_PATH="/etc/isard-scripts"
-RUN_SCRIPT="bash $INSTALL_PATH/run.sh only-splash \&\& echo \&\& echo 'The installer needs sudo permissions...' \&\& sudo bash $INSTALL_PATH/run.sh no-splash"
+RUN_SCRIPT="sudo bash $INSTALL_PATH/run.sh"
 PROFILE="/home/$SUDO_USER/.profile"
 AUTOSTART="/home/$SUDO_USER/.config/autostart"
 DESKTOPFILE="$AUTOSTART/isard-scripts.desktop"
@@ -408,11 +408,8 @@ startup(){
   
   trap 'abort' 0
 
-  #Splash "screen"
-  if [ "$1" != "no-splash" ];
-  then 
-    info "$SCRIPT_NAME" "$SCRIPT_VERSION"  
-  fi
+  #Splash "screen"  
+  info "$SCRIPT_NAME" "$SCRIPT_VERSION"    
   
   #Checking for "sudo"
   if [ "$EUID" -ne 0 ]
