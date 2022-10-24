@@ -15,10 +15,11 @@ rm -rf $INSTALL_PATH
 get-branch
 git clone https://github.com/FherStk/isard-scripts.git --branch $CURRENT_BRANCH $INSTALL_PATH
 
-echo "Disabling sudo password..."
+title "Disabling sudo password..."
 _file="/etc/sudoers"
 _line="%sudo   ALL=(ALL:ALL) NOPASSWD:ALL"
 grep -qxF "$_line" "$_file" || echo "$_line" >> $_file
+echo "Done"
 
 echo ""
 title "Setting up the first launch after user logon (just once):"
