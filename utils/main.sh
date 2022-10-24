@@ -451,6 +451,11 @@ system-setup()
   echo "Disabling auto-upgrades..."
   cp $BASE_PATH/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
   dpkg-reconfigure -f noninteractive unattended-upgrades
+
+  echo "Disabling sudo password..."
+  _file="/etc/sudoers"
+  _line="%sudo   ALL=(ALL:ALL) NOPASSWD:ALL"
+  grep -qxF "$_line" "$_file" || echo "$_line" >> $_file
 }
 
 script-setup(){
