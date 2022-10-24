@@ -1,7 +1,7 @@
 #!/bin/bash
 #Global vars:
 BASE_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-IS_DESKTOP=$(dpkg -l ubuntu-desktop | grep -c "ubuntu-desktop")
+IS_DESKTOP=$(dpkg -l ubuntu-desktop 2>/dev/null | grep -c "ubuntu-desktop")
 CURRENT_BRANCH="main"
 INSTALL_PATH="/etc/isard-scripts"
 RUN_SCRIPT="bash $INSTALL_PATH/run.sh only-splash \&\& echo \&\& echo 'The installer needs sudo permissions...' \&\& sudo bash $INSTALL_PATH/run.sh no-splash"
