@@ -21,9 +21,25 @@ _line="%sudo   ALL=(ALL:ALL) NOPASSWD:ALL"
 grep -qxF "$_line" "$_file" || echo "$_line" >> $_file
 echo "Done"
 
+title "Enabling auto-login..."
+if [ $IS_DESKTOP -eq 1 ];
+then    
+    #Ubuntu Desktop
+else
+    #Ubuntu Server
+    
+    echo "Creating the folder..."
+    mkdir -p /etc/systemd/system/getty@tty1.service.d        
+
+    echo "Creating the file '$1'"
+    _file="/etc/systemd/system/getty@tty1.service.d/override.conf"
+    cp $BASE_PATH/auto-login.conf $_file
+    sed -i "s|<USERNAME>|$SUDO_USER|g" $_file    
+fi
+
 echo ""
 title "Setting up the first launch after user logon (just once):"
-if [ $(dpkg -l ubuntu-desktop | grep -c "ubuntu-desktop") -eq 1 ];
+if [ $IS_DESKTOP -eq 1 ];
 then     
     #Ubuntu Desktop
     echo "Setting up the $DESKTOPFILE entry..."

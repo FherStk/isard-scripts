@@ -263,7 +263,7 @@ set-address-dhcp()
 
   #Some scripts could force this
   echo "Setting up network data..."
-  if [ $(dpkg -l ubuntu-desktop | grep -c "ubuntu-desktop") -eq 1 ];
+  if [ $IS_DESKTOP -eq 1 ];
   then     
     #Ubuntu Desktop
     cp $BASE_PATH/netplan-dhcp-desktop.yaml /etc/netplan/01-network-manager-all.yaml
@@ -288,7 +288,7 @@ set-address-static()
   request-ip $1
   echo "Setting up network data..."
 
-  if [ $(dpkg -l ubuntu-desktop | grep -c "ubuntu-desktop") -eq 1 ];
+  if [ $IS_DESKTOP -eq 1 ];
   then     
     #Ubuntu Desktop
     cp $BASE_PATH/netplan-static-desktop.yaml /etc/netplan/01-network-manager-all.yaml
@@ -467,7 +467,7 @@ script-setup(){
   apt-upgrade
   apt-req "openssh-server"    
 
-  if [ $(dpkg -l ubuntu-desktop | grep -c "ubuntu-desktop") -eq 1 ];
+  if [ $IS_DESKTOP -eq 1 ];
   then     
     #Ubuntu Desktop
     echo ""
