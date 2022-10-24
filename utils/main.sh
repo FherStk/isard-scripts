@@ -1,6 +1,5 @@
 #!/bin/bash
 #Global vars:
-FIRST_RUN=1
 BASE_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 IS_DESKTOP=$(dpkg -l ubuntu-desktop 2>/dev/null | grep -c "ubuntu-desktop")
 CURRENT_BRANCH="main"
@@ -490,7 +489,7 @@ startup(){
   #Output: N/A
   #################################################################################### 
   
-  trap 'abort' 0  
+  trap 'abort' 0
 
   #Splash "screen"  
   info "$SCRIPT_NAME" "$SCRIPT_VERSION"    
@@ -505,20 +504,15 @@ startup(){
       exit 0
   fi    
   
-  if [ "$FIRST_RUN" -eq 1 ]
-  then 
-    #Update if new versions  
-    auto-update true
+  #Update if new versions  
+  auto-update true
 
-    #Some packages are needed
-    echo ""
-    title "Installing requirements:"
-    sudo apt update
-    apt-req "dialog"  #for requesting information
-    apt-req "ipcalc"  #for static address validation
-  fi
-
-  $FIRST_RUN=0
+  #Some packages are needed
+  echo ""
+  title "Installing requirements:"
+  sudo apt update
+  apt-req "dialog"  #for requesting information
+  apt-req "ipcalc"  #for static address validation
 }
 
 script-setup(){
