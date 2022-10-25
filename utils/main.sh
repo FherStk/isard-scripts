@@ -476,11 +476,11 @@ passwords-background()
 
   if [ $IS_DESKTOP -eq 1 ];
   then     
-    _source="/usr/share/backgrounds/warty-final-ubuntu-text.png"
-    _dest="/usr/share/backgrounds/warty-final-ubuntu.png"      
+    _source="/usr/share/backgrounds/warty-final-ubuntu.png"
+    _dest="/usr/share/backgrounds/warty-final-ubuntu-text.png"      
     #convert $_source -font helvetica -fill white -pointsize 36 -draw "text 50,50 '$(cat $PASSWORDS)'" $_dest
-    convert $_source -font helvetica -fill white -pointsize 36 -draw "text 50,50 @$PASSWORDS" $_dest
-    run-in-user-session gsettings set org.gnome.desktop.background picture-uri file:///$_dest
+    convert $_source -font helvetica -fill white -pointsize 36 -gravity SouthEast -annotate "@$PASSWORDS" $_dest
+    run-in-user-session gsettings set org.gnome.desktop.background picture-uri file:///$_dest    
   fi
 }
 
@@ -491,6 +491,7 @@ passwords-add(){
   #Output: N/A
   #################################################################################### 
   
+  echo "" >> $PASSWORDS
   echo "$1:" >> $PASSWORDS
   echo "  - Username: $2" >> $PASSWORDS
   echo "  - Password: $3" >> $PASSWORDS
@@ -551,6 +552,7 @@ startup(){
   if [ $IS_DESKTOP -eq 1 ];
   then    
     apt-req "imagemagick-6.q16" #background passwords
+    sed -i "s|<policy domain=\"path\" rights=\"none\" pattern=\"@*\" />|<policy domain=\"path\" rights=\"all\" pattern=\"@*\" />|g" /etc/ImageMagick-6/policy.xml
   fi
 }
 
@@ -606,6 +608,17 @@ script-setup(){
   touch $PASSWORDS
 
   echo "Storing basic data..."
-  echo "---System credentials---" >> $PASSWORDS
+  if [ $IS_DESKTOP -eq 1 ];
+  then
+    #Printing to an image unaligns the text :(    
+    echo "#########################" >> $PASSWORDS
+    echo "#   SYSTEM CREDENTIALS   #" >> $PASSWORDS
+    echo "#########################" >> $PASSWORDS
+  else
+    echo "##########################" >> $PASSWORDS
+    echo "#   SYSTEM CREDENTIALS   #" >> $PASSWORDS
+    echo "##########################" >> $PASSWORDS
+  fi
+  
   passwords-add "Ubuntu" "usuario" "usuario"
 }
