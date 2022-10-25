@@ -10,4 +10,6 @@ source $SCRIPT_PATH/../utils/main.sh
 startup
 script-setup
 apt-install "mysql-server-8.0"
+
+passwords-add "PostgreSQL" "root" "root"
 done-and-reboot

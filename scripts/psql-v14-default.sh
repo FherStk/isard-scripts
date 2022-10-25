@@ -10,4 +10,6 @@ source $SCRIPT_PATH/../utils/main.sh
 startup
 script-setup
 apt-install "postgresql-14"
+
+passwords-add "PostgreSQL" "postgres" "N/A"
 done-and-reboot

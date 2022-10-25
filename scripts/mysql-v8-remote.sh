@@ -30,4 +30,5 @@ service mysql restart
 echo "Creating the remote user 'root@%'..."
 sudo -H -u root bash -c "mysql -e \"CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY 'root'; ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'root'; GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';\""
 
+passwords-add "PostgreSQL" "root" "root"
 done-and-reboot
