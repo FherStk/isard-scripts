@@ -455,7 +455,7 @@ auto-login-disable()
 
   echo ""
   title "Disabling auto-login..."
-  
+
   if [ $IS_DESKTOP -eq 1 ];
   then    
       #Ubuntu Desktop
@@ -479,12 +479,17 @@ passwords-background()
   #Input:  N/A
   #Output: N/A
   #################################################################################### 
-
+  echo ""
+  title "Setting up the system credentials information:"
+  
   if [ $IS_DESKTOP -eq 1 ];
   then     
+    echo "Creating the background image..."
     _source="/usr/share/backgrounds/warty-final-ubuntu.png"
-    _dest="/usr/share/backgrounds/warty-final-ubuntu-text.png"      
-    convert $_source -font helvetica -fill white -pointsize 36 -gravity SouthEast -annotate +50+0 "@$PASSWORDS" $_dest
+    _dest="/usr/share/backgrounds/warty-final-ubuntu-text.png"      0
+    convert $_source -font helvetica -fill white -pointsize 36 -gravity SouthEast -annotate +50+100 "@$PASSWORDS" $_dest
+
+    echo "Setting up the background image..."
     run-in-user-session gsettings set org.gnome.desktop.background picture-uri file:///$_dest    
   fi
 }
