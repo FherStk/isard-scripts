@@ -394,7 +394,7 @@ sudo-password-enable()
   #################################################################################### 
   echo ""
   title "Disabling sudo password..."
-  
+
   _file="/etc/sudoers"
   echo "Setting up the file '$_file'"
   
@@ -417,7 +417,6 @@ sudo-password-disable()
   
   _line="%sudo   ALL=(ALL:ALL) NOPASSWD:ALL"
   grep -qxF "$_line" "$_file" || echo "$_line" >> $_file
-  echo "Done"
 }
 
 auto-login-enable()
