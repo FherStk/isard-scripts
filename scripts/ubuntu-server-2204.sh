@@ -10,7 +10,4 @@ source $SCRIPT_PATH/../utils/main.sh
 
 startup
 script-setup
-
-passwords-add "Otro" "fher" "pwd"
-
 done-and-reboot
