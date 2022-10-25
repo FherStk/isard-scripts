@@ -262,7 +262,7 @@ set-address-dhcp()
   #Output: N/A
   #################################################################################### 
 
-  #Some scripts could force this
+  #Some scripts could force this2
   echo "Setting up network data..."
   if [ $IS_DESKTOP -eq 1 ];
   then     
@@ -391,6 +391,7 @@ sudo-password-enable()
   #Input:  N/A
   #Output: N/A
   #################################################################################### 
+  echo ""
   title "Disabling sudo password..."
   _file="/etc/sudoers"
   _line="%sudo   ALL=(ALL:ALL) NOPASSWD:ALL"  
@@ -405,6 +406,7 @@ sudo-password-disable()
   #Input:  N/A
   #Output: N/A
   ####################################################################################   
+  echo ""
   title "Enabling sudo password..."
   _file="/etc/sudoers"
   _line="%sudo   ALL=(ALL:ALL) NOPASSWD:ALL"
@@ -420,7 +422,9 @@ auto-login-enable()
   #Output: N/A
   #################################################################################### 
 
+  echo ""
   title "Enabling auto-login..."
+
   if [ $IS_DESKTOP -eq 1 ];
   then    
       #Ubuntu Desktop
@@ -449,7 +453,9 @@ auto-login-disable()
   #Output: N/A
   #################################################################################### 
 
+  echo ""
   title "Disabling auto-login..."
+  
   if [ $IS_DESKTOP -eq 1 ];
   then    
       #Ubuntu Desktop
