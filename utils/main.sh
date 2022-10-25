@@ -487,6 +487,7 @@ passwords-background()
     echo "Creating the background image..."
     _source="/usr/share/backgrounds/warty-final-ubuntu.png"
     _dest="/usr/share/backgrounds/warty-final-ubuntu-text.png"      0
+    rm -f $_dest
     convert $_source -font helvetica -fill white -pointsize 36 -gravity SouthEast -annotate +50+100 "@$PASSWORDS" $_dest
 
     echo "Setting up the background image..."
