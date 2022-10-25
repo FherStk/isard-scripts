@@ -22,7 +22,7 @@ if [ "$NEED_UPDATE" = "TRUE" ]; then
         #System credentials (isard-scripts)
         echo "" >> "$stamp"
         echo "System Credentials:" >> "$stamp"
-        tail -n +5 <PASSWORDS> | column -t | awk '{a[FNR%3] = a[FNR%3] == "" ? $0 : a[FNR%3] "\t" $0} END{for(i=1;i<=3;i++) print a[i%3]}' | column -t -o "     " -s "$(printf '\t')" >> "$stamp"
+        tail -n +5 <PASSWORDS> | column -t -o " " | awk '{a[FNR%3] = a[FNR%3] == "" ? $0 : a[FNR%3] "\t" $0} END{for(i=1;i<=3;i++) print a[i%3]}' | column -t -o "        " -s "$(printf '\t')" >> "$stamp"
 
     #else
     #    # do not replace a formerly good result due to load
