@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_VERSION="1.0.0"
+SCRIPT_VERSION="1.1.0"
 SCRIPT_NAME="Ubuntu Desktop 22.04 LTS (DBeaver Community Edition)"
 HOST_NAME="gantt-project"
 

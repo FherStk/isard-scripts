@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_VERSION="1.0.1"
+SCRIPT_VERSION="1.1.0"
 SCRIPT_NAME="Ubuntu Desktop 22.04 LTS (GanttProject v3)"
 HOST_NAME="gantt-project"
 
