@@ -10,7 +10,7 @@ source $SCRIPT_PATH/../utils/main.sh
 startup
 script-setup
 
-apt-req "default-jre"
+apt-install "default-jre"
 
 echo ""
 title "Downloading GanttProject:"

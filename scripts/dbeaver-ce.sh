@@ -10,6 +10,6 @@ source $SCRIPT_PATH/../utils/main.sh
 startup
 script-setup
 
-snap-req "dbeaver-ce"
+snap-install "dbeaver-ce"
 run-in-user-session gsettings set org.gnome.shell favorite-apps "['firefox_firefox.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop', 'dbeaver-ce_dbeaver-ce.desktop']"
 done-and-reboot

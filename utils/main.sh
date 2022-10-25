@@ -131,7 +131,7 @@ get-branch()
   CURRENT_BRANCH=$(git -C $BASE_PATH rev-parse --abbrev-ref HEAD)
 }
 
-apt-req()
+apt-install()
 {
   ####################################################################################
   #Description: Installs an app (if not installed) using apt.
@@ -142,14 +142,14 @@ apt-req()
   echo ""
   if [ $(dpkg-query -W -f='${Status}' $1 2>/dev/null | grep -c "ok installed") -eq 0 ];
   then    
-    title "Installing requirements: " "$1"
+    title "Installing apt package: " "$1"
     apt install -y $1;    
   else 
-    echo -e "${CYAN}Requirement ${LCYAN}${1}${CYAN} already satisfied, skipping...$NC"
+    echo -e "${CYAN}Package ${LCYAN}${1}${CYAN} already installed, skipping...$NC"
   fi
 }
 
-pip-req()
+pip-install()
 {
   ####################################################################################
   #Description: Installs an app (if not installed) using pip3.
@@ -159,21 +159,22 @@ pip-req()
 
   echo ""
   if [ $(pip3 list 2>/dev/null | grep -io -c "$1") -eq 0 ];
-  then        
+  then    
+    _text="Installing pip3 package: "   
     if [ -f "$MARK" ]; then 
-      title "Installing requirements: " "$1 v$2"
+      title $_text "$1 v$2"
       pip3 install $1==$2;    
     else
-      title "Installing requirements: " "$1"
+      title $_text "$1"
       pip3 install $1;      
     fi
     
   else 
-    echo -e "${CYAN}Requirement ${LCYAN}${1}${CYAN} already satisfied, skipping...$NC"
+    echo -e "${CYAN}Package ${LCYAN}${1}${CYAN} already installed, skipping...$NC"
   fi
 }
 
-snap-req()
+snap-install()
 {
   ####################################################################################
   #Description: Installs an app (if not installed) using snap.
@@ -184,14 +185,14 @@ snap-req()
   echo ""
   if [ $(snap list | grep -c $1) -eq 0 ];
   then    
-    title "Installing requirements: " "$1"
+    title "Installing snap package: " "$1"
     snap install $1 $2;
   else 
-    echo -e "${CYAN}Requirement ${LCYAN}${1}${CYAN} already satisfied, skipping...$NC"
+    echo -e "${CYAN}Package ${LCYAN}${1}${CYAN} already installed, skipping...$NC"
   fi
 }
 
-flatpak-req()
+flatpak-install()
 {
   ####################################################################################
   #Description: Installs an app (if not installed) using flatpak.
@@ -202,10 +203,10 @@ flatpak-req()
   echo ""
   if [ $(flatpak list | grep -c $1) -eq 0 ];
   then    
-    title "Installing requirements: " "$1"
+    title "Installing flatpak package: " "$1"
     flatpak install --noninteractive --assumeyes $1;
   else 
-    echo -e "${CYAN}Requirement ${LCYAN}${1}${CYAN} already satisfied, skipping...$NC"
+    echo -e "${CYAN}Package ${LCYAN}${1}${CYAN} already installed, skipping...$NC"
   fi
 }
 
@@ -557,12 +558,12 @@ startup(){
   echo ""
   title "Installing requirements:"
   sudo apt update
-  apt-req "dialog"  #for requesting information
-  apt-req "ipcalc"  #for static address validation
+  apt-install "dialog"  #for requesting information
+  apt-install "ipcalc"  #for static address validation
 
   if [ $IS_DESKTOP -eq 1 ];
   then    
-    apt-req "imagemagick-6.q16" #background passwords
+    apt-install "imagemagick-6.q16" #background passwords
     sed -i "s|<policy domain=\"path\" rights=\"none\" pattern=\"@*\" />|<policy domain=\"path\" rights=\"all\" pattern=\"@*\" />|g" /etc/ImageMagick-6/policy.xml
   fi
 }
@@ -587,16 +588,22 @@ script-setup(){
   echo "Disabling auto-upgrades..."
   cp $BASE_PATH/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
   dpkg-reconfigure -f noninteractive unattended-upgrades  
+    
+  set-hostname "$HOST_NAME"  
 
-  set-hostname "$HOST_NAME"
-
-  if [ "$1" != "ignore-address" ];
+  _address="192.168.1.1/24"
+  if [ "$1" == "static-address" ];
   then       
-    set-address "192.168.1.1/24"
+    set-address-static $_address
+  elif [ "$1" == "dhcp-address" ];
+  then       
+    set-address-dhcp
+  else
+    set-address $_address
   fi
 
   apt-upgrade
-  apt-req "openssh-server"    
+  apt-install "openssh-server"    
 
   if [ $IS_DESKTOP -eq 1 ];
   then     

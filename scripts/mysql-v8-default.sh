@@ -9,5 +9,5 @@ source $SCRIPT_PATH/../utils/main.sh
 
 startup
 script-setup
-apt-req "mysql-server-8.0"
+apt-install "mysql-server-8.0"
 done-and-reboot

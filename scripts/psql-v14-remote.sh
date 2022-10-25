@@ -9,8 +9,8 @@ source $SCRIPT_PATH/../utils/main.sh
 
 startup
 script-setup
-apt-req "postgresql-14"
-apt-req "unzip"
+apt-install "postgresql-14"
+apt-install "unzip"
 
 echo ""
 title "Setting up remote connections:"

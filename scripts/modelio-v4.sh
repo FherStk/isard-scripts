@@ -10,8 +10,8 @@ source $SCRIPT_PATH/../utils/main.sh
 startup
 script-setup
 
-apt-req "libgdk-pixbuf-xlib-2.0-0"
-apt-req "libgdk-pixbuf2.0-0"
+apt-install "libgdk-pixbuf-xlib-2.0-0"
+apt-install "libgdk-pixbuf2.0-0"
 
 echo ""
 title "Downloading Modelio and dependencies:"
