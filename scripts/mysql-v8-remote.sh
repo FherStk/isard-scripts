@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_VERSION="1.0.3"
+SCRIPT_VERSION="1.1.0"
 SCRIPT_NAME="Ubuntu Server 22.04 LTS (MySQL v8 - With remote connections)"
 HOST_NAME="mysql-server"
 
@@ -9,7 +9,7 @@ source $SCRIPT_PATH/../utils/main.sh
 
 startup
 script-setup
-apt-req "mysql-server-8.0"
+apt-install "mysql-server-8.0"
 
 echo ""
 title "Setting up the demo database:"

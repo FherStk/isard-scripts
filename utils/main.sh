@@ -8,6 +8,7 @@ RUN_SCRIPT="sudo bash $INSTALL_PATH/run.sh"
 PROFILE="/home/$SUDO_USER/.profile"
 AUTOSTART="/home/$SUDO_USER/.config/autostart"
 DESKTOPFILE="$AUTOSTART/isard-scripts.desktop"
+PASSWORDS="/home/$SUDO_USER/passwords.info"
 
 # Terminal colors:
 # Black        0;30     Dark Gray     1;30
@@ -130,7 +131,7 @@ get-branch()
   CURRENT_BRANCH=$(git -C $BASE_PATH rev-parse --abbrev-ref HEAD)
 }
 
-apt-req()
+apt-install()
 {
   ####################################################################################
   #Description: Installs an app (if not installed) using apt.
@@ -141,14 +142,14 @@ apt-req()
   echo ""
   if [ $(dpkg-query -W -f='${Status}' $1 2>/dev/null | grep -c "ok installed") -eq 0 ];
   then    
-    title "Installing requirements: " "$1"
+    title "Installing apt package: " "$1"
     apt install -y $1;    
   else 
-    echo -e "${CYAN}Requirement ${LCYAN}${1}${CYAN} already satisfied, skipping...$NC"
+    echo -e "${CYAN}Package ${LCYAN}${1}${CYAN} already installed, skipping...$NC"
   fi
 }
 
-pip-req()
+pip-install()
 {
   ####################################################################################
   #Description: Installs an app (if not installed) using pip3.
@@ -158,21 +159,22 @@ pip-req()
 
   echo ""
   if [ $(pip3 list 2>/dev/null | grep -io -c "$1") -eq 0 ];
-  then        
+  then    
+    _text="Installing pip3 package: "   
     if [ -f "$MARK" ]; then 
-      title "Installing requirements: " "$1 v$2"
+      title $_text "$1 v$2"
       pip3 install $1==$2;    
     else
-      title "Installing requirements: " "$1"
+      title $_text "$1"
       pip3 install $1;      
     fi
     
   else 
-    echo -e "${CYAN}Requirement ${LCYAN}${1}${CYAN} already satisfied, skipping...$NC"
+    echo -e "${CYAN}Package ${LCYAN}${1}${CYAN} already installed, skipping...$NC"
   fi
 }
 
-snap-req()
+snap-install()
 {
   ####################################################################################
   #Description: Installs an app (if not installed) using snap.
@@ -183,14 +185,14 @@ snap-req()
   echo ""
   if [ $(snap list | grep -c $1) -eq 0 ];
   then    
-    title "Installing requirements: " "$1"
+    title "Installing snap package: " "$1"
     snap install $1 $2;
   else 
-    echo -e "${CYAN}Requirement ${LCYAN}${1}${CYAN} already satisfied, skipping...$NC"
+    echo -e "${CYAN}Package ${LCYAN}${1}${CYAN} already installed, skipping...$NC"
   fi
 }
 
-flatpak-req()
+flatpak-install()
 {
   ####################################################################################
   #Description: Installs an app (if not installed) using flatpak.
@@ -201,10 +203,10 @@ flatpak-req()
   echo ""
   if [ $(flatpak list | grep -c $1) -eq 0 ];
   then    
-    title "Installing requirements: " "$1"
+    title "Installing flatpak package: " "$1"
     flatpak install --noninteractive --assumeyes $1;
   else 
-    echo -e "${CYAN}Requirement ${LCYAN}${1}${CYAN} already satisfied, skipping...$NC"
+    echo -e "${CYAN}Package ${LCYAN}${1}${CYAN} already installed, skipping...$NC"
   fi
 }
 
@@ -261,7 +263,7 @@ set-address-dhcp()
   #Output: N/A
   #################################################################################### 
 
-  #Some scripts could force this
+  #Some scripts could force this2
   echo "Setting up network data..."
   if [ $IS_DESKTOP -eq 1 ];
   then     
@@ -322,12 +324,14 @@ request-ip()
 
 done-no-reboot(){
   ####################################################################################
-  #Description: Cleans the temp data and the bash history, prompts a DONE!.
+  #Description: Cleans the temp data and the bash history, sets the background
+  #             passwords (for desktop only) and prompts an ending message.
   #Input:  N/A
   #Output: N/A
   #################################################################################### 
 
   clean
+  passwords-background
 
   echo ""
   echo -e "${GREEN}DONE!$NC"
@@ -337,12 +341,14 @@ done-no-reboot(){
 
 done-and-reboot(){
   ####################################################################################
-  #Description: Cleans the temp data and the bash history, then reboots the system.
+  #Description: Cleans the temp data and the bash history, sets the background
+  #             passwords (for desktop only) and reboots the system.
   #Input:  N/A
   #Output: N/A
   #################################################################################### 
 
   clean
+  passwords-background
 
   echo ""
   echo -e "${GREEN}DONE! Rebooting...$NC"
@@ -386,11 +392,14 @@ sudo-password-enable()
   #Input:  N/A
   #Output: N/A
   #################################################################################### 
+  echo ""
   title "Disabling sudo password..."
+
   _file="/etc/sudoers"
+  echo "Setting up the file '$_file'"
+  
   _line="%sudo   ALL=(ALL:ALL) NOPASSWD:ALL"  
-  sed -i "s|$_line||g" $_file    
-  echo "Done"
+  sed -i "s|$_line||g" $_file      
 }
 
 sudo-password-disable()
@@ -400,11 +409,14 @@ sudo-password-disable()
   #Input:  N/A
   #Output: N/A
   ####################################################################################   
+  echo ""
   title "Enabling sudo password..."
+  
   _file="/etc/sudoers"
+  echo "Setting up the file '$_file'"
+  
   _line="%sudo   ALL=(ALL:ALL) NOPASSWD:ALL"
   grep -qxF "$_line" "$_file" || echo "$_line" >> $_file
-  echo "Done"
 }
 
 auto-login-enable()
@@ -415,12 +427,14 @@ auto-login-enable()
   #Output: N/A
   #################################################################################### 
 
+  echo ""
   title "Enabling auto-login..."
+
   if [ $IS_DESKTOP -eq 1 ];
   then    
       #Ubuntu Desktop
       _file="/etc/gdm3/custom.conf"
-      echo "Setting up the file '$1'"
+      echo "Setting up the file '$_file'"
       sed -i "s|#  AutomaticLoginEnable = true|  AutomaticLoginEnable = true|g" $_file
       sed -i "s|#  AutomaticLogin = user1|  AutomaticLogin = $SUDO_USER|g" $_file
 
@@ -429,8 +443,8 @@ auto-login-enable()
       echo "Creating the folder..."
       mkdir -p /etc/systemd/system/getty@tty1.service.d        
 
-      echo "Creating the file '$1'"
       _file="/etc/systemd/system/getty@tty1.service.d/override.conf"
+      echo "Creating the file '$_file'"      
       cp $BASE_PATH/auto-login.conf $_file
       sed -i "s|<USERNAME>|$SUDO_USER|g" $_file    
   fi
@@ -444,20 +458,69 @@ auto-login-disable()
   #Output: N/A
   #################################################################################### 
 
+  echo ""
   title "Disabling auto-login..."
+
   if [ $IS_DESKTOP -eq 1 ];
   then    
       #Ubuntu Desktop
       _file="/etc/gdm3/custom.conf"
-      echo "Setting up the file '$1'"
+      echo "Setting up the file '$_file'"
       sed -i "s|  AutomaticLoginEnable = true|#  AutomaticLoginEnable = true|g" $_file
       sed -i "s|  AutomaticLogin = $SUDO_USER|  AutomaticLogin = user1|g" $_file
 
   else
-      #Ubuntu Server    
-      echo "Removing files..."
-      rm -Rf /etc/systemd/system/getty@tty1.service.d        
+      #Ubuntu Server  
+      _file="/etc/systemd/system/getty@tty1.service.d"  
+      echo "Removing the file '$_file'"
+      rm -Rf $_file
   fi
+}
+
+passwords-background()
+{
+  ####################################################################################
+  #Description: Writes the passwords file content into the background image
+  #             on desktop systems.
+  #Input:  N/A
+  #Output: N/A
+  #################################################################################### 
+  echo ""
+  title "Setting up the system credentials information:"
+  
+  if [ $IS_DESKTOP -eq 1 ];
+  then     
+    #Desktop
+    echo "Creating the background image..."
+    _source="/usr/share/backgrounds/warty-final-ubuntu.png"
+    _dest="/usr/share/backgrounds/warty-final-ubuntu-text.png"
+    rm -f $_dest
+    convert $_source -font helvetica -fill white -pointsize 36 -gravity SouthEast -annotate +50+100 "@$PASSWORDS" $_dest
+
+    echo "Setting up the background image..."
+    run-in-user-session gsettings set org.gnome.desktop.background picture-uri file:///$_dest    
+
+  else
+    #Server
+    _source="$BASE_PATH/50-landscape-sysinfo"
+    _dest="/etc/update-motd.d/50-landscape-sysinfo"
+    echo "Creating entry into '$_dest'..."    
+    cp $_source $_dest
+    sed -i "s|<PASSWORDS>|$PASSWORDS|g" $_dest
+  fi  
+}
+
+passwords-add(){
+  ####################################################################################
+  #Description: Adds a password entry to the passwords file
+  #Input:  $1 => Header | $2 => Username | $3 => Password
+  #Output: N/A
+  #################################################################################### 
+  
+  echo "" >> $PASSWORDS
+  echo "$1" >> $PASSWORDS
+  echo "Username: $2" >> $PASSWORDS
+  echo "Password: $3" >> $PASSWORDS
 }
 
 info()
@@ -509,8 +572,14 @@ startup(){
   echo ""
   title "Installing requirements:"
   sudo apt update
-  apt-req "dialog"  #for requesting information
-  apt-req "ipcalc"  #for static address validation
+  apt-install "dialog"  #for requesting information
+  apt-install "ipcalc"  #for static address validation
+
+  if [ $IS_DESKTOP -eq 1 ];
+  then    
+    apt-install "imagemagick-6.q16" #background passwords
+    sed -i "s|<policy domain=\"path\" rights=\"none\" pattern=\"@*\" />|<policy domain=\"path\" rights=\"all\" pattern=\"@*\" />|g" /etc/ImageMagick-6/policy.xml
+  fi
 }
 
 script-setup(){
@@ -533,16 +602,22 @@ script-setup(){
   echo "Disabling auto-upgrades..."
   cp $BASE_PATH/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
   dpkg-reconfigure -f noninteractive unattended-upgrades  
+    
+  set-hostname "$HOST_NAME"  
 
-  set-hostname "$HOST_NAME"
-
-  if [ "$1" != "ignore-address" ];
+  _address="192.168.1.1/24"
+  if [ "$1" == "static-address" ];
   then       
-    set-address "192.168.1.1/24"
+    set-address-static $_address
+  elif [ "$1" == "dhcp-address" ];
+  then       
+    set-address-dhcp
+  else
+    set-address $_address
   fi
 
   apt-upgrade
-  apt-req "openssh-server"    
+  apt-install "openssh-server"    
 
   if [ $IS_DESKTOP -eq 1 ];
   then     
@@ -558,4 +633,26 @@ script-setup(){
   #else
     #Ubuntu Server   
   fi
+
+  title "Setting up the passwords file:"
+  echo "Creating the file..."
+  rm -f $PASSWORDS
+  touch $PASSWORDS
+
+  echo "Storing basic data..."
+  if [ $IS_DESKTOP -eq 1 ];
+  then
+    #Desktop
+    #Printing to an image unaligns the text :(    
+    echo "#########################" >> $PASSWORDS
+    echo "#   SYSTEM CREDENTIALS   #" >> $PASSWORDS
+    echo "#########################" >> $PASSWORDS
+  else
+    #Server
+    echo "##########################" >> $PASSWORDS
+    echo "#   SYSTEM CREDENTIALS   #" >> $PASSWORDS
+    echo "##########################" >> $PASSWORDS
+  fi
+  
+  passwords-add "Ubuntu" "usuario" "usuario"
 }

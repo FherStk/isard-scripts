@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_VERSION="1.0.0"
+SCRIPT_VERSION="1.1.0"
 SCRIPT_NAME="Ubuntu Desktop 22.04 LTS (Modelio v4)"
 HOST_NAME="gantt-project"
 
@@ -10,8 +10,8 @@ source $SCRIPT_PATH/../utils/main.sh
 startup
 script-setup
 
-apt-req "libgdk-pixbuf-xlib-2.0-0"
-apt-req "libgdk-pixbuf2.0-0"
+apt-install "libgdk-pixbuf-xlib-2.0-0"
+apt-install "libgdk-pixbuf2.0-0"
 
 echo ""
 title "Downloading Modelio and dependencies:"

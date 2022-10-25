@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_VERSION="1.0.2"
+SCRIPT_VERSION="1.1.0"
 SCRIPT_NAME="Ubuntu Server 22.04 LTS (PostgreSQL v14 - With remote connections)"
 HOST_NAME="psql-server"
 
@@ -9,8 +9,8 @@ source $SCRIPT_PATH/../utils/main.sh
 
 startup
 script-setup
-apt-req "postgresql-14"
-apt-req "unzip"
+apt-install "postgresql-14"
+apt-install "unzip"
 
 echo ""
 title "Setting up remote connections:"

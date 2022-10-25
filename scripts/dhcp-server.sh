@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_VERSION="1.0.0"
+SCRIPT_VERSION="1.1.0"
 SCRIPT_NAME="Ubuntu Server 22.04 LTS (Default setup)"
 HOST_NAME="dhcp-server"
 
@@ -8,12 +8,9 @@ SCRIPT_FILE=$(basename $BASH_SOURCE)
 source $SCRIPT_PATH/../utils/main.sh
 
 startup
-script-setup "ignore-address"
-set-address-static "192.168.1.1/24"
+script-setup "static-address" 
 
-apt-upgrade
-apt-req "openssh-server"  
-apt-req "isc-dhcp-server"  
+apt-install "isc-dhcp-server"  
 
 cp /etc/dhcp/dhcpd.conf /etc/dhcp/dhcpd.conf.bak
 cp $SCRIPT_PATH/../utils/dhcpd.conf /etc/dhcp/dhcpd.conf
