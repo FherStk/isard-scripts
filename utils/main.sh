@@ -504,8 +504,9 @@ passwords-background()
     #Server
     _source="$BASE_PATH/50-landscape-sysinfo"
     _dest="/etc/update-motd.d/50-landscape-sysinfo"
-    echo "Creating entry into '$_dest'..."
+    echo "Creating entry into '$_dest'..."    
     cp $_source $_dest
+    sed -i "s|<PASSWORDS>|$PASSWORDS|g" $_dest
   fi  
 }
 
