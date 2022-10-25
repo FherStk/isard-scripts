@@ -649,7 +649,9 @@ script-setup(){
     echo "#########################" >> $PASSWORDS
   else
     #Server
-    echo "System credentials:" >> $PASSWORDS
+    echo "##########################" >> $PASSWORDS
+    echo "#   SYSTEM CREDENTIALS   #" >> $PASSWORDS
+    echo "##########################" >> $PASSWORDS
   fi
   
   passwords-add "Ubuntu" "usuario" "usuario"
