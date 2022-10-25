@@ -479,7 +479,7 @@ passwords-background()
     _source="/usr/share/backgrounds/warty-final-ubuntu-text.png"
     _dest="/usr/share/backgrounds/warty-final-ubuntu.png"      
     #convert $_source -font helvetica -fill white -pointsize 36 -draw "text 50,50 '$(cat $PASSWORDS)'" $_dest
-    convert $_source -font helvetica -fill white -pointsize 36 -draw "text 50,50 @$PASSWORDS)" $_dest
+    convert $_source -font helvetica -fill white -pointsize 36 -draw "text 50,50 @$PASSWORDS" $_dest
     run-in-user-session gsettings set org.gnome.desktop.background picture-uri file:///$_dest
   fi
 }
