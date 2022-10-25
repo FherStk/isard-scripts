@@ -394,10 +394,12 @@ sudo-password-enable()
   #################################################################################### 
   echo ""
   title "Disabling sudo password..."
+  
   _file="/etc/sudoers"
+  echo "Setting up the file '$_file'"
+  
   _line="%sudo   ALL=(ALL:ALL) NOPASSWD:ALL"  
-  sed -i "s|$_line||g" $_file    
-  echo "Done"
+  sed -i "s|$_line||g" $_file      
 }
 
 sudo-password-disable()
@@ -409,7 +411,10 @@ sudo-password-disable()
   ####################################################################################   
   echo ""
   title "Enabling sudo password..."
+  
   _file="/etc/sudoers"
+  echo "Setting up the file '$_file'"
+  
   _line="%sudo   ALL=(ALL:ALL) NOPASSWD:ALL"
   grep -qxF "$_line" "$_file" || echo "$_line" >> $_file
   echo "Done"
@@ -461,14 +466,15 @@ auto-login-disable()
   then    
       #Ubuntu Desktop
       _file="/etc/gdm3/custom.conf"
-      echo "Setting up the file '$1'"
+      echo "Setting up the file '$_file'"
       sed -i "s|  AutomaticLoginEnable = true|#  AutomaticLoginEnable = true|g" $_file
       sed -i "s|  AutomaticLogin = $SUDO_USER|  AutomaticLogin = user1|g" $_file
 
   else
-      #Ubuntu Server    
-      echo "Removing files..."
-      rm -Rf /etc/systemd/system/getty@tty1.service.d        
+      #Ubuntu Server  
+      _file="/etc/systemd/system/getty@tty1.service.d"  
+      echo "Removing the file '$_file'"
+      rm -Rf $_file
   fi
 }
 
