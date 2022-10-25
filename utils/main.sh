@@ -430,7 +430,7 @@ auto-login-enable()
   then    
       #Ubuntu Desktop
       _file="/etc/gdm3/custom.conf"
-      echo "Setting up the file '$1'"
+      echo "Setting up the file '$_file'"
       sed -i "s|#  AutomaticLoginEnable = true|  AutomaticLoginEnable = true|g" $_file
       sed -i "s|#  AutomaticLogin = user1|  AutomaticLogin = $SUDO_USER|g" $_file
 
@@ -439,8 +439,8 @@ auto-login-enable()
       echo "Creating the folder..."
       mkdir -p /etc/systemd/system/getty@tty1.service.d        
 
-      echo "Creating the file '$1'"
       _file="/etc/systemd/system/getty@tty1.service.d/override.conf"
+      echo "Creating the file '$_file'"      
       cp $BASE_PATH/auto-login.conf $_file
       sed -i "s|<USERNAME>|$SUDO_USER|g" $_file    
   fi
