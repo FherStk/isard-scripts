@@ -20,8 +20,8 @@ if [ "$NEED_UPDATE" = "TRUE" ]; then
             > "$stamp"
         
         #System credentials (isard-scripts)
-        printf "\n$(tail -n +1 $HOME/passwords.info | column -t | awk '{a[FNR%3] = a[FNR%3] == "" ? $0 : a[FNR%3] "\t" $0} END{for(i=1;i<=3;i++) print a[i%3]}' | column -t -s \"$(printf '\t')\")" >> "$stamp"
-        
+        printf "\n$(tail -n +2 $HOME/passwords.info | column -t | awk '{a[FNR%3] = a[FNR%3] == "" ? $0 : a[FNR%3] "\t" $0} END{for(i=1;i<=3;i++) print a[i%3]}' | column -t -s \"$(printf '\t')\")" >> "$stamp"
+
     #else
     #    # do not replace a formerly good result due to load
     #    if ! grep -q "System information as of" $stamp 2> /dev/null; then
