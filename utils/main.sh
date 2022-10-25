@@ -519,8 +519,8 @@ passwords-add(){
   
   echo "" >> $PASSWORDS
   echo "$1:" >> $PASSWORDS
-  echo "  - Username: $2" >> $PASSWORDS
-  echo "  - Password: $3" >> $PASSWORDS
+  echo " - Username: $2" >> $PASSWORDS
+  echo " - Password: $3" >> $PASSWORDS
 }
 
 info()
