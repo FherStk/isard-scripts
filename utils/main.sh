@@ -490,6 +490,7 @@ passwords-background()
   
   if [ $IS_DESKTOP -eq 1 ];
   then     
+    #Desktop
     echo "Creating the background image..."
     _source="/usr/share/backgrounds/warty-final-ubuntu.png"
     _dest="/usr/share/backgrounds/warty-final-ubuntu-text.png"
@@ -498,7 +499,14 @@ passwords-background()
 
     echo "Setting up the background image..."
     run-in-user-session gsettings set org.gnome.desktop.background picture-uri file:///$_dest    
-  fi
+
+  else
+    #Server
+    _source="$BASE_PATH/50-landscape-sysinfo"
+    _dest="/etc/update-motd.d/50-landscape-sysinfo"
+    echo "Creating entry into '$_dest'..."
+    cp $_source $_dest
+  fi  
 }
 
 passwords-add(){
@@ -633,14 +641,14 @@ script-setup(){
   echo "Storing basic data..."
   if [ $IS_DESKTOP -eq 1 ];
   then
+    #Desktop
     #Printing to an image unaligns the text :(    
     echo "#########################" >> $PASSWORDS
     echo "#   SYSTEM CREDENTIALS   #" >> $PASSWORDS
     echo "#########################" >> $PASSWORDS
   else
-    echo "##########################" >> $PASSWORDS
-    echo "#   SYSTEM CREDENTIALS   #" >> $PASSWORDS
-    echo "##########################" >> $PASSWORDS
+    #Server
+    echo "System credentials:" >> $PASSWORDS
   fi
   
   passwords-add "Ubuntu" "usuario" "usuario"
