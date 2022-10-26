@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_VERSION="1.7.0"
+SCRIPT_VERSION="1.8.0"
 SCRIPT_NAME="Script Installer"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
@@ -27,8 +27,11 @@ do
     #For Ubuntu Desktop
     rm -f $DESKTOPFILE
     
-    #Running the script
-    source $SCRIPT_PATH/scripts/$f
+    if [ "$f" != "NONE" ];
+    then       
+        #Running the script
+        source $SCRIPT_PATH/scripts/$f
+    fi
 done
 
 trap : 0

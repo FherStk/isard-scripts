@@ -134,7 +134,7 @@ get-branch()
 apt-install()
 {
   ####################################################################################
-  #Description: Installs an app (if not installed) using apt.
+  #Description: Unnatended package install (if not installed) using apt.
   #Input:  $1 => The app name
   #Output: N/A
   ####################################################################################  
@@ -143,7 +143,7 @@ apt-install()
   if [ $(dpkg-query -W -f='${Status}' $1 2>/dev/null | grep -c "ok installed") -eq 0 ];
   then    
     title "Installing apt package: " "$1"
-    apt install -y $1;    
+    DEBIAN_FRONTEND=noninteractive apt install -y $1;    
   else 
     echo -e "${CYAN}Package ${LCYAN}${1}${CYAN} already installed, skipping...$NC"
   fi
@@ -369,6 +369,17 @@ clean()
   history -c
 }
 
+append-no-repeat()
+{
+  ####################################################################################
+  #Description: Appends a line into a file if does not exist.
+  #Input:  $1 => The line to append. | $2 => The file where append.
+  #Output: N/A
+  ####################################################################################  
+
+  grep -qxF "$1" "$2" || echo "$1" >> $2
+}
+
 run-in-user-session() {
   ####################################################################################
   #Description: Runs the given command for the current user (even if sudo)
@@ -416,7 +427,7 @@ sudo-password-disable()
   echo "Setting up the file '$_file'"
   
   _line="%sudo   ALL=(ALL:ALL) NOPASSWD:ALL"
-  grep -qxF "$_line" "$_file" || echo "$_line" >> $_file
+  append-no-repeat "$_line" "$_file"
 }
 
 auto-login-enable()
