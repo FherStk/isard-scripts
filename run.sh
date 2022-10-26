@@ -27,8 +27,11 @@ do
     #For Ubuntu Desktop
     rm -f $DESKTOPFILE
     
-    #Running the script
-    source $SCRIPT_PATH/scripts/$f
+    if [ "$1" != "NONE" ];
+    then       
+        #Running the script
+        source $SCRIPT_PATH/scripts/$f
+    fi
 done
 
 trap : 0
