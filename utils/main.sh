@@ -369,6 +369,17 @@ clean()
   history -c
 }
 
+append-no-repeat()
+{
+  ####################################################################################
+  #Description: Appends a line into a file if does not exist.
+  #Input:  $1 => The line to append. | $2 => The file where append.
+  #Output: N/A
+  ####################################################################################  
+
+  grep -qxF "$1" "$2" || echo "$1" >> $2
+}
+
 run-in-user-session() {
   ####################################################################################
   #Description: Runs the given command for the current user (even if sudo)
@@ -416,7 +427,7 @@ sudo-password-disable()
   echo "Setting up the file '$_file'"
   
   _line="%sudo   ALL=(ALL:ALL) NOPASSWD:ALL"
-  grep -qxF "$_line" "$_file" || echo "$_line" >> $_file
+  append-no-repeat "$_line" "$_file"
 }
 
 auto-login-enable()

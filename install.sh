@@ -31,7 +31,7 @@ then
 else
     #Ubuntu Server
     echo "Setting up the $PROFILE entry..."
-    grep -qxF "$RUN_SCRIPT" "$PROFILE" || echo "$RUN_SCRIPT" >> $PROFILE
+    append-no-repeat "$RUN_SCRIPT" "$PROFILE"
 fi
 
 done-no-reboot
