@@ -134,7 +134,7 @@ get-branch()
 apt-install()
 {
   ####################################################################################
-  #Description: Installs an app (if not installed) using apt.
+  #Description: Unnatended package install (if not installed) using apt.
   #Input:  $1 => The app name
   #Output: N/A
   ####################################################################################  
