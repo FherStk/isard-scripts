@@ -27,7 +27,7 @@ do
     #For Ubuntu Desktop
     rm -f $DESKTOPFILE
     
-    if [ "$1" != "NONE" ];
+    if [ "$f" != "NONE" ];
     then       
         #Running the script
         source $SCRIPT_PATH/scripts/$f
