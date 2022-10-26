@@ -11,8 +11,8 @@ startup
 script-setup
 
 curl -o - https://www.domjudge.org/repokey.asc | sudo apt-key add -
-echo "deb     https://domjudge.org/debian unstable/" >> /etc/apt/sources.list
-echo "deb-src     https://domjudge.org/debian unstable/" >> /etc/apt/sources.list
+append-no-repeat "deb     https://domjudge.org/debian unstable/" /etc/apt/sources.list
+append-no-repeat "deb-src     https://domjudge.org/debian unstable/" /etc/apt/sources.list
 sudo apt update
 
 apt install domjudge-judgehost-dbgsym domjudge-domserver -y
