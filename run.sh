@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_VERSION="1.7.0"
+SCRIPT_VERSION="1.7.1"
 SCRIPT_NAME="Script Installer"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
