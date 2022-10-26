@@ -143,7 +143,7 @@ apt-install()
   if [ $(dpkg-query -W -f='${Status}' $1 2>/dev/null | grep -c "ok installed") -eq 0 ];
   then    
     title "Installing apt package: " "$1"
-    apt install -y $1;    
+    DEBIAN_FRONTEND=noninteractive apt install -y $1;    
   else 
     echo -e "${CYAN}Package ${LCYAN}${1}${CYAN} already installed, skipping...$NC"
   fi
