@@ -15,6 +15,6 @@ append-no-repeat "deb     https://domjudge.org/debian unstable/" /etc/apt/source
 append-no-repeat "deb-src     https://domjudge.org/debian unstable/" /etc/apt/sources.list
 sudo apt update
 
-apt install domjudge-judgehost-dbgsym domjudge-domserver -y
-passwords-add "DOMjudge" "admin" $(cat /etc/domjudge/initial_admin_password.secret)
+DEBIAN_FRONTEND=noninteractive apt install domjudge-judgehost-dbgsym domjudge-domserver -y
+passwords-add "DOMjudge (http://<ip>/domjudge)" "admin" $(cat /etc/domjudge/initial_admin_password.secret)
 done-and-reboot
