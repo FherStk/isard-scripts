@@ -92,6 +92,7 @@ service redis-server start
 sed -i "s|#CELERY_BROKER_URL|CELERY_BROKER_URL|g" dmoj/local_settings.py
 sed -i "s|#CELERY_RESULT_BACKEND|CELERY_RESULT_BACKEND|g" dmoj/local_settings.py
 sed -i "s|#ALLOWED_HOSTS = \['dmoj.ca'\]|ALLOWED_HOSTS = \['\*'\]|g" dmoj/local_settings.py
+sed -i "s|<desired bridge log path>|bridge.log|g" dmoj/local_settings.py
 
 apt-install "supervisor"
 
