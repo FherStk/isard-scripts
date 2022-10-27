@@ -103,4 +103,4 @@ uwsgi --ini uwsgi.ini
 
 
 # passwords-add "DOMjudge (http://<ip>/domjudge)" "admin" $(cat /etc/domjudge/initial_admin_password.secret)
-done-and-reboot
+#done-and-reboot
