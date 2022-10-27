@@ -46,6 +46,7 @@ sudo -H -u root bash -c "mysql -e \"GRANT ALL PRIVILEGES ON dmoj.* TO 'dmoj'@'lo
 
 echo ""
 title "Setting up the virtual enviroment:"
+cd /home/$SUDO_USER
 python3 -m venv dmojsite
 . dmojsite/bin/activate
 cd dmojsite
@@ -117,14 +118,13 @@ sed -i "s|<path to virtualenv>|$_virtualenv|g" $_file
 sed -i "s|<path to site>|$_repodir|g" $_file
 
 echo ""
-title "Setting up bridge:"
+title "Setting up bridged:"
 
 _file="/etc/supervisor/conf.d/bridged.conf"
 wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/bridged.conf -O $_file
 sed -i "s|<path to virtualenv>|$_virtualenv|g" $_file
 sed -i "s|<path to site>|$_repodir|g" $_file
 sed -i "s|<user to run under>|$SUDO_USER|g" $_file
-
 
 echo ""
 title "Setting up celery:"
@@ -140,7 +140,19 @@ title "Reloading supervisor:"
 supervisorctl update
 supervisorctl status
 
-#TODO: judge using https://docs.dmoj.ca/#/judge/setting_up_a_judge?id=through-pypi
+echo ""
+title "Setting up nginx:"
+apt-install "nginx"
+
+_file="/etc/nginx/conf.d/nginx.conf"
+wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/nginx.conf -O $_file
+sed -i "s|<hostname>|localhost|g" $_file
+sed -i "s|<site code path>|$_repodir|g" $_file
+sed -i "s|<django setting STATIC_ROOT, without the final /static>|/tmp|g" $_file
+
+service nginx reload
+
+#TODO: NGINX
 #dmoj "localhost" "judge" "shmvr7PNyUMy948fYHCbxmWlkaC5UErKiMWyjofkDp6yHSmPQbhDIV/YX/eDSRb+NpeXvRTeZ/5ZcGQLIEqIpuaEl53JSkNqOMMa" 
 
 
