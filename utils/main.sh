@@ -162,10 +162,10 @@ pip-install()
   then    
     _text="Installing pip3 package: "   
     if [ -f "$MARK" ]; then 
-      title $_text "$1 v$2"
+      title "$_text" "$1 v$2"
       pip3 install $1==$2;    
     else
-      title $_text "$1"
+      title "$_text" "$1"
       pip3 install $1;      
     fi
     
