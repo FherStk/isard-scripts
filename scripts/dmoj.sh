@@ -189,7 +189,7 @@ _file="/home/$SUDO_USER/problems/judge.yml"
 cp $SCRIPT_PATH/../utils/dmoj/judge.yml $_file
 moj-autoconf > problems/moj-autoconf.result
 
-md2tBmnNM979zs
+
 
 #dmoj-autoconf => echo the last part to judge.yml
 #
@@ -208,6 +208,7 @@ python3 manage.py compilemessages
 python3 manage.py compilejsi18n
 dmoj -c /home/usuario/problems/judge.yml localhost &
 
+#pass for "usuario": md2tBmnNM979zs
 
 passwords-add "DM::OJ (http://<ip>)" "admin" "admin"
 #done-and-reboot
