@@ -10,108 +10,97 @@ source $SCRIPT_PATH/../utils/main.sh
 startup
 script-setup
 
+apt-install "gcc"
+apt-install "g++"
+apt-install "make"
+apt-install "python3-dev"
+apt-install "python3-pip"
+apt-install "python3-venv"
+apt-install "libxml2-dev"
+apt-install "libxslt1-dev"
+apt-install "zlib1g-dev"
+apt-install "gettext"
+apt-install "curl"
+apt-install "redis-server"
+
+echo ""
+title "Setting up the nodeJS repositories:"
+curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+echo "Done"
+
+apt-install "nodejs"
+
+echo ""
+title "Installing node-js dependencies:"
+npm install -g sass postcss-cli postcss autoprefixer
+
+apt-install "mariadb-server"
+apt-install "libmysqlclient-dev"
+
+echo ""
+title "Setting up the database:"
+sudo -H -u root bash -c "mysql -e \"CREATE DATABASE dmoj DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_general_ci;\""
+sudo -H -u root bash -c "mysql -e \"GRANT ALL PRIVILEGES ON dmoj.* TO 'dmoj'@'localhost' IDENTIFIED BY 'dmoj';\""
+
+echo ""
+title "Setting up the virtual enviroment:"
+python3 -m venv dmojsite
+. dmojsite/bin/activate
+
+echo ""
+title "Downloading DM::OJ:"
+git clone https://github.com/DMOJ/site.git
+cd site
+git submodule init
+git submodule update
+
+echo ""
+title "Installing the python dependencies:"
+pip3 install -r requirements.txt
+
+pip-install mysqlclient
+pip-install pymysql
+pip-install uwsgi
+
+echo ""
+title "Setting up DM::OJ:"
+wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/local_settings.py -O dmoj/local_settings.py
+
+#TODO: read key from settings.py -> replace $ with \$ and & with \&
+sed -i "s|'This key is not very secure and you should change it.'|'5*9f5q57mqmlz2#f\$x1h76\\&jxy#yortjl1v+l*6hd18\$d*yx#0'|g" dmoj/local_settings.py
+sed -i "s|'<mariadb user password>'|'dmoj'|g" dmoj/local_settings.py
 
 
+./make_style.sh
+python3 manage.py collectstatic
+python3 manage.py compilemessages
+python3 manage.py compilejsi18n
+python3 manage.py migrate
+python3 manage.py loaddata navbar
+python3 manage.py loaddata language_small
+python3 manage.py loaddata demo
 
-# apt-install "docker"
-# apt-install "docker-compose"
-
-# echo ""
-# title "Setiing up the grub entry:"
-# sed -i "s|GRUB_CMDLINE_LINUX_DEFAULT=\"\"|GRUB_CMDLINE_LINUX_DEFAULT=\"quiet cgroup_enable=memory swapaccount=1\"|g" /etc/default/grub
-# update-grub
-
-# echo ""
-# title "Installing the database container:"
-# _container="dj-mariadb"
-# if [ $(docker container ls -a $1 2>/dev/null | grep -c "$_container") -eq 0 ];
-# then    
-#     docker run -d -it --name $_container -e MYSQL_ROOT_PASSWORD=rootpw -e MYSQL_USER=domjudge -e MYSQL_PASSWORD=djpw -e MYSQL_DATABASE=domjudge -p 13306:3306 mariadb --max-connections=1000
-# else 
-#     echo -e "${CYAN}Container ${LCYAN}${_container}${CYAN} already installed, skipping...$NC"
-# fi
-
-# echo ""
-# title "Installing the DOMjudge container:"
-# _container="domserver"
-# if [ $(docker container ls -a $1 2>/dev/null | grep -c "$_container") -eq 0 ];
-# then    
-#     docker run -d --link dj-mariadb:mariadb -it -e MYSQL_HOST=mariadb -e MYSQL_USER=domjudge -e MYSQL_DATABASE=domjudge -e MYSQL_PASSWORD=djpw -e MYSQL_ROOT_PASSWORD=rootpw -p 12345:80 --name $_container domjudge/domserver:latest
-# else 
-#     echo -e "${CYAN}Container ${LCYAN}${_container}${CYAN} already installed, skipping...$NC"
-# fi
-
-# echo ""
-# title "Installing the judgehost container:"
-# _container="judgehost-0"
-# if [ $(docker container ls -a $1 2>/dev/null | grep -c "$_container") -eq 0 ];
-# then    
-#     docker run -it --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro --name $_container --link domserver:domserver --hostname judgedaemon-0 -e DAEMON_ID=0 domjudge/judgehost:latest
-# else 
-#     echo -e "${CYAN}Container ${LCYAN}${_container}${CYAN} already installed, skipping...$NC"
-# fi
+#https://stackoverflow.com/questions/6244382/how-to-automate-createsuperuser-on-django
+DJANGO_SUPERUSER_PASSWORD="root"
+DJANGO_SUPERUSER_USERNAME="root"
+DJANGO_SUPERUSER_EMAIL="root@root.com"
+python3 manage.py createsuperuser --noinput
 
 
+service redis-server start
+sed -i "s|#CELERY_BROKER_URL|CELERY_BROKER_URL|g" dmoj/local_settings.py
+sed -i "s|#CELERY_RESULT_BACKEND|CELERY_RESULT_BACKEND|g" dmoj/local_settings.py
+sed -i "s|#ALLOWED_HOSTS = \['dmoj.ca'\]|ALLOWED_HOSTS = \['\*'\]|g" dmoj/local_settings.py
+
+apt-install "supervisor"
+
+echo ""
+title "Setting up web service:"
+uwsgi --ini uwsgi.ini
 
 
-
-
-# passwords-add "DOMjudge (http://<ip>/domjudge)" "admin" $(sudo docker exec -it domserver cat /opt/domjudge/domserver/etc/initial_admin_password.secret)
-
-#10.2.151.180
-
-
-
-
-# echo ""
-# title "Setting up the DOMjudge repositories:"
-# curl -o - https://www.domjudge.org/repokey.asc | sudo apt-key add -
-# append-no-repeat "deb     https://domjudge.org/debian unstable/" /etc/apt/sources.list
-# append-no-repeat "deb-src     https://domjudge.org/debian unstable/" /etc/apt/sources.list
-# sudo apt update
-
-# echo ""
-# title "Downloading DOMjudge:"
-# apt-install "domjudge-domserver"
-
-# echo ""
-# title "Downloading judgehosts:"
-# apt-install "domjudge-judgehost-dbgsym"
-# apt-install "make"
-# apt-install "pkg-config"
-# apt-install "sudo"
-# apt-install "debootstrap"
-# apt-install "libcgroup-dev"
-# apt-install "lsof"
-# apt-install "procps"
-
-# wget https://www.domjudge.org/download -O domjudge.tar.gz
-# tar -xvzf domjudge.tar.gz
-
-# echo ""
-# title "Setting up judgehosts:"
-# ./configure --prefix=/home/$SUDO_USER/domjudge
-# make judgehost
-# make install-judgehost
-
-
-
-
-
-
-# echo ""
-# title "Setting up user permissions:"
-# echo "Adding the current user to the domjudge group"
-# usermod -a -G domjudge $SUDO_USER
-
-# echo ""
-# title "Setiing up the chroot:"
-# dj_make_chroot
-
-# echo ""
-# title "Setiing up the grub entry:"
-# sed -i "s|GRUB_CMDLINE_LINUX_DEFAULT=\"\"|GRUB_CMDLINE_LINUX_DEFAULT=\"quiet cgroup_enable=memory swapaccount=1\"|g" /etc/default/grub
-# update-grub
+#TODO: judge using https://docs.dmoj.ca/#/judge/setting_up_a_judge?id=through-pypi
+#dmoj "localhost" "judge" "shmvr7PNyUMy948fYHCbxmWlkaC5UErKiMWyjofkDp6yHSmPQbhDIV/YX/eDSRb+NpeXvRTeZ/5ZcGQLIEqIpuaEl53JSkNqOMMa" 
 
 
 # passwords-add "DOMjudge (http://<ip>/domjudge)" "admin" $(cat /etc/domjudge/initial_admin_password.secret)
