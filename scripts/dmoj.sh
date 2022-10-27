@@ -97,6 +97,7 @@ sed -i "s|#CELERY_BROKER_URL|CELERY_BROKER_URL|g" $_file
 sed -i "s|#CELERY_RESULT_BACKEND|CELERY_RESULT_BACKEND|g" $_file
 sed -i "s|#ALLOWED_HOSTS = \['dmoj.ca'\]|ALLOWED_HOSTS = \['\*'\]|g" $_file
 sed -i "s|<desired bridge log path>|bridge.log|g" $_file
+echo "DMOJ_PROBLEM_DATA_ROOT = \"/home/usuario/problems/\"" >> $_file
 
 _repodir="/home/$SUDO_USER/site"
 _virtualenv="/home/$SUDO_USER/dmojsite"
@@ -169,12 +170,26 @@ title "Setting up the judge:"
 
 apt-install "build-essential"
 apt-install "libseccomp-dev"
-pip-install "dmoj"
+apt-install "default-jdk"
+apt-install "default-jdk"
+pip-install "openjdk-8-jdk"
 
-mkdir /home/$SUDO_USER/judge
+#mkdir /home/$SUDO_USER/judge
 mkdir /home/$SUDO_USER/problems
 
+cd /home/$SUDO_USER
+git clone --recursive https://github.com/DMOJ/judge-server.git
+cd judge-server
+pip3 install -e .
+
 #TODO: create the judge by cli
+cd ..
+
+_file="/home/$SUDO_USER/problems/judge.yml"
+cp $SCRIPT_PATH/../utils/dmoj/judge.yml $_file
+moj-autoconf > problems/moj-autoconf.result
+
+md2tBmnNM979zs
 
 #dmoj-autoconf => echo the last part to judge.yml
 #
@@ -185,10 +200,14 @@ mkdir /home/$SUDO_USER/problems
 #runtime:
 #   ...
 
-#Maybe needed again?
+#On startup:
+. dmojsite/bin/activate
+cd site
 python3 manage.py collectstatic
 python3 manage.py compilemessages
 python3 manage.py compilejsi18n
+dmoj -c /home/usuario/problems/judge.yml localhost &
+
 
 passwords-add "DM::OJ (http://<ip>)" "admin" "admin"
 #done-and-reboot
