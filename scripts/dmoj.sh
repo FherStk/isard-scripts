@@ -83,7 +83,6 @@ python3 manage.py loaddata navbar
 python3 manage.py loaddata language_small
 python3 manage.py loaddata demo
 
-#https://stackoverflow.com/questions/6244382/how-to-automate-createsuperuser-on-django
 DJANGO_SUPERUSER_PASSWORD="$SUDO_USER"
 DJANGO_SUPERUSER_USERNAME="$SUDO_USER"
 DJANGO_SUPERUSER_EMAIL="$SUDO_USER@$SUDO_USER.com"
@@ -174,7 +173,6 @@ apt-install "default-jdk"
 apt-install "default-jdk"
 pip-install "openjdk-8-jdk"
 
-#mkdir /home/$SUDO_USER/judge
 mkdir /home/$SUDO_USER/problems
 
 cd /home/$SUDO_USER
@@ -182,7 +180,7 @@ git clone --recursive https://github.com/DMOJ/judge-server.git
 cd judge-server
 pip3 install -e .
 
-#TODO: create the judge by cli
+#TODO: create the judge by cli (implies creating it within django... maybe with a query?)
 cd ..
 
 _file="/home/$SUDO_USER/problems/judge.yml"
