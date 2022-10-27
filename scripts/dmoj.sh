@@ -40,7 +40,7 @@ apt-install "libmysqlclient-dev"
 echo ""
 title "Setting up the database:"
 echo "Creating database..."
-sudo -H -u root bash -c "mysql -e \"CREATE DATABASE dmoj DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_general_ci;\""
+sudo -H -u root bash -c "mysql -e \"CREATE DATABASE IF NOT EXISTS dmoj DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_general_ci;\""
 echo "Granting privileges..."
 sudo -H -u root bash -c "mysql -e \"GRANT ALL PRIVILEGES ON dmoj.* TO 'dmoj'@'localhost' IDENTIFIED BY 'dmoj';\""
 
