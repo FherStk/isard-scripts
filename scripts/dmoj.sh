@@ -190,6 +190,8 @@ moj-autoconf > problems/moj-autoconf.result
 
 
 #dmoj-autoconf => echo the last part to judge.yml
+#https://unix.stackexchange.com/questions/569097/how-to-cut-a-file-starting-from-the-line-in-which-a-certain-pattern-occurs
+
 #
 #id: <judge name>
 #key: <judge authentication key>
