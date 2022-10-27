@@ -49,7 +49,6 @@ title "Setting up the virtual enviroment:"
 cd /home/$SUDO_USER
 python3 -m venv dmojsite
 . dmojsite/bin/activate
-cd dmojsite
 
 echo ""
 title "Downloading DM::OJ:"
@@ -71,7 +70,9 @@ _file="dmoj/local_settings.py"
 wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/local_settings.py -O $_file
 sed -i "s|'This key is not very secure and you should change it.'|'5*9f5q57mqmlz2#f\$x1h76\\&jxy#yortjl1v+l*6hd18\$d*yx#0'|g" $_file
 sed -i "s|'<mariadb user password>'|'dmoj'|g" $_file
-
+sed -i "s|#EVENT_DAEMON_POST = 'ws://127.0.0.1:15101/'|EVENT_DAEMON_POST = 'ws://127.0.0.1:15101/'|g" $_file
+sed -i "s|#EVENT_DAEMON_GET = 'ws://<your domain>/event/'|EVENT_DAEMON_GET = 'ws://127.0.0.1/event/'|g" $_file
+sed -i "s|#EVENT_DAEMON_POLL = '/channels/''|EVENT_DAEMON_POLL = '/channels/'|g" $_file
 
 ./make_style.sh
 python3 manage.py collectstatic
@@ -83,11 +84,12 @@ python3 manage.py loaddata language_small
 python3 manage.py loaddata demo
 
 #https://stackoverflow.com/questions/6244382/how-to-automate-createsuperuser-on-django
-DJANGO_SUPERUSER_PASSWORD="root"
-DJANGO_SUPERUSER_USERNAME="root"
-DJANGO_SUPERUSER_EMAIL="root@root.com"
-python3 manage.py createsuperuser --noinput --username root --email root@root.com
+DJANGO_SUPERUSER_PASSWORD="$SUDO_USER"
+DJANGO_SUPERUSER_USERNAME="$SUDO_USER"
+DJANGO_SUPERUSER_EMAIL="$SUDO_USER@$SUDO_USER.com"
+python3 manage.py createsuperuser --noinput --username $SUDO_USER --email $SUDO_USER@$SUDO_USER.com
 
+pip-install "redis"
 service redis-server start
 
 _file="dmoj/local_settings.py"
@@ -96,7 +98,7 @@ sed -i "s|#CELERY_RESULT_BACKEND|CELERY_RESULT_BACKEND|g" $_file
 sed -i "s|#ALLOWED_HOSTS = \['dmoj.ca'\]|ALLOWED_HOSTS = \['\*'\]|g" $_file
 sed -i "s|<desired bridge log path>|bridge.log|g" $_file
 
-_repodir="/home/$SUDO_USER/dmojsite/site"
+_repodir="/home/$SUDO_USER/site"
 _virtualenv="/home/$SUDO_USER/dmojsite"
 
 echo ""
@@ -105,6 +107,7 @@ pip-install "uwsgi"
 
 _file="dmoj/uwsgi.ini" 
 wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/uwsgi.ini -O $_file
+sed -i "s|chdir = <dmoj repo dir>|chdir = $_virtualenv|g" $_file #TEST THIS LINE
 sed -i "s|<dmoj repo dir>|$_repodir|g" $_file
 sed -i "s|<virtualenv path>|$_virtualenv|g" $_file
 
@@ -114,7 +117,7 @@ apt-install "supervisor"
 
 _file="/etc/supervisor/conf.d/site.conf"
 wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/site.conf -O $_file
-sed -i "s|<path to virtualenv>|$_virtualenv|g" $_file
+sed -i "s|command=<path to virtualenv>/bin/uwsgi --ini uwsgi.ini|command=$_virtualenv/bin/uwsgi --ini $_repodir/dmoj/uwsgi.ini|g" $_file
 sed -i "s|<path to site>|$_repodir|g" $_file
 
 echo ""
@@ -144,17 +147,23 @@ echo ""
 title "Setting up nginx:"
 apt-install "nginx"
 
-_file="/etc/nginx/conf.d/nginx.conf"
-wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/nginx.conf -O $_file
-sed -i "s|<hostname>|localhost|g" $_file
+_file="/etc/nginx/sites-available/default"
+cp $SCRIPT_PATH/../utils/dmoj/nginx.conf $_file
 sed -i "s|<site code path>|$_repodir|g" $_file
-sed -i "s|<django setting STATIC_ROOT, without the final /static>|/tmp|g" $_file
 
 service nginx reload
 
-#TODO: NGINX
-#dmoj "localhost" "judge" "shmvr7PNyUMy948fYHCbxmWlkaC5UErKiMWyjofkDp6yHSmPQbhDIV/YX/eDSRb+NpeXvRTeZ/5ZcGQLIEqIpuaEl53JSkNqOMMa" 
+echo ""
+title "Setting up the event server:"
+
+_file="$_repodir/websocket/config.js"
+cp $SCRIPT_PATH/../utils/dmoj/config.js $_file
+
+_file="/etc/supervisor/conf.d/wsevent.conf"
+wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/wsevent.conf -O $_file
+sed -i "s|<site repo path>|$_repodir|g" $_file
+sed -i "s|<username>|$SUDO_USER|g" $_file
 
 
-# passwords-add "DOMjudge (http://<ip>/domjudge)" "admin" $(cat /etc/domjudge/initial_admin_password.secret)
+passwords-add "DM::OJ (http://<ip>)" "admin" "admin"
 #done-and-reboot
