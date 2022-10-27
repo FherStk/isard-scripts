@@ -97,7 +97,7 @@ apt-install "supervisor"
 
 echo ""
 title "Setting up web service:"
-uwsgi --ini uwsgi.ini
+#uwsgi --ini uwsgi.ini
 
 
 #TODO: judge using https://docs.dmoj.ca/#/judge/setting_up_a_judge?id=through-pypi
