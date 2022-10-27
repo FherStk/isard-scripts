@@ -164,6 +164,31 @@ wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/wsevent.con
 sed -i "s|<site repo path>|$_repodir|g" $_file
 sed -i "s|<username>|$SUDO_USER|g" $_file
 
+echo ""
+title "Setting up the judge:"
+
+apt-install "build-essential"
+apt-install "libseccomp-dev"
+pip-install "dmoj"
+
+mkdir /home/$SUDO_USER/judge
+mkdir /home/$SUDO_USER/problems
+
+#TODO: create the judge by cli
+
+#dmoj-autoconf => echo the last part to judge.yml
+#
+#id: <judge name>
+#key: <judge authentication key>
+#problem_storage_root:
+#  - /mnt/problems
+#runtime:
+#   ...
+
+#Maybe needed again?
+python3 manage.py collectstatic
+python3 manage.py compilemessages
+python3 manage.py compilejsi18n
 
 passwords-add "DM::OJ (http://<ip>)" "admin" "admin"
 #done-and-reboot
