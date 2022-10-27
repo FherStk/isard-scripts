@@ -39,7 +39,9 @@ apt-install "libmysqlclient-dev"
 
 echo ""
 title "Setting up the database:"
+echo "Creating database..."
 sudo -H -u root bash -c "mysql -e \"CREATE DATABASE dmoj DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_general_ci;\""
+echo "Granting privileges..."
 sudo -H -u root bash -c "mysql -e \"GRANT ALL PRIVILEGES ON dmoj.* TO 'dmoj'@'localhost' IDENTIFIED BY 'dmoj';\""
 
 echo ""
@@ -58,9 +60,9 @@ echo ""
 title "Installing the python dependencies:"
 pip3 install -r requirements.txt
 
-pip-install mysqlclient
-pip-install pymysql
-pip-install uwsgi
+pip-install "mysqlclient"
+pip-install "pymysql"
+pip-install "uwsgi"
 
 echo ""
 title "Setting up DM::OJ:"
