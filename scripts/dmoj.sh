@@ -48,6 +48,7 @@ echo ""
 title "Setting up the virtual enviroment:"
 python3 -m venv dmojsite
 . dmojsite/bin/activate
+cd dmojsite
 
 echo ""
 title "Downloading DM::OJ:"
@@ -62,15 +63,13 @@ pip3 install -r requirements.txt
 
 pip-install "mysqlclient"
 pip-install "pymysql"
-pip-install "uwsgi"
 
 echo ""
 title "Setting up DM::OJ:"
-wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/local_settings.py -O dmoj/local_settings.py
-
-#TODO: read key from settings.py -> replace $ with \$ and & with \&
-sed -i "s|'This key is not very secure and you should change it.'|'5*9f5q57mqmlz2#f\$x1h76\\&jxy#yortjl1v+l*6hd18\$d*yx#0'|g" dmoj/local_settings.py
-sed -i "s|'<mariadb user password>'|'dmoj'|g" dmoj/local_settings.py
+_file="dmoj/local_settings.py"
+wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/local_settings.py -O $_file
+sed -i "s|'This key is not very secure and you should change it.'|'5*9f5q57mqmlz2#f\$x1h76\\&jxy#yortjl1v+l*6hd18\$d*yx#0'|g" $_file
+sed -i "s|'<mariadb user password>'|'dmoj'|g" $_file
 
 
 ./make_style.sh
@@ -89,17 +88,57 @@ DJANGO_SUPERUSER_EMAIL="root@root.com"
 python3 manage.py createsuperuser --noinput --username root --email root@root.com
 
 service redis-server start
-sed -i "s|#CELERY_BROKER_URL|CELERY_BROKER_URL|g" dmoj/local_settings.py
-sed -i "s|#CELERY_RESULT_BACKEND|CELERY_RESULT_BACKEND|g" dmoj/local_settings.py
-sed -i "s|#ALLOWED_HOSTS = \['dmoj.ca'\]|ALLOWED_HOSTS = \['\*'\]|g" dmoj/local_settings.py
-sed -i "s|<desired bridge log path>|bridge.log|g" dmoj/local_settings.py
 
-apt-install "supervisor"
+_file="dmoj/local_settings.py"
+sed -i "s|#CELERY_BROKER_URL|CELERY_BROKER_URL|g" $_file
+sed -i "s|#CELERY_RESULT_BACKEND|CELERY_RESULT_BACKEND|g" $_file
+sed -i "s|#ALLOWED_HOSTS = \['dmoj.ca'\]|ALLOWED_HOSTS = \['\*'\]|g" $_file
+sed -i "s|<desired bridge log path>|bridge.log|g" $_file
+
+_repodir="/home/$SUDO_USER/dmojsite/site"
+_virtualenv="/home/$SUDO_USER/dmojsite"
 
 echo ""
-title "Setting up web service:"
-#uwsgi --ini uwsgi.ini
+title "Setting up uwsgi:"
+pip-install "uwsgi"
 
+_file="dmoj/uwsgi.ini" 
+wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/uwsgi.ini -O $_file
+sed -i "s|<dmoj repo dir>|$_repodir|g" $_file
+sed -i "s|<virtualenv path>|$_virtualenv|g" $_file
+
+echo ""
+title "Setting up supervisor:"
+apt-install "supervisor"
+
+_file="/etc/supervisor/conf.d/site.conf"
+wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/site.conf -O $_file
+sed -i "s|<path to virtualenv>|$_virtualenv|g" $_file
+sed -i "s|<path to site>|$_repodir|g" $_file
+
+echo ""
+title "Setting up bridge:"
+
+_file="/etc/supervisor/conf.d/bridged.conf"
+wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/bridged.conf -O $_file
+sed -i "s|<path to virtualenv>|$_virtualenv|g" $_file
+sed -i "s|<path to site>|$_repodir|g" $_file
+sed -i "s|<user to run under>|$SUDO_USER|g" $_file
+
+
+echo ""
+title "Setting up celery:"
+
+_file="/etc/supervisor/conf.d/celery.conf"
+wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/celery.conf -O $_file
+sed -i "s|<path to virtualenv>|$_virtualenv|g" $_file
+sed -i "s|<path to site>|$_repodir|g" $_file
+sed -i "s|<user to run under>|$SUDO_USER|g" $_file
+
+echo ""
+title "Reloading supervisor:"
+supervisorctl update
+supervisorctl status
 
 #TODO: judge using https://docs.dmoj.ca/#/judge/setting_up_a_judge?id=through-pypi
 #dmoj "localhost" "judge" "shmvr7PNyUMy948fYHCbxmWlkaC5UErKiMWyjofkDp6yHSmPQbhDIV/YX/eDSRb+NpeXvRTeZ/5ZcGQLIEqIpuaEl53JSkNqOMMa" 
