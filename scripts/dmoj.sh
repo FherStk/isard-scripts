@@ -86,7 +86,7 @@ python3 manage.py loaddata demo
 DJANGO_SUPERUSER_PASSWORD="root"
 DJANGO_SUPERUSER_USERNAME="root"
 DJANGO_SUPERUSER_EMAIL="root@root.com"
-python3 manage.py createsuperuser --noinput --username root
+python3 manage.py createsuperuser --noinput --username root --email root@root.com
 
 service redis-server start
 sed -i "s|#CELERY_BROKER_URL|CELERY_BROKER_URL|g" dmoj/local_settings.py
