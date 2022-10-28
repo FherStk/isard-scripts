@@ -628,10 +628,12 @@ script-setup(){
   fi
 
   apt-upgrade
-  apt-install "openssh-server"    
 
   if [ $IS_DESKTOP -eq 1 ];
   then     
+    apt-install "openssh-server"    
+    apt-install "curl"
+
     #Ubuntu Desktop
     echo ""
     title "Setting up the desktop:"

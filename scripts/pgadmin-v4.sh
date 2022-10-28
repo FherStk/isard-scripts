@@ -10,8 +10,6 @@ source $SCRIPT_PATH/../utils/main.sh
 startup
 script-setup
 
-apt-install "curl"
-
 echo ""
 title "Setting up the pgAdmin4 repository:"
 curl -fsS https://www.pgadmin.org/static/packages_pgadmin_org.pub | sudo gpg --dearmor -o /usr/share/keyrings/packages-pgadmin-org.gpg
