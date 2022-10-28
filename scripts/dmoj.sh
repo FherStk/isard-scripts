@@ -10,6 +10,10 @@ source $SCRIPT_PATH/../utils/main.sh
 startup
 script-setup
 
+#################################
+#     DM:OJ FRONTEND (SITE)     #
+#################################
+
 apt-install "gcc"
 apt-install "g++"
 apt-install "make"
@@ -164,6 +168,10 @@ wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/wsevent.con
 sed -i "s|<site repo path>|$_repodir|g" $_file
 sed -i "s|<username>|$SUDO_USER|g" $_file
 
+#################################
+#     DM:OJ BACKEND (JUDGE)     #
+#################################
+
 echo ""
 title "Setting up the judge:"
 
@@ -179,33 +187,29 @@ cd /home/$SUDO_USER
 git clone --recursive https://github.com/DMOJ/judge-server.git
 cd judge-server
 pip3 install -e .
-
-#TODO: create the judge by cli (implies creating it within django... maybe with a query?)
 cd ..
+
+_judge_name="default";
+_judge_key="5qwU1VFlfiv1wi1PHsXG7Z2nQika73VyLOvk3Dcd3Ma/PajJw/VRzNHc7o7lg5CfRvPvGfLOmjjmGmT1im6D3dSu0FwsQyINANhW"
+sudo -H -u root bash -c "mysql -D dmoj -e \"INSERT INTO judge_judge (name, auth_key, created, is_blocked, online, description) VALUES ('$_judge_name', '$_judge_key', now(), 0, 0, '');\""
 
 _file="/home/$SUDO_USER/problems/judge.yml"
 cp $SCRIPT_PATH/../utils/dmoj/judge.yml $_file
-moj-autoconf > problems/moj-autoconf.result
+sed -i "s|<judge name>|$_judge_name|g" $_file
+sed -i "s|<judge authentication key>|$_judge_key|g" $_file
+sed -i "s|<judge problems>|/home/$SUDO_USER/problems|g" $_file
+dmoj-autoconf >  $_file
 
+#TODO: setup startup, maybe within a service?
 
-
-#dmoj-autoconf => echo the last part to judge.yml
-#https://unix.stackexchange.com/questions/569097/how-to-cut-a-file-starting-from-the-line-in-which-a-certain-pattern-occurs
-
-#
-#id: <judge name>
-#key: <judge authentication key>
-#problem_storage_root:
-#  - /mnt/problems
-#runtime:
-#   ...
-
-#On startup:
+#On startup: to clean the site (check why this must be done)
 . dmojsite/bin/activate
 cd site
 python3 manage.py collectstatic
 python3 manage.py compilemessages
 python3 manage.py compilejsi18n
+
+#On startup: run the judge
 dmoj -c /home/usuario/problems/judge.yml localhost &
 
 #pass for "usuario": md2tBmnNM979zs
