@@ -13,7 +13,7 @@ script-setup "static-address"
 apt-install "isc-dhcp-server"  
 
 cp /etc/dhcp/dhcpd.conf /etc/dhcp/dhcpd.conf.bak
-cp $SCRIPT_PATH/../utils/dhcpd.conf /etc/dhcp/dhcpd.conf
+cp $SCRIPT_PATH/../utils/dhcp-server/dhcpd.conf /etc/dhcp/dhcpd.conf
 sed -i 's|INTERFACESv4=""|INTERFACESv4="enp3s0"|g' /etc/default/isc-dhcp-server
 systemctl restart isc-dhcp-server.service
 

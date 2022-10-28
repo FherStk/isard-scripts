@@ -24,7 +24,7 @@ rm -R test_db
 echo ""
 title "Setting up remote connections:"
 echo "Opening the binding address to '*'..."
-cp $SCRIPT_PATH/../utils/mysql.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
+cp $SCRIPT_PATH/../utils/mysql-v8-remote/mysql.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
 service mysql restart
 
 echo "Creating the remote user 'root@%'..."
