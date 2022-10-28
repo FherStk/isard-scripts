@@ -23,7 +23,7 @@ then
 
 else
     #Ubuntu Server   
-    _user="admin@admin.com"
+    _user="admin@admin"
     _pass="admin"
     apt-install "pgadmin4-web"
     PGADMIN_SETUP_PASSWORD=$_pass PGADMIN_SETUP_EMAIL=$_user /usr/pgadmin4/bin/setup-web.sh --yes
