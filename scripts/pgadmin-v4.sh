@@ -23,9 +23,11 @@ then
 
 else
     #Ubuntu Server   
+    _user="admin@admin"
+    _pass="admin"
     apt-install "pgadmin4-web"
-    PGADMIN_SETUP_PASSWORD=admin PGADMIN_SETUP_EMAIL=admin /usr/pgadmin4/bin/setup-web.sh --yes
-    passwords-add "pgAdmin4 (http://<ip>/pgadmin4)" "admin" "admin"
+    PGADMIN_SETUP_PASSWORD=$_pass PGADMIN_SETUP_EMAIL=$_user /usr/pgadmin4/bin/setup-web.sh --yes
+    passwords-add "pgAdmin4 (http://<ip>/pgadmin4)" "$_user" "$_pass"
 fi
 
 run-in-user-session gsettings set org.gnome.shell favorite-apps "['firefox_firefox.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop', 'pgadmin4.desktop']"
