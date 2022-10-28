@@ -29,4 +29,4 @@ else
 fi
 
 run-in-user-session gsettings set org.gnome.shell favorite-apps "['firefox_firefox.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop', 'pgadmin4.desktop']"
-done-no-reboot
+done-and-reboot
