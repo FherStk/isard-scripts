@@ -589,7 +589,7 @@ startup(){
   if [ $IS_DESKTOP -eq 1 ];
   then    
     apt-install "imagemagick-6.q16" #background passwords
-    sed -i "s|<policy domain=\"path\" rights=\"none\" pattern=\"@*\" />|<policy domain=\"path\" rights=\"all\" pattern=\"@*\" />|g" /etc/ImageMagick-6/policy.xml
+    sed -i "s|<policy domain=\"path\" rights=\"none\" pattern=\"@|<policy domain=\"path\" rights=\"all\" pattern=\"@|g" /etc/ImageMagick-6/policy.xml
   fi
 }
 
@@ -628,10 +628,12 @@ script-setup(){
   fi
 
   apt-upgrade
-  apt-install "openssh-server"    
 
   if [ $IS_DESKTOP -eq 1 ];
   then     
+    apt-install "openssh-server"    
+    apt-install "curl"
+
     #Ubuntu Desktop
     echo ""
     title "Setting up the desktop:"
