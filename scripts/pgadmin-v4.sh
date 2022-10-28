@@ -1,6 +1,6 @@
 #!/bin/bash
-SCRIPT_VERSION="1.0.0"
-SCRIPT_NAME="Ubuntu Desktop 22.04 LTS (pgAdmin v4)"
+SCRIPT_VERSION="1.0.1"
+SCRIPT_NAME="Ubuntu Desktop & Server 22.04 LTS (pgAdmin v4)"
 HOST_NAME="pgadmin"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
