@@ -28,10 +28,11 @@ title "Setting up the environment:"
 echo "Setting up the hostname..."
 sed -i "s|localhost|$ADDRESS|g" docker-compose.yml
 
-echo "Setting up the environment..."
+echo "Setting up docker..."
 docker-compose up -d
 #TODO: check the username and password setup with DJANGO vars
-docker-compose -f docker-compose.yml -f docker-compose-inits.yml run --rm taiga-manage createsuperuser -e DJANGO_SUPERUSER_PASSWORD="taiga" DJANGO_SUPERUSER_USERNAME="taiga" DJANGO_SUPERUSER_EMAIL="taiga@taiga.com"
+docker-compose -f docker-compose.yml -f docker-compose-inits.yml run -e DJANGO_SUPERUSER_PASSWORD="taiga" --rm taiga-manage createsuperuser --no-input --username "taiga" --email "taiga@taiga.com"
+#docker-compose -f docker-compose.yml -f docker-compose-inits.yml run --rm taiga-manage createsuperuser -e DJANGO_SUPERUSER_PASSWORD="taiga" DJANGO_SUPERUSER_USERNAME="taiga" DJANGO_SUPERUSER_EMAIL="taiga@taiga.com"
 docker-compose up -d
 
 passwords-add "Taiga.io (http://ip:9000)" "taiga" "taiga"
