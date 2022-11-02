@@ -236,7 +236,7 @@ setup-network()
   then        
     set-network-dhcp
   else  
-    setup-network-static $ADDRESS
+    set-network-static $ADDRESS
   fi
 }
 
