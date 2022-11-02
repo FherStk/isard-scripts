@@ -210,6 +210,32 @@ flatpak-install()
   fi
 }
 
+get-interface()
+{
+  ####################################################################################
+  #Description: Displays a graphical prompt with a list of the network interfaces.
+  #Input:  N/A
+  #Output: $NETWORK_IFACE => the selected network interface.
+  #Source: https://stackoverflow.com/a/62578085
+  #################################################################################### 
+  declare –a _interfaces=()
+  for iface in $(ip address | grep -oP '(^[\d]+:\s)\K[\d\w]+'); do
+    #mac=$(ip address show ${each} | grep -oP '(?<=link/ether\s)\K[\da-f:]+|(?<=link/loopback\s)\K[\da-f:]+')
+    #for address in $(ip address show ${iface} | grep -oP '(?<=inet\s)\K[\d.]+|(?<=inet6\s)\K[\da-f:]+'); do
+    for address in $(ip address show ${iface} | grep -oP '(?<=inet\s)\K[\d.]+'); do #exclude IPv&      
+      _interfaces+=$(echo " $iface $address off")
+    done
+  done
+
+  _selected=$(dialog --nocancel --title "Network Interfaces" --radiolist "\nSelect a network interface." 20 70 25 $_interfaces --output-fd 1);
+  clear
+  
+  for iface in $_selected
+  do      
+    NETWORK_IFACE=$iface    
+  done
+}
+
 set-hostname()
 {
   ####################################################################################
