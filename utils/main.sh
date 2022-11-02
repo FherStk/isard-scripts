@@ -118,19 +118,6 @@ auto-update()
   fi
 }
 
-get-branch()
-{
-  ####################################################################################
-  #Description: Loads the current git branch.
-  #Input:  N/A
-  #Output: CURRENT_BRANCH => The current git branch
-  #################################################################################### 
-
-  echo -e "Getting the current branch info..."
-  git -C $BASE_PATH fetch --all
-  CURRENT_BRANCH=$(git -C $BASE_PATH rev-parse --abbrev-ref HEAD)
-}
-
 apt-install()
 {
   ####################################################################################
@@ -210,52 +197,31 @@ flatpak-install()
   fi
 }
 
-get-interface()
+get-branch()
+{
+  ####################################################################################
+  #Description: Loads the current git branch.
+  #Input:  N/A
+  #Output: CURRENT_BRANCH => The current git branch
+  #################################################################################### 
+
+  echo -e "Getting the current branch info..."
+  git -C $BASE_PATH fetch --all
+  CURRENT_BRANCH=$(git -C $BASE_PATH rev-parse --abbrev-ref HEAD)
+}
+
+get-interface-address()
 {
   ####################################################################################
   #Description: Displays a graphical prompt with a list of the network interfaces.
-  #Input:  N/A
-  #Output: $NETWORK_IFACE => the selected network interface.
+  #Input:  $1 => the interface name
+  #Output: ADDRESS => the selected network interface.
   #Source: https://stackoverflow.com/a/62578085
   #################################################################################### 
-  declare –a _interfaces=()
-  for iface in $(ip address | grep -oP '(^[\d]+:\s)\K[\d\w]+'); do
-    #mac=$(ip address show ${each} | grep -oP '(?<=link/ether\s)\K[\da-f:]+|(?<=link/loopback\s)\K[\da-f:]+')
-    #for address in $(ip address show ${iface} | grep -oP '(?<=inet\s)\K[\d.]+|(?<=inet6\s)\K[\da-f:]+'); do
-    for address in $(ip address show ${iface} | grep -oP '(?<=inet\s)\K[\d.]+'); do #exclude IPv&      
-      _interfaces+=$(echo " $iface $address off")
-    done
-  done
-
-  _selected=$(dialog --nocancel --title "Network Interfaces" --radiolist "\nSelect a network interface." 20 70 25 $_interfaces --output-fd 1);
-  clear
-  
-  for iface in $_selected
-  do      
-    NETWORK_IFACE=$iface    
-  done
+  ADDRESS=$(ip -br -4 a sh | grep "$1" | awk '{print $3}' | cut -d "/" -f 1)
 }
 
-set-hostname()
-{
-  ####################################################################################
-  #Description: Displays a graphical prompt and sets the current host's name.
-  #Input:  $1 => The default new host name
-  #Output: N/A
-  #################################################################################### 
-
-  echo ""
-  echo "Setting up hostname..."  
-
-  _old_hostname=$(hostname)
-  _new_hostname=$(dialog --nocancel --title "Hostname Configuration" --inputbox "\nEnter the host name:" 8 40 $1 --output-fd 1) 
-  clear
-    
-  hostnamectl set-hostname $_new_hostname
-  sed -i "s/'$_old_hostname'/'$_new_hostname'/g" /etc/hosts
-}
-
-set-address()
+setup-network()
 {
   ####################################################################################
   #Description: Displays a graphical prompt and sets the current host's address using 
@@ -264,24 +230,85 @@ set-address()
   #Output: N/A
   #################################################################################### 
 
-  echo ""
-  echo "Setting up host address..."
-
-  _selected=$(dialog --nocancel --title "Network Configuration: enp3s0" --radiolist "\nSelect a configuration for the 'personal' network interface." 20 70 25 1 DHCP off 2 'Static IP address' on --output-fd 1);
-  clear
+  request-network-config
   
-  for f in $_selected
-  do      
-    if [[ "$f" == 1 ]];
-    then        
-      set-address-dhcp
-    else  
-      set-address-static ${1}
-    fi
-  done
+  if [[ "$ADDRESS" == "DHCP" ]];
+  then        
+    set-network-dhcp
+  else  
+    setup-network-static $ADDRESS
+  fi
 }
 
-set-address-dhcp()
+setup-network-static()
+{
+  ####################################################################################
+  #Description: Displays a graphical prompt and sets an static address using netplan.
+  #Input:  $1 => The default new host static address
+  #Output: N/A
+  #################################################################################### 
+
+  #Some scripts could force this (like dhcp-server.sh)  
+  request-static-address $1
+  set-network-static $ADDRESS
+}
+
+setup-hostname()
+{
+  ####################################################################################
+  #Description: Displays a graphical prompt and sets the current host's name.
+  #Input:  $1 => The default new host name
+  #Output: N/A
+  #################################################################################### 
+
+  _new_hostname=$(dialog --nocancel --title "Hostname Configuration" --inputbox "\nEnter the host name:" 8 40 $1 --output-fd 1) 
+  clear
+    
+  set-hostname $_new_hostname
+}
+
+set-hostname()
+{
+  ####################################################################################
+  #Description: Sets the current host's name.
+  #Input:  $1 => The new host name
+  #Output: N/A
+  #################################################################################### 
+
+  echo ""
+  echo "Setting up hostname..."  
+
+  _old_hostname=$(hostname)     
+  hostnamectl setup-hostname $1
+  sed -i "s/'$_old_hostname'/'$1'/g" /etc/hosts
+}
+
+set-network-static()
+{
+  ####################################################################################
+  #Description: Sets an static address using netplan.
+  #Input:  $1 => The new host static address
+  #Output: N/A
+  #################################################################################### 
+
+  #Some scripts could force this (like dhcp-server.sh)    
+  echo "Setting up network data..."
+  if [ $IS_DESKTOP -eq 1 ];
+  then     
+    #Ubuntu Desktop
+    cp $BASE_PATH/netplan-static-desktop.yaml /etc/netplan/01-network-manager-all.yaml
+    sed -i "s|x.x.x.x/yy|$1|g" /etc/netplan/01-network-manager-all.yaml
+  else
+    #Ubuntu Server
+    cp $BASE_PATH/netplan-static-server.yaml /etc/netplan/00-installer-config.yaml
+    sed -i "s|x.x.x.x/yy|$1|g" /etc/netplan/00-installer-config.yaml
+  fi
+
+  echo "Setting up netplan..."
+  netplan apply
+}
+
+set-network-dhcp()
 {
   ####################################################################################
   #Description: Setups the netplan for using DHCP (without prompt).
@@ -304,34 +331,58 @@ set-address-dhcp()
   netplan apply
 }
 
-set-address-static()
+request-network-config()
 {
   ####################################################################################
-  #Description: Displays a graphical prompt and sets an static address using netplan.
-  #Input:  $1 => The default new host static address
-  #Output: N/A
+  #Description: Displays a graphical prompt for the network configuration.
+  #Input:  $1 => The default static host address
+  #Output: ADDRESS => Returns "DHCP" or a network address
   #################################################################################### 
 
-  #Some scripts could force this (like dhcp-server.sh)  
-  request-ip $1
-  echo "Setting up network data..."
+  echo ""
+  echo "Setting up host address..."
 
-  if [ $IS_DESKTOP -eq 1 ];
-  then     
-    #Ubuntu Desktop
-    cp $BASE_PATH/netplan-static-desktop.yaml /etc/netplan/01-network-manager-all.yaml
-    sed -i "s|x.x.x.x/yy|$ADDRESS|g" /etc/netplan/01-network-manager-all.yaml
-  else
-    #Ubuntu Server
-    cp $BASE_PATH/netplan-static-server.yaml /etc/netplan/00-installer-config.yaml
-    sed -i "s|x.x.x.x/yy|$ADDRESS|g" /etc/netplan/00-installer-config.yaml
-  fi
-
-  echo "Setting up netplan..."
-  netplan apply
+  _selected=$(dialog --nocancel --title "Network Configuration: enp3s0" --radiolist "\nSelect a configuration for the 'personal' network interface." 20 70 25 1 DHCP off 2 'Static IP address' on --output-fd 1);
+  clear
+  
+  for f in $_selected
+  do      
+    if [[ "$f" == 1 ]];
+    then        
+      ADDRESS="DHCP"
+    else  
+      request-static-address $1
+    fi
+  done
 }
 
-request-ip()
+request-interface()
+{
+  ####################################################################################
+  #Description: Displays a graphical prompt with a list of the network interfaces.
+  #Input:  N/A
+  #Output: INTERFACE => the selected network interface.
+  #Source: https://stackoverflow.com/a/62578085
+  #################################################################################### 
+  declare –a _interfaces=()
+  for iface in $(ip address | grep -oP '(^[\d]+:\s)\K[\d\w]+'); do
+    #mac=$(ip address show ${each} | grep -oP '(?<=link/ether\s)\K[\da-f:]+|(?<=link/loopback\s)\K[\da-f:]+')
+    #for address in $(ip address show ${iface} | grep -oP '(?<=inet\s)\K[\d.]+|(?<=inet6\s)\K[\da-f:]+'); do
+    for address in $(ip address show ${iface} | grep -oP '(?<=inet\s)\K[\d.]+'); do #exclude IPv&      
+      _interfaces+=$(echo " $iface $address off")
+    done
+  done
+
+  _selected=$(dialog --nocancel --title "Network Interfaces" --radiolist "\nSelect a network interface." 20 70 25 $_interfaces --output-fd 1);
+  clear
+  
+  for iface in $_selected
+  do      
+    INTERFACE=$iface    
+  done
+}
+
+request-static-address()
 {
   ####################################################################################
   #Description: Displays a graphical prompt and requests an static address.
@@ -342,7 +393,7 @@ request-ip()
   ADDRESS=$(dialog --nocancel --title "Network Configuration: enp3s0" --inputbox "\nEnter the host address:" 8 40 $1 --output-fd 1)  
   if [ $(ipcalc -b $ADDRESS | grep -c "INVALID ADDRESS") -eq 1 ];
   then
-    request-ip   
+    request-static-address   
   else
     clear
   fi
@@ -640,17 +691,17 @@ script-setup(){
   cp $BASE_PATH/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
   dpkg-reconfigure -f noninteractive unattended-upgrades  
     
-  set-hostname "$HOST_NAME"  
+  setup-hostname "$HOST_NAME"  
 
   _address="192.168.1.1/24"
   if [ "$1" == "static-address" ];
   then       
-    set-address-static $_address
+    setup-network-static $_address
   elif [ "$1" == "dhcp-address" ];
   then       
-    set-address-dhcp
+    set-network-dhcp
   else
-    set-address $_address
+    setup-network $_address
   fi
 
   apt-upgrade
