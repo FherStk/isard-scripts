@@ -230,7 +230,7 @@ setup-network()
   #Output: N/A
   #################################################################################### 
 
-  request-network-config
+  request-network-config $1
   
   if [[ "$ADDRESS" == "DHCP" ]];
   then        

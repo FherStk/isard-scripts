@@ -1,7 +1,7 @@
 #!/bin/bash
 SCRIPT_VERSION="1.0.0"
 SCRIPT_NAME="Ubuntu Server 22.04 LTS (Taiga.io v4)"
-HOST_NAME="psql-server"
+HOST_NAME="taiga"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SCRIPT_FILE=$(basename $BASH_SOURCE)
