@@ -33,6 +33,9 @@ echo "Setting up docker..."
 docker-compose up -d
 
 #TODO: this fails, must wait till up finished... should be executed after a reboot? 
+#docker compose logs -f -t {service_name1}
+#https://stackoverflow.com/questions/48783546/how-to-check-the-status-of-docker-compose-up-d-command
+#https://www.datanovia.com/en/lessons/docker-compose-wait-for-container-using-wait-tool/
 
 echo
 title "Setting up the superuser account:"
