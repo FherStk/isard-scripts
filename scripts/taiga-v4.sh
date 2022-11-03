@@ -10,6 +10,9 @@ source $SCRIPT_PATH/../utils/main.sh
 startup
 script-setup
 
+request-interface
+get-interface-address $INTERFACE
+
 apt-install "docker"
 apt-install "docker-compose"
 cd /home/$SUDO_USER
@@ -19,9 +22,6 @@ title "Downloading Taiga.io:"
 git clone https://github.com/kaleidos-ventures/taiga-docker.git
 cd taiga-docker/
 git checkout stable
-
-request-interface
-get-interface-address $INTERFACE
 
 echo ""
 title "Setting up the environment:"
