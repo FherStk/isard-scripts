@@ -31,17 +31,25 @@ sed -i "s|localhost|$ADDRESS|g" docker-compose.yml
 _user="taiga"
 echo "Setting up docker..."
 docker-compose up -d
-docker compose logs -f -t
+
+while $(sudo docker-compose logs  $1 2>/dev/null | grep -c "Listening at: http://0.0.0.0:8000") -eq 1 ;
+do
+    echo "Waiting for services..."
+    sleep 1
+done
+echo "Services ready..."
+
+
 
 #TODO: this fails, must wait till up finished... should be executed after a reboot? 
 #docker compose logs -f -t {service_name1}
 #https://stackoverflow.com/questions/48783546/how-to-check-the-status-of-docker-compose-up-d-command
 #https://www.datanovia.com/en/lessons/docker-compose-wait-for-container-using-wait-tool/
 
-# echo
-# title "Setting up the superuser account:"
-# echo "Creating the superuser account..."
-# docker-compose -f docker-compose.yml -f docker-compose-inits.yml run --rm taiga-manage createsuperuser --no-input --username $_user --email $_user@$_user.com
+echo
+title "Setting up the superuser account:"
+echo "Creating the superuser account..."
+docker-compose -f docker-compose.yml -f docker-compose-inits.yml run --rm taiga-manage createsuperuser --no-input --username $_user --email $_user@$_user.com
 
 # echo "Storing the superuser password..."
 # docker-compose up -d
