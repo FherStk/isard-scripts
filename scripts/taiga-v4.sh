@@ -28,19 +28,20 @@ title "Setting up the environment:"
 echo "Setting up the hostname..."
 sed -i "s|localhost|$ADDRESS|g" docker-compose.yml
 
+_user="taiga"
+echo "Setting up docker..."
+docker-compose up -d
+
+#TODO: this fails, must wait till up finished... should be executed after a reboot? 
+
 echo
 title "Setting up the superuser account:"
-
-_user="taiga"
-
 echo "Creating the superuser account..."
 docker-compose -f docker-compose.yml -f docker-compose-inits.yml run --rm taiga-manage createsuperuser --no-input --username $_user --email $_user@$_user.com
 
 echo "Storing the superuser password..."
-echo "from django.contrib.auth import get_user_model; User = get_user_model(); u = User.objects.get(username='$_user'); u.set_password('$_user');u.save()" | docker-compose -f docker-compose.yml -f docker-compose-inits.yml run --rm taiga-manage shell
-
-echo "Setting up docker..."
 docker-compose up -d
+echo "from django.contrib.auth import get_user_model; User = get_user_model(); u = User.objects.get(username='$_user'); u.set_password('$_user');u.save()" | docker-compose -f docker-compose.yml -f docker-compose-inits.yml run --rm taiga-manage shell
 
 passwords-add "Taiga.io (http://ip:9000)" "$_user" "$_user"
 #done-and-reboot
