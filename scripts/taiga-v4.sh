@@ -30,9 +30,9 @@ sed -i "s|localhost|$ADDRESS|g" docker-compose.yml
 
 echo "Setting up docker..."
 docker-compose up -d
-#TODO: unable to setup the password :(
 docker-compose -f docker-compose.yml -f docker-compose-inits.yml run -e DJANGO_SUPERUSER_PASSWORD=taiga --rm taiga-manage createsuperuser --no-input --username taiga --email taiga@taiga.com
+echo "from django.contrib.auth import get_user_model; User = get_user_model(); u = User.objects.get(username='taiga'); u.set_password('taiga');u.save()" | sudo docker-compose -f docker-compose.yml -f docker-compose-inits.yml run --rm taiga-manage shell
 docker-compose up -d
 
 passwords-add "Taiga.io (http://ip:9000)" "taiga" "taiga"
-# done-and-reboot
+done-and-reboot
