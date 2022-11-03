@@ -32,7 +32,7 @@ _user="taiga"
 echo "Setting up docker..."
 docker-compose up -d
 
-while $(sudo docker-compose logs  $1 2>/dev/null | grep -c "Listening at: http://0.0.0.0:8000") -eq 1 ;
+while $(sudo docker-compose logs  $1 2>/dev/null | grep -c "Listening at: http://0.0.0.0:8000") -eq 0 ;
 do
     echo "Waiting for services..."
     sleep 1
