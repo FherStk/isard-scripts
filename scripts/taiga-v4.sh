@@ -34,10 +34,10 @@ docker-compose up -d
 
 while [ $(docker-compose logs | grep -c "Listening at: http://0.0.0.0:8000") -eq 0 ];
 do
-    echo "Waiting for services..."
-    sleep 1
+    echo "Waiting for taiga services to startup..."
+    sleep 5
 done
-echo "Services ready..."
+echo "Taiga services are ready..."
 
 echo
 title "Setting up the superuser account:"
@@ -45,8 +45,10 @@ echo "Creating the superuser account..."
 docker-compose -f docker-compose.yml -f docker-compose-inits.yml run --rm taiga-manage createsuperuser --no-input --username $_user --email $_user@$_user.com
 
 echo "Storing the superuser password..."
-docker-compose up -d
 echo "from django.contrib.auth import get_user_model; User = get_user_model(); u = User.objects.get(username='$_user'); u.set_password('$_user');u.save()" | docker-compose -f docker-compose.yml -f docker-compose-inits.yml run --rm taiga-manage shell
+
+#TODO: startup with the computer
+#docker-compose up -d
 
 passwords-add "Taiga.io (http://ip:9000)" "$_user" "$_user"
 #done-and-reboot
