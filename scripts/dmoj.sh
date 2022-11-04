@@ -206,5 +206,4 @@ sed -i "s|<user>|$SUDO_USER|g" $_file
 append-no-repeat "sudo bash $_file > /dev/null 2>&1 &" "/home/$SUDO_USER/.profile"
 
 passwords-add "DM::OJ (http://<ip>)" "admin" "admin"
-#done-and-reboot
-done-no-reboot
+done-and-reboot
