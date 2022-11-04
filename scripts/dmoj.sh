@@ -107,9 +107,9 @@ echo "DMOJ_PROBLEM_DATA_ROOT = \"/home/usuario/problems/\"" >> $_file
 _repodir="/home/$SUDO_USER/site"
 _virtualenv="/home/$SUDO_USER/dmojsite"
 
+pip-install "uwsgi"
 echo ""
 title "Setting up uwsgi:"
-pip-install "uwsgi"
 
 _file="dmoj/uwsgi.ini" 
 wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/uwsgi.ini -O $_file
@@ -117,9 +117,9 @@ sed -i "s|chdir = <dmoj repo dir>|chdir = $_virtualenv|g" $_file #TEST THIS LINE
 sed -i "s|<dmoj repo dir>|$_repodir|g" $_file
 sed -i "s|<virtualenv path>|$_virtualenv|g" $_file
 
+apt-install "supervisor"
 echo ""
 title "Setting up supervisor:"
-apt-install "supervisor"
 
 _file="/etc/supervisor/conf.d/site.conf"
 wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/site.conf -O $_file
