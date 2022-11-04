@@ -155,6 +155,8 @@ service nginx reload
 
 echo ""
 title "Setting up the event server:"
+npm install qu ws simplesets
+pip-install websocket-client
 
 _file="$_repodir/websocket/config.js"
 cp $SCRIPT_PATH/../utils/dmoj/config.js $_file
@@ -163,6 +165,11 @@ _file="/etc/supervisor/conf.d/wsevent.conf"
 wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/wsevent.conf -O $_file
 sed -i "s|<site repo path>|$_repodir|g" $_file
 sed -i "s|<username>|$SUDO_USER|g" $_file
+
+supervisorctl update
+supervisorctl restart bridged
+supervisorctl restart site
+service nginx restart
 
 #################################
 #     DM:OJ BACKEND (JUDGE)     #
@@ -198,6 +205,16 @@ echo "" >>  $_file #new line
 dmoj-autoconf >>  $_file
 
 echo ""
+title "Setting up permissions:"
+cd /home/$SUDO_USER
+chown -R $SUDO_USER:$SUDO_USER dmojsite
+chown -R $SUDO_USER:$SUDO_USER judge
+chown -R $SUDO_USER:$SUDO_USER judge-server
+chown -R $SUDO_USER:$SUDO_USER problems
+chown -R $SUDO_USER:$SUDO_USER site
+echo "Done"
+
+echo ""
 title "Setting up the startup:"
 
 #TODO: this should be a startup service, sorry, no more time to spend on this... :(
@@ -220,4 +237,4 @@ done-and-reboot
 #cat /tmp/bridge.stderr.log
 #cat /tmp/site.stderr.log
 #cat /tmp/celery.stderr.log
-
+#cat /tmp/wsevent.stderr.log
