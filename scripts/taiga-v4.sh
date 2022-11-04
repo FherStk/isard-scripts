@@ -49,7 +49,7 @@ echo "Storing the superuser password..."
 echo "from django.contrib.auth import get_user_model; User = get_user_model(); u = User.objects.get(username='$_user'); u.set_password('$_user');u.save()" | docker-compose -f docker-compose.yml -f docker-compose-inits.yml run --rm taiga-manage shell
 
 echo "Setting up the startup on boot..."
-append-no-repeat "sudo docker-compose -f /home/$SUDO_USER/taiga-docker/docker-compose.yml up -d" "/home/$SUDO_USER/.profile"
+append-no-repeat "sudo docker-compose -f /home/$SUDO_USER/taiga-docker/docker-compose.yml up -d 2>/dev/null &" "/home/$SUDO_USER/.profile"
 echo "Done"
 
 passwords-add "Taiga.io (http://ip:9000)" "$_user" "$_user"
