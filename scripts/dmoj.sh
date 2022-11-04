@@ -180,8 +180,8 @@ title "Setting up the judge:"
 apt-install "build-essential"
 apt-install "libseccomp-dev"
 apt-install "default-jdk"
-apt-install "default-jdk"
-pip-install "openjdk-8-jdk"
+apt-install "openjdk-11-jdk"
+apt-install "openjdk-8-jdk"
 
 mkdir /home/$SUDO_USER/problems
 
