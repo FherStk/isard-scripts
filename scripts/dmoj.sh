@@ -194,15 +194,16 @@ cp $SCRIPT_PATH/../utils/dmoj/judge.yml $_file
 sed -i "s|<judge name>|$_judge_name|g" $_file
 sed -i "s|<judge authentication key>|$_judge_key|g" $_file
 sed -i "s|<judge problems>|/home/$SUDO_USER/problems|g" $_file
-dmoj-autoconf >  $_file
-
+dmoj-autoconf >>  $_file
 
 echo ""
 title "Setting up the startup:"
 
+#TODO: this should be a startup service, sorry, no more time to spend on this... :(
 _file="/home/$SUDO_USER/startup.sh"
 cp $SCRIPT_PATH/../utils/dmoj/startup.sh $_file
 sed -i "s|<user>|$SUDO_USER|g" $_file
+chmod +x $_file
 append-no-repeat "sudo bash $_file > /dev/null 2>&1 &" "/home/$SUDO_USER/.profile"
 
 passwords-add "DM::OJ (http://<ip>)" "admin" "admin"
