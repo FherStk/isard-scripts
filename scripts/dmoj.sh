@@ -209,3 +209,15 @@ append-no-repeat "sudo bash $_file > /dev/null 2>&1 &" "/home/$SUDO_USER/.profil
 
 passwords-add "DM::OJ (http://<ip>)" "admin" "admin"
 done-and-reboot
+
+
+#TODO:
+#sudo supervisorctl status => all must be running
+#permissions problem???
+
+#cat /var/log/nginx/error.log 
+#cat /var/log/supervisor/supervisord.log
+#cat /tmp/bridge.stderr.log
+#cat /tmp/site.stderr.log
+#cat /tmp/celery.stderr.log
+
