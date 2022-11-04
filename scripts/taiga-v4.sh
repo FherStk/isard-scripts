@@ -30,6 +30,7 @@ sed -i "s|localhost|$ADDRESS|g" docker-compose.yml
 
 _user="taiga"
 echo "Setting up docker..."
+systemctl enable docker
 docker-compose up -d
 
 while [ $(docker-compose logs | grep -c "Listening at: http://0.0.0.0:8000") -eq 0 ];
@@ -42,13 +43,10 @@ echo "Taiga services are ready..."
 echo
 title "Setting up the superuser account:"
 echo "Creating the superuser account..."
-docker-compose -f docker-compose.yml -f docker-compose-inits.yml run --rm taiga-manage createsuperuser --no-input --username $_user --email $_user@$_user.com
+docker-compose -f docker-compose.yml -f docker-compose-inits.yml run --restart unless-stopped --rm taiga-manage createsuperuser --no-input --username $_user --email $_user@$_user.com
 
 echo "Storing the superuser password..."
 echo "from django.contrib.auth import get_user_model; User = get_user_model(); u = User.objects.get(username='$_user'); u.set_password('$_user');u.save()" | docker-compose -f docker-compose.yml -f docker-compose-inits.yml run --rm taiga-manage shell
 
-#TODO: startup with the computer
-#docker-compose up -d
-
 passwords-add "Taiga.io (http://ip:9000)" "$_user" "$_user"
-#done-and-reboot
+done-and-reboot
