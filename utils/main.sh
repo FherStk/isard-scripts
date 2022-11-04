@@ -296,11 +296,11 @@ set-network-static()
   if [ $IS_DESKTOP -eq 1 ];
   then     
     #Ubuntu Desktop
-    cp $BASE_PATH/netplan-static-desktop.yaml /etc/netplan/01-network-manager-all.yaml
+    cp $BASE_PATH/main/netplan-static-desktop.yaml /etc/netplan/01-network-manager-all.yaml
     sed -i "s|x.x.x.x/yy|$1|g" /etc/netplan/01-network-manager-all.yaml
   else
     #Ubuntu Server
-    cp $BASE_PATH/netplan-static-server.yaml /etc/netplan/00-installer-config.yaml
+    cp $BASE_PATH/main/netplan-static-server.yaml /etc/netplan/00-installer-config.yaml
     sed -i "s|x.x.x.x/yy|$1|g" /etc/netplan/00-installer-config.yaml
   fi
 
