@@ -87,10 +87,11 @@ python3 manage.py loaddata navbar
 python3 manage.py loaddata language_small
 python3 manage.py loaddata demo
 
-DJANGO_SUPERUSER_PASSWORD="$SUDO_USER"
-DJANGO_SUPERUSER_USERNAME="$SUDO_USER"
-DJANGO_SUPERUSER_EMAIL="$SUDO_USER@$SUDO_USER.com"
-python3 manage.py createsuperuser --noinput --username $SUDO_USER --email $SUDO_USER@$SUDO_USER.com
+_admin="admin"
+DJANGO_SUPERUSER_PASSWORD="$_admin"
+DJANGO_SUPERUSER_USERNAME="$_admin"
+DJANGO_SUPERUSER_EMAIL="$_admin@$_admin.com"
+python3 manage.py createsuperuser --noinput --username $_admin --email $_admin@$_admin.com
 
 pip-install "redis"
 service redis-server start
@@ -200,19 +201,15 @@ sed -i "s|<judge authentication key>|$_judge_key|g" $_file
 sed -i "s|<judge problems>|/home/$SUDO_USER/problems|g" $_file
 dmoj-autoconf >  $_file
 
-#TODO: setup startup, maybe within a service?
 
-#On startup: to clean the site (check why this must be done)
-. dmojsite/bin/activate
-cd site
-python3 manage.py collectstatic
-python3 manage.py compilemessages
-python3 manage.py compilejsi18n
+echo ""
+title "Setting up the startup:"
 
-#On startup: run the judge
-dmoj -c /home/usuario/problems/judge.yml localhost &
+_file="/home/$SUDO_USER/startup.sh"
+cp $SCRIPT_PATH/../utils/dmoj/startup.sh $_file
+sed -i "s|<user>|$SUDO_USER|g" $_file
+append-no-repeat "sudo ./$_file &"
 
-#pass for "usuario": md2tBmnNM979zs
-
-passwords-add "DM::OJ (http://<ip>)" "admin" "admin"
+passwords-add "DM::OJ (http://<ip>)" "$_admin" "$_admin"
 #done-and-reboot
+done-no-reboot
