@@ -49,10 +49,11 @@ echo "Granting privileges..."
 sudo -H -u root bash -c "mysql -e \"GRANT ALL PRIVILEGES ON dmoj.* TO 'dmoj'@'localhost' IDENTIFIED BY 'dmoj';\""
 
 echo ""
-title "Setting up the virtual enviroment:"
+title "Setting up the virtual environment:"
 cd /home/$SUDO_USER
 python3 -m venv dmojsite
 . dmojsite/bin/activate
+echo "Done"
 
 echo ""
 title "Downloading DM::OJ:"
@@ -87,7 +88,7 @@ python3 manage.py loaddata navbar
 python3 manage.py loaddata language_small
 python3 manage.py loaddata demo
 
-_admin="admin"
+_admin="dmoj"
 DJANGO_SUPERUSER_PASSWORD="$_admin"
 DJANGO_SUPERUSER_USERNAME="$_admin"
 DJANGO_SUPERUSER_EMAIL="$_admin@$_admin.com"
