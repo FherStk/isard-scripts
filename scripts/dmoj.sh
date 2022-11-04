@@ -209,7 +209,7 @@ title "Setting up the startup:"
 _file="/home/$SUDO_USER/startup.sh"
 cp $SCRIPT_PATH/../utils/dmoj/startup.sh $_file
 sed -i "s|<user>|$SUDO_USER|g" $_file
-append-no-repeat "sudo ./$_file &" "/home/$SUDO_USER/.profile"
+append-no-repeat "sudo .$_file &" "/home/$SUDO_USER/.profile"
 
 passwords-add "DM::OJ (http://<ip>)" "$_admin" "$_admin"
 #done-and-reboot
