@@ -194,6 +194,7 @@ cp $SCRIPT_PATH/../utils/dmoj/judge.yml $_file
 sed -i "s|<judge name>|$_judge_name|g" $_file
 sed -i "s|<judge authentication key>|$_judge_key|g" $_file
 sed -i "s|<judge problems>|/home/$SUDO_USER/problems|g" $_file
+echo "" >>  $_file #new line
 dmoj-autoconf >>  $_file
 
 echo ""
