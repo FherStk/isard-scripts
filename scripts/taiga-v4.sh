@@ -52,5 +52,5 @@ echo "Setting up the startup on boot..."
 append-no-repeat "sudo docker-compose -f /home/$SUDO_USER/taiga-docker/docker-compose.yml up -d" "/home/$SUDO_USER/.profile"
 echo "Done"
 
-passwords-add "Taiga.io (http://ip:9000)" "$_user" "$_user"
+#passwords-add "Taiga.io (http://ip:9000)" "$_user" "$_user"
 #done-and-reboot
