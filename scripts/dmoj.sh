@@ -88,12 +88,6 @@ python3 manage.py loaddata navbar
 python3 manage.py loaddata language_small
 python3 manage.py loaddata demo
 
-_admin="dmoj"
-DJANGO_SUPERUSER_PASSWORD="$_admin"
-DJANGO_SUPERUSER_USERNAME="$_admin"
-DJANGO_SUPERUSER_EMAIL="$_admin@$_admin.com"
-python3 manage.py createsuperuser --noinput --username $_admin --email $_admin@$_admin.com
-
 pip-install "redis"
 service redis-server start
 
@@ -209,8 +203,8 @@ title "Setting up the startup:"
 _file="/home/$SUDO_USER/startup.sh"
 cp $SCRIPT_PATH/../utils/dmoj/startup.sh $_file
 sed -i "s|<user>|$SUDO_USER|g" $_file
-append-no-repeat "sudo .$_file &" "/home/$SUDO_USER/.profile"
+append-no-repeat "sudo bash $_file > /dev/null 2>&1 &" "/home/$SUDO_USER/.profile"
 
-passwords-add "DM::OJ (http://<ip>)" "$_admin" "$_admin"
+passwords-add "DM::OJ (http://<ip>)" "admin" "admin"
 #done-and-reboot
 done-no-reboot
