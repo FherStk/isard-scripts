@@ -33,10 +33,10 @@ echo "Setting up docker..."
 systemctl enable docker
 docker-compose up -d
 
+echo "Waiting for taiga services to startup..."
 while [ $(docker-compose logs | grep -c "Listening at: http://0.0.0.0:8000") -eq 0 ];
-do
-    echo "Waiting for taiga services to startup..."
-    sleep 5
+do    
+    sleep 1
 done
 echo "Taiga services are ready..."
 
