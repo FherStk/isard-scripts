@@ -205,16 +205,6 @@ echo "" >>  $_file #new line
 dmoj-autoconf >>  $_file
 
 echo ""
-title "Setting up permissions:"
-cd /home/$SUDO_USER
-chown -R $SUDO_USER:$SUDO_USER dmojsite
-chown -R $SUDO_USER:$SUDO_USER judge
-chown -R $SUDO_USER:$SUDO_USER judge-server
-chown -R $SUDO_USER:$SUDO_USER problems
-chown -R $SUDO_USER:$SUDO_USER site
-echo "Done"
-
-echo ""
 title "Setting up the startup service:"
 echo "Creating the startup script..."
 _startup="/home/$SUDO_USER/startup.sh"
@@ -227,6 +217,16 @@ _service="/etc/systemd/system/dmoj-judge.service"
 cp $SCRIPT_PATH/../utils/dmoj/dmoj-judge.service $_service
 sed -i "s|<user>|$SUDO_USER|g" $_service
 sed -i "s|<file>|$_startup|g" $_service
+
+echo "Setting up permissions..."
+cd /home/$SUDO_USER
+chown -R $SUDO_USER:$SUDO_USER dmojsite
+chown -R $SUDO_USER:$SUDO_USER judge
+chown -R $SUDO_USER:$SUDO_USER judge-server
+chown -R $SUDO_USER:$SUDO_USER problems
+chown -R $SUDO_USER:$SUDO_USER site
+chown -R $SUDO_USER:$SUDO_USER /tmp/static
+chown $SUDO_USER:$SUDO_USER startup.sh
 
 echo "Enabling the startup service..."
 systemctl enable dmoj-judge
