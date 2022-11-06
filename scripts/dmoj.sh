@@ -240,10 +240,10 @@ passwords-add "DM::OJ (http://<ip>)" "admin" "admin"
 done-and-reboot
 
 
-#TODO:
+#INFO: for checking possible promlems during the execution
 #sudo supervisorctl status => all must be running
-#permissions problem???
-
+#
+#Logs:
 #cat /var/log/nginx/error.log 
 #cat /var/log/supervisor/supervisord.log
 #cat /tmp/bridge.stderr.log
