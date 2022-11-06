@@ -45,8 +45,12 @@ echo ""
 title "Setting up the database:"
 echo "Creating database..."
 sudo -H -u root bash -c "mysql -e \"CREATE DATABASE IF NOT EXISTS dmoj DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_general_ci;\""
+
 echo "Granting privileges..."
 sudo -H -u root bash -c "mysql -e \"GRANT ALL PRIVILEGES ON dmoj.* TO 'dmoj'@'localhost' IDENTIFIED BY 'dmoj';\""
+
+echo "Populating timezones..."
+sudo -H -u root bash -c "mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -p mysql"
 
 echo ""
 title "Setting up the virtual environment:"
