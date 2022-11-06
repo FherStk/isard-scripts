@@ -215,14 +215,22 @@ chown -R $SUDO_USER:$SUDO_USER site
 echo "Done"
 
 echo ""
-title "Setting up the startup:"
+title "Setting up the startup service:"
+echo "Creating the startup script..."
+_startup="/home/$SUDO_USER/startup.sh"
+cp $SCRIPT_PATH/../utils/dmoj/startup.sh $_startup
+sed -i "s|<user>|$SUDO_USER|g" $_startup
+chmod +x $_startup
 
-#TODO: this should be a startup service, sorry, no more time to spend on this... :(
-_file="/home/$SUDO_USER/startup.sh"
-cp $SCRIPT_PATH/../utils/dmoj/startup.sh $_file
-sed -i "s|<user>|$SUDO_USER|g" $_file
-chmod +x $_file
-append-no-repeat "sudo bash $_file > /dev/null 2>&1 &" "/home/$SUDO_USER/.profile"
+echo "Creating the startup service..."
+_service="/etc/systemd/system/dmoj-judge.service"
+cp $SCRIPT_PATH/../utils/dmoj/dmoj-judge.service $_service
+sed -i "s|<user>|$SUDO_USER|g" $_service
+sed -i "s|<file>|$_startup|g" $_service
+
+echo "Enabling the startup service..."
+systemctl enable dmoj-judge
+systemctl start dmoj-judge
 
 passwords-add "DM::OJ (http://<ip>)" "admin" "admin"
 done-and-reboot
