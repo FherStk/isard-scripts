@@ -149,10 +149,10 @@ pip-install()
   then    
     _text="Installing pip3 package: "   
     if [ -f "$MARK" ]; then 
-      title $_text "$1 v$2"
+      title "$_text" "$1 v$2"
       pip3 install $1==$2;    
     else
-      title $_text "$1"
+      title "$_text" "$1"
       pip3 install $1;      
     fi
     
@@ -296,11 +296,11 @@ set-network-static()
   if [ $IS_DESKTOP -eq 1 ];
   then     
     #Ubuntu Desktop
-    cp $BASE_PATH/netplan-static-desktop.yaml /etc/netplan/01-network-manager-all.yaml
+    cp $BASE_PATH/main/netplan-static-desktop.yaml /etc/netplan/01-network-manager-all.yaml
     sed -i "s|x.x.x.x/yy|$1|g" /etc/netplan/01-network-manager-all.yaml
   else
     #Ubuntu Server
-    cp $BASE_PATH/netplan-static-server.yaml /etc/netplan/00-installer-config.yaml
+    cp $BASE_PATH/main/netplan-static-server.yaml /etc/netplan/00-installer-config.yaml
     sed -i "s|x.x.x.x/yy|$1|g" /etc/netplan/00-installer-config.yaml
   fi
 
@@ -321,10 +321,10 @@ set-network-dhcp()
   if [ $IS_DESKTOP -eq 1 ];
   then     
     #Ubuntu Desktop
-    cp $BASE_PATH/netplan-dhcp-desktop.yaml /etc/netplan/01-network-manager-all.yaml
+    cp $BASE_PATH/main/netplan-dhcp-desktop.yaml /etc/netplan/01-network-manager-all.yaml
   else
     #Ubuntu Server
-    cp $BASE_PATH/netplan-dhcp-server.yaml /etc/netplan/00-installer-config.yaml
+    cp $BASE_PATH/main/netplan-dhcp-server.yaml /etc/netplan/00-installer-config.yaml
   fi
 
   echo "Setting up netplan..."
@@ -533,7 +533,7 @@ auto-login-enable()
 
       _file="/etc/systemd/system/getty@tty1.service.d/override.conf"
       echo "Creating the file '$_file'"      
-      cp $BASE_PATH/auto-login.conf $_file
+      cp $BASE_PATH/main/auto-login.conf $_file
       sed -i "s|<USERNAME>|$SUDO_USER|g" $_file    
   fi
 }
@@ -590,7 +590,7 @@ passwords-background()
 
   else
     #Server
-    _source="$BASE_PATH/50-landscape-sysinfo"
+    _source="$BASE_PATH/main/50-landscape-sysinfo"
     _dest="/etc/update-motd.d/50-landscape-sysinfo"
     echo "Creating entry into '$_dest'..."    
     cp $_source $_dest
@@ -688,7 +688,7 @@ script-setup(){
   echo ""
   title "Performing system setup:"
   echo "Disabling auto-upgrades..."
-  cp $BASE_PATH/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
+  cp $BASE_PATH/main/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
   dpkg-reconfigure -f noninteractive unattended-upgrades  
     
   setup-hostname "$HOST_NAME"  

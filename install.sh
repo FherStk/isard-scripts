@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_VERSION="1.3.0"
+SCRIPT_VERSION="1.3.1"
 SCRIPT_NAME="App Install"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
@@ -25,7 +25,7 @@ then
     #Ubuntu Desktop
     echo "Setting up the $DESKTOPFILE entry..."
     mkdir -p $AUTOSTART
-    cp $BASE_PATH/isard-scripts.desktop $DESKTOPFILE
+    cp $BASE_PATH/install/isard-scripts.desktop $DESKTOPFILE
     sed -i "s|<INSTALL_PATH>|$INSTALL_PATH|g" $DESKTOPFILE
     sed -i "s|<RUN_SCRIPT>|$RUN_SCRIPT|g" $DESKTOPFILE    
 else

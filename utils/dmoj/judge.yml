@@ -1,0 +1,4 @@
+id: <judge name>
+key: <judge authentication key>
+problem_storage_root:
+  - <judge problems>

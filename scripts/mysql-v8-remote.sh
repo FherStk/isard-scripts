@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_VERSION="1.1.0"
+SCRIPT_VERSION="1.1.1"
 SCRIPT_NAME="Ubuntu Server 22.04 LTS (MySQL v8 - With remote connections)"
 HOST_NAME="mysql-server"
 
@@ -24,7 +24,7 @@ rm -R test_db
 echo ""
 title "Setting up remote connections:"
 echo "Opening the binding address to '*'..."
-cp $SCRIPT_PATH/../utils/mysql.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
+cp $SCRIPT_PATH/../utils/mysql-v8-remote/mysql.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
 service mysql restart
 
 echo "Creating the remote user 'root@%'..."
