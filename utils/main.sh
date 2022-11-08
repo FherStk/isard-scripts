@@ -279,7 +279,7 @@ set-hostname()
   echo "Setting up hostname..."  
 
   _old_hostname=$(hostname)     
-  hostnamectl setup-hostname $1
+  hostnamectl set-hostname $1
   sed -i "s/'$_old_hostname'/'$1'/g" /etc/hosts
 }
 
