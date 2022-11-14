@@ -577,7 +577,10 @@ passwords-background()
   title "Setting up the system credentials information:"
   
   if [ $IS_DESKTOP -eq 1 ];
-  then     
+  then   
+    #Manual generation through terminal
+    #sudo convert /usr/share/backgrounds/warty-final-ubuntu.png -font helvetica -fill white -pointsize 36 -gravity SouthEast -annotate +50+100 "@/home/usuario/passwords.info" /usr/share/backgrounds/warty-final-ubuntu-text.png  
+
     #Desktop
     echo "Creating the background image..."
     _source="/usr/share/backgrounds/warty-final-ubuntu.png"
