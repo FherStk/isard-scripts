@@ -38,4 +38,4 @@ rm -f $_file
 
 passwords-add "PostgreSQL" "postgres" "N/A"
 passwords-add "Odoo (http://ip:8069)" "N/A" "N/A"
-#done-and-reboot
+done-and-reboot
