@@ -16,6 +16,8 @@ wget -q -O - https://nightly.odoo.com/odoo.key | sudo gpg --dearmor -o /usr/shar
 echo 'deb [signed-by=/usr/share/keyrings/odoo-archive-keyring.gpg] https://nightly.odoo.com/16.0/nightly/deb/ ./' | sudo tee /etc/apt/sources.list.d/odoo.list
 apt update
 
+apt-install "odoo"
+
 echo ""
 title "Setting up the HTML to PDF component:"
 _file="xfonts-75dpi.deb"
@@ -40,4 +42,4 @@ rm -f $_file
 
 passwords-add "PostgreSQL" "postgres" "N/A"
 passwords-add "Odoo (http://ip:8069)" "N/A" "N/A"
-done-and-reboot
+#done-and-reboot
