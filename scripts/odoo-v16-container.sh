@@ -13,10 +13,10 @@ apt-install lxc
 lxd init --auto
 
 _container="odoo-v16"
-_file="/home/ubuntu/install.sh"
+_path="/home/ubuntu/"
 lxc launch ubuntu:22.04 $_container
-lxc file push $SCRIPT_PATH/../utils/odoo-v16/install.sh $_container$_file
-lxc exec $_container -- /bin/bash $_file
+lxc file push --recursive $SCRIPT_PATH/../ $_container$_path
+lxc exec $_container -- /bin/bash $_path/utils/odoo-v16/install.sh
 
 passwords-add "PostgreSQL" "postgres" "N/A"
 passwords-add "Odoo (http://ip:8069)" "N/A" "N/A"

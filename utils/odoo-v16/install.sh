@@ -1,4 +1,8 @@
 #!/bin/bash
+source $SCRIPT_PATH/../main.sh
+echo "AHI VA"
+echo $SCRIPT_PATH
+
 echo ""
 title "Setting up the Odoo repository:"
 wget -q -O - https://nightly.odoo.com/odoo.key | sudo gpg --dearmor -o /usr/share/keyrings/odoo-archive-keyring.gpg
