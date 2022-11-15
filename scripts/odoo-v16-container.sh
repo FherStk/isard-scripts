@@ -18,6 +18,13 @@ lxc launch ubuntu:22.04 $_container
 lxc file push --recursive $SCRIPT_PATH/../ $_container$_path
 lxc exec $_container -- /bin/bash $_path/utils/odoo-v16/install.sh
 
+#TODO: en fer login, mostrar que cal connectar-se via SSH amb port forwarding per a accedir a Odoo
+#TODO: mirar si es pot fer una redirecció automàtica perquè no calgui fer la connexió SSH, sinó posar el port
+#8069 a la màquina d'isard i que aquesta l'envii cap al contenidor. Serà més fàcil per l'usuari.
+
+#_addr=$(lxc list "odoo-v16" -c 4 | awk '!/IPV4/{ if ( $2 != "" ) print $2}')
+#`ssh -L 8069:$_addr:8069 $SUDO_USER@<ip-isard>`
+
 passwords-add "PostgreSQL" "postgres" "N/A"
 passwords-add "Odoo (http://ip:8069)" "N/A" "N/A"
 done-and-reboot
