@@ -1,7 +1,6 @@
 #!/bin/bash
+SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 source $SCRIPT_PATH/../main.sh
-echo "AHI VA"
-echo $SCRIPT_PATH
 
 echo ""
 title "Setting up the Odoo repository:"
