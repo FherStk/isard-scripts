@@ -727,6 +727,7 @@ script-setup(){
     #Ubuntu Server   
   fi
 
+  echo ""
   title "Setting up the passwords file:"
   echo "Creating the file..."
   rm -f $PASSWORDS
