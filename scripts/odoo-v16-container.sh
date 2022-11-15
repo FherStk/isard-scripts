@@ -9,12 +9,13 @@ source $SCRIPT_PATH/../utils/main.sh
 
 startup
 script-setup
-apt-install lxd
+apt-install lxc
+lxd init --auto
 
 _container="odoo-v16"
-_file="$_container/home/ubuntu/install.sh"
+_file="/home/ubuntu/install.sh"
 lxc launch ubuntu:22.04 $_container
-lxc file push $SCRIPT_PATH/../utils/odoo-v16/install.sh $_file
+lxc file push $SCRIPT_PATH/../utils/odoo-v16/install.sh $_container$_file
 lxc exec $_container -- /bin/bash $_file
 
 passwords-add "PostgreSQL" "postgres" "N/A"
