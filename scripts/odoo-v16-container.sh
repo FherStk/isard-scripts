@@ -21,9 +21,17 @@ lxc exec $_container -- /bin/bash $_path/utils/odoo-v16/install.sh
 #TODO: en fer login, mostrar que cal connectar-se via SSH amb port forwarding per a accedir a Odoo
 #TODO: mirar si es pot fer una redirecció automàtica perquè no calgui fer la connexió SSH, sinó posar el port
 #8069 a la màquina d'isard i que aquesta l'envii cap al contenidor. Serà més fàcil per l'usuari.
+#`ssh -L 8069:$_addr:8069 $SUDO_USER@<ip-isard>`
+
+#TODO: port forwarding => https://www.cyberciti.biz/faq/how-to-configure-ufw-to-forward-port-80443-to-internal-server-hosted-on-lan/
+#edit /etc/sysctl.conf
+#append net.ipv4.ip_forward=1
+
+#sudo sysctl -p
+#sudo systemctl restart ufw
 
 #_addr=$(lxc list "odoo-v16" -c 4 | awk '!/IPV4/{ if ( $2 != "" ) print $2}')
-#`ssh -L 8069:$_addr:8069 $SUDO_USER@<ip-isard>`
+#iptables -t nat -A PREROUTING -p tcp --dport 8069 -j DNAT --to-destination $_addr:8069
 
 passwords-add "PostgreSQL" "postgres" "N/A"
 passwords-add "Odoo (http://ip:8069)" "N/A" "N/A"
