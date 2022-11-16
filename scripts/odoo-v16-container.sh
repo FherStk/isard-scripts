@@ -40,6 +40,7 @@ systemctl restart ufw
 echo ""
 title "Performing the initial LXC/LXD snapshot:"
 lxc snapshot odoo-v16 $_container initial
+echo "Done"
 
 passwords-add "PostgreSQL" "postgres" "N/A"
 passwords-add "Odoo (http://ip:8069)" "N/A" "N/A"
