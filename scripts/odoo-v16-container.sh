@@ -34,8 +34,9 @@ title "Setting up port forwarding to the LXC/LXD container:"
 #Source: https://www.cyberciti.biz/faq/how-to-configure-ufw-to-forward-port-80443-to-internal-server-hosted-on-lan/
 append-no-repeat "net.ipv4.ip_forward=1" "/etc/sysctl.conf"
 
+#Source: https://eugene.yakovenko.me/port-forwarding-redirect-configuration-for-lxd-lxc/
 _addr=$(lxc list "odoo-v16" -c 4 | awk '!/IPV4/{ if ( $2 != "" ) print $2}')
-iptables -t nat -A PREROUTING -p tcp --dport 8069 -j DNAT --to-destination $_addr:8069
+lxc config device add $_container odoo-forward proxy listen=tcp:0.0.0.0:8069 connect=tcp:$_addr:8069
 
 sysctl -p
 systemctl restart ufw
