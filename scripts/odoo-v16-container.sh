@@ -7,17 +7,23 @@ SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SCRIPT_FILE=$(basename $BASH_SOURCE)
 source $SCRIPT_PATH/../utils/main.sh
 
-# startup
-# script-setup
-# apt-install lxc
+startup
+script-setup
+apt-install lxc
 
-# echo ""
-# title "Setting up the LXC/LXD container:"
-# lxd init --auto
+echo ""
+title "Setting up the LXC/LXD container:"
+lxd init --auto
 
 _container="odoo-v16"
 _path="/home/ubuntu/"
-# lxc launch ubuntu:22.04 $_container
+lxc launch ubuntu:22.04 $_container
+
+echo "TEST:"
+echo $SCRIPT_PATH/../
+echo ${_container}${_path}
+echo $pwd
+
 lxc file push --recursive $SCRIPT_PATH/../ ${_container}${_path}
 lxc exec $_container -- /bin/bash ${_path}isard-scripts/utils/odoo-v16/install.sh
 
