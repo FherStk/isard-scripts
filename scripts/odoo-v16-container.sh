@@ -19,11 +19,10 @@ _container="odoo-v16"
 _path="/home/ubuntu/"
 lxc launch ubuntu:22.04 $_container
 
-echo "TEST:"
-echo $SCRIPT_PATH/..
-echo ${_container}${_path}
-
+echo "Copying the install script within the container..."
 lxc file push --recursive $SCRIPT_PATH/.. ${_container}${_path}
+
+echo "Running the install script within the container..."
 lxc exec $_container -- /bin/bash ${_path}isard-scripts/utils/odoo-v16/install.sh
 
 # #WARNING:  The container requests the IP address using its MAC address as the identifier, so, in theory, should be the same on any scenario.
