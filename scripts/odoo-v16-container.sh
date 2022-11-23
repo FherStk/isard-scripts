@@ -21,11 +21,11 @@ lxc launch ubuntu:22.04 $_container
 echo "Copying the install script within the container..."
 lxc file push --recursive $SCRIPT_PATH/.. ${_container}/etc/
 
-echo "Running the install script within the container..."
-lxc exec $_container -- /bin/bash /etc/isard-scripts/utils/odoo-v16/install.sh
-
 echo "Upgrading the container's installed apps..."
 lxc exec $_container -- /bin/bash /etc/isard-scripts/utils/odoo-v16/upgrade.sh
+
+echo "Running the install script within the container..."
+lxc exec $_container -- /bin/bash /etc/isard-scripts/utils/odoo-v16/install.sh
 
 # #WARNING:  The container requests the IP address using its MAC address as the identifier, so, in theory, should be the same on any scenario.
 # #          If the container's IP address changes, the following lines should be invoked on startup.
