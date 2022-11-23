@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_VERSION="1.0.0"
+SCRIPT_VERSION="1.0.1"
 SCRIPT_NAME="Ubuntu Server 22.04 LTS (Odoo v16 - Within an LXC/LXD container)"
 HOST_NAME="odoo"
 
