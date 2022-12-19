@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_VERSION="1.0.0"
+SCRIPT_VERSION="1.1.0"
 SCRIPT_NAME="Ubuntu Server 22.04 LTS (DM::OJ)"
 HOST_NAME="dmoj"
 
@@ -79,6 +79,7 @@ _file="dmoj/local_settings.py"
 wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/local_settings.py -O $_file
 sed -i "s|'This key is not very secure and you should change it.'|'5*9f5q57mqmlz2#f\$x1h76\\&jxy#yortjl1v+l*6hd18\$d*yx#0'|g" $_file
 sed -i "s|'<mariadb user password>'|'dmoj'|g" $_file
+sed -i "s|#EVENT_DAEMON_USE = True|EVENT_DAEMON_USE = True|g" $_file
 sed -i "s|#EVENT_DAEMON_POST = 'ws://127.0.0.1:15101/'|EVENT_DAEMON_POST = 'ws://127.0.0.1:15101/'|g" $_file
 sed -i "s|#EVENT_DAEMON_GET = 'ws://<your domain>/event/'|EVENT_DAEMON_GET = 'ws://127.0.0.1/event/'|g" $_file
 sed -i "s|#EVENT_DAEMON_POLL = '/channels/''|EVENT_DAEMON_POLL = '/channels/'|g" $_file
