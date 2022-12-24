@@ -77,6 +77,7 @@ echo ""
 title "Installing the python dependencies:"
 pip3 install -r requirements.txt
 
+pip-install "websocket-client"
 pip-install "mysqlclient"
 pip-install "pymysql"
 
