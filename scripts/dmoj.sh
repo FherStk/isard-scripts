@@ -1,10 +1,12 @@
 #!/bin/bash
-SCRIPT_VERSION="1.1.0"
+SCRIPT_VERSION="1.2.0"
 SCRIPT_NAME="Ubuntu Server 22.04 LTS (DM::OJ)"
 HOST_NAME="dmoj"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SCRIPT_FILE=$(basename $BASH_SOURCE)
+DMOJ_PATH="/etc/dmoj"
+DMOJ_USER="dmoj"
 source $SCRIPT_PATH/../utils/main.sh
 
 startup
@@ -43,18 +45,23 @@ apt-install "libmysqlclient-dev"
 
 echo ""
 title "Setting up the database:"
-echo "Creating database..."
+echo "Creating the dmoj database..."
 sudo -H -u root bash -c "mysql -e \"CREATE DATABASE IF NOT EXISTS dmoj DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_general_ci;\""
 
-echo "Granting privileges..."
+echo "Granting privileges to the dmoj user..."
 sudo -H -u root bash -c "mysql -e \"GRANT ALL PRIVILEGES ON dmoj.* TO 'dmoj'@'localhost' IDENTIFIED BY 'dmoj';\""
 
 echo "Populating timezones..."
-sudo -H -u root bash -c "mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -p mysql"
+sudo -H -u root bash -c "mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql mysql"
+
+echo ""
+title "Creating the installation folder at $DMOJ_PATH:"
+mkdir -p $DMOJ_PATH
+echo "Done"
 
 echo ""
 title "Setting up the virtual environment:"
-cd /home/$SUDO_USER
+cd $DMOJ_PATH
 python3 -m venv dmojsite
 . dmojsite/bin/activate
 echo "Done"
@@ -70,15 +77,20 @@ echo ""
 title "Installing the python dependencies:"
 pip3 install -r requirements.txt
 
+pip-install "websocket-client"
 pip-install "mysqlclient"
 pip-install "pymysql"
+
+echo ""
+title "Creating the DMOJ user:"
+useradd -m -p $DMOJ_USER $DMOJ_USER
 
 echo ""
 title "Setting up DM::OJ:"
 _file="dmoj/local_settings.py"
 wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/local_settings.py -O $_file
 sed -i "s|'This key is not very secure and you should change it.'|'5*9f5q57mqmlz2#f\$x1h76\\&jxy#yortjl1v+l*6hd18\$d*yx#0'|g" $_file
-sed -i "s|'<mariadb user password>'|'dmoj'|g" $_file
+sed -i "s|'<mariadb user password>'|'$DMOJ_USER'|g" $_file
 sed -i "s|#EVENT_DAEMON_USE = True|EVENT_DAEMON_USE = True|g" $_file
 sed -i "s|#EVENT_DAEMON_POST = 'ws://127.0.0.1:15101/'|EVENT_DAEMON_POST = 'ws://127.0.0.1:15101/'|g" $_file
 sed -i "s|#EVENT_DAEMON_GET = 'ws://<your domain>/event/'|EVENT_DAEMON_GET = 'ws://127.0.0.1/event/'|g" $_file
@@ -101,10 +113,13 @@ sed -i "s|#CELERY_BROKER_URL|CELERY_BROKER_URL|g" $_file
 sed -i "s|#CELERY_RESULT_BACKEND|CELERY_RESULT_BACKEND|g" $_file
 sed -i "s|#ALLOWED_HOSTS = \['dmoj.ca'\]|ALLOWED_HOSTS = \['\*'\]|g" $_file
 sed -i "s|<desired bridge log path>|bridge.log|g" $_file
-echo "DMOJ_PROBLEM_DATA_ROOT = \"/home/usuario/problems/\"" >> $_file
+echo "DMOJ_PROBLEM_DATA_ROOT = '$DMOJ_PATH/problems/'" >> $_file
+echo "REGISTRATION_OPEN = False" >> $_file
+echo "DEFAULT_USER_LANGUAGE = 'JAVA8'" >> $_file
+echo "DMOJ_SUBMISSION_SOURCE_VISIBILITY = 'only-own'" >> $_file
 
-_repodir="/home/$SUDO_USER/site"
-_virtualenv="/home/$SUDO_USER/dmojsite"
+_repodir="$DMOJ_PATH/site"
+_virtualenv="$DMOJ_PATH/dmojsite"
 
 pip-install "uwsgi"
 echo ""
@@ -132,7 +147,7 @@ _file="/etc/supervisor/conf.d/bridged.conf"
 wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/bridged.conf -O $_file
 sed -i "s|<path to virtualenv>|$_virtualenv|g" $_file
 sed -i "s|<path to site>|$_repodir|g" $_file
-sed -i "s|<user to run under>|$SUDO_USER|g" $_file
+sed -i "s|<user to run under>|$DMOJ_USER|g" $_file
 
 echo ""
 title "Setting up celery:"
@@ -141,7 +156,7 @@ _file="/etc/supervisor/conf.d/celery.conf"
 wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/celery.conf -O $_file
 sed -i "s|<path to virtualenv>|$_virtualenv|g" $_file
 sed -i "s|<path to site>|$_repodir|g" $_file
-sed -i "s|<user to run under>|$SUDO_USER|g" $_file
+sed -i "s|<user to run under>|$DMOJ_USER|g" $_file
 
 echo ""
 title "Reloading supervisor:"
@@ -169,12 +184,29 @@ cp $SCRIPT_PATH/../utils/dmoj/config.js $_file
 _file="/etc/supervisor/conf.d/wsevent.conf"
 wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/wsevent.conf -O $_file
 sed -i "s|<site repo path>|$_repodir|g" $_file
-sed -i "s|<username>|$SUDO_USER|g" $_file
+sed -i "s|<username>|$DMOJ_USER|g" $_file
 
 supervisorctl update
 supervisorctl restart bridged
 supervisorctl restart site
 service nginx restart
+
+echo ""
+title "Setting up the problems:"
+echo "Creating the problems folder..."
+mkdir $DMOJ_PATH/problems
+echo "Done!"
+
+echo "Creating the aplusb problem folder..."
+_path=$DMOJ_PATH/problems/aplusb 
+mkdir $_path
+echo "Done!"
+
+echo "Downloading the aplusb problem data..."
+wget https://github.com/DMOJ/docs/raw/master/problem_examples/standard/aplusb/aplusb.zip -O $_path/aplusb.zip
+wget https://raw.githubusercontent.com/DMOJ/docs/master/problem_examples/standard/aplusb/init.yml -O $_path/init.yml
+echo "Done!"
+
 
 #################################
 #     DM:OJ BACKEND (JUDGE)     #
@@ -189,9 +221,7 @@ apt-install "default-jdk"
 apt-install "openjdk-11-jdk"
 apt-install "openjdk-8-jdk"
 
-mkdir /home/$SUDO_USER/problems
-
-cd /home/$SUDO_USER
+cd $DMOJ_PATH
 git clone --recursive https://github.com/DMOJ/judge-server.git
 cd judge-server
 pip3 install -e .
@@ -201,37 +231,36 @@ _judge_name="default";
 _judge_key="5qwU1VFlfiv1wi1PHsXG7Z2nQika73VyLOvk3Dcd3Ma/PajJw/VRzNHc7o7lg5CfRvPvGfLOmjjmGmT1im6D3dSu0FwsQyINANhW"
 sudo -H -u root bash -c "mysql -D dmoj -e \"INSERT INTO judge_judge (name, auth_key, created, is_blocked, online, description) VALUES ('$_judge_name', '$_judge_key', now(), 0, 0, '');\""
 
-_file="/home/$SUDO_USER/problems/judge.yml"
+_file="$DMOJ_PATH/problems/judge.yml"
 cp $SCRIPT_PATH/../utils/dmoj/judge.yml $_file
 sed -i "s|<judge name>|$_judge_name|g" $_file
 sed -i "s|<judge authentication key>|$_judge_key|g" $_file
-sed -i "s|<judge problems>|/home/$SUDO_USER/problems|g" $_file
+sed -i "s|<judge problems>|$DMOJ_PATH/problems|g" $_file
 echo "" >>  $_file #new line
 dmoj-autoconf >>  $_file
 
 echo ""
 title "Setting up the startup service:"
 echo "Creating the startup script..."
-_startup="/home/$SUDO_USER/startup.sh"
+_startup="$DMOJ_PATH/startup.sh"
 cp $SCRIPT_PATH/../utils/dmoj/startup.sh $_startup
-sed -i "s|<user>|$SUDO_USER|g" $_startup
+sed -i "s|<dmoj-root-path>|$DMOJ_PATH|g" $_startup
 chmod +x $_startup
 
 echo "Creating the startup service..."
 _service="/etc/systemd/system/dmoj-judge.service"
 cp $SCRIPT_PATH/../utils/dmoj/dmoj-judge.service $_service
-sed -i "s|<user>|$SUDO_USER|g" $_service
+sed -i "s|<user>|$DMOJ_USER|g" $_service
 sed -i "s|<file>|$_startup|g" $_service
 
 echo "Setting up permissions..."
-cd /home/$SUDO_USER
-chown -R $SUDO_USER:$SUDO_USER dmojsite
-chown -R $SUDO_USER:$SUDO_USER judge
-chown -R $SUDO_USER:$SUDO_USER judge-server
-chown -R $SUDO_USER:$SUDO_USER problems
-chown -R $SUDO_USER:$SUDO_USER site
-chown -R $SUDO_USER:$SUDO_USER /tmp/static
-chown $SUDO_USER:$SUDO_USER startup.sh
+cd $DMOJ_PATH
+chown -R $DMOJ_USER:$DMOJ_USER dmojsite
+chown -R $DMOJ_USER:$DMOJ_USER judge-server
+chown -R $DMOJ_USER:$DMOJ_USER problems
+chown -R $DMOJ_USER:$DMOJ_USER site
+chown -R $DMOJ_USER:$DMOJ_USER /tmp/static
+chown $DMOJ_USER:$DMOJ_USER startup.sh
 
 echo "Enabling the startup service..."
 systemctl enable dmoj-judge
@@ -239,7 +268,6 @@ systemctl start dmoj-judge
 
 passwords-add "DM::OJ (http://<ip>)" "admin" "admin"
 done-and-reboot
-
 
 #INFO: for checking possible promlems during the execution
 #sudo supervisorctl status => all must be running
