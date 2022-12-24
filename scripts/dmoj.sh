@@ -6,6 +6,7 @@ HOST_NAME="dmoj"
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SCRIPT_FILE=$(basename $BASH_SOURCE)
 DMOJ_PATH="/etc/dmoj"
+DMOJ_USER="dmoj"
 source $SCRIPT_PATH/../utils/main.sh
 
 startup
@@ -80,11 +81,15 @@ pip-install "mysqlclient"
 pip-install "pymysql"
 
 echo ""
+title "Creating the DMOJ user:"
+useradd -m -p $DMOJ_USER $DMOJ_USER
+
+echo ""
 title "Setting up DM::OJ:"
 _file="dmoj/local_settings.py"
 wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/local_settings.py -O $_file
 sed -i "s|'This key is not very secure and you should change it.'|'5*9f5q57mqmlz2#f\$x1h76\\&jxy#yortjl1v+l*6hd18\$d*yx#0'|g" $_file
-sed -i "s|'<mariadb user password>'|'dmoj'|g" $_file
+sed -i "s|'<mariadb user password>'|'$DMOJ_USER'|g" $_file
 sed -i "s|#EVENT_DAEMON_USE = True|EVENT_DAEMON_USE = True|g" $_file
 sed -i "s|#EVENT_DAEMON_POST = 'ws://127.0.0.1:15101/'|EVENT_DAEMON_POST = 'ws://127.0.0.1:15101/'|g" $_file
 sed -i "s|#EVENT_DAEMON_GET = 'ws://<your domain>/event/'|EVENT_DAEMON_GET = 'ws://127.0.0.1/event/'|g" $_file
@@ -138,7 +143,7 @@ _file="/etc/supervisor/conf.d/bridged.conf"
 wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/bridged.conf -O $_file
 sed -i "s|<path to virtualenv>|$_virtualenv|g" $_file
 sed -i "s|<path to site>|$_repodir|g" $_file
-sed -i "s|<user to run under>|$SUDO_USER|g" $_file
+sed -i "s|<user to run under>|$DMOJ_USER|g" $_file
 
 echo ""
 title "Setting up celery:"
@@ -147,7 +152,7 @@ _file="/etc/supervisor/conf.d/celery.conf"
 wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/celery.conf -O $_file
 sed -i "s|<path to virtualenv>|$_virtualenv|g" $_file
 sed -i "s|<path to site>|$_repodir|g" $_file
-sed -i "s|<user to run under>|$SUDO_USER|g" $_file
+sed -i "s|<user to run under>|$DMOJ_USER|g" $_file
 
 echo ""
 title "Reloading supervisor:"
@@ -175,7 +180,7 @@ cp $SCRIPT_PATH/../utils/dmoj/config.js $_file
 _file="/etc/supervisor/conf.d/wsevent.conf"
 wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/wsevent.conf -O $_file
 sed -i "s|<site repo path>|$_repodir|g" $_file
-sed -i "s|<username>|$SUDO_USER|g" $_file
+sed -i "s|<username>|$DMOJ_USER|g" $_file
 
 supervisorctl update
 supervisorctl restart bridged
@@ -220,24 +225,24 @@ title "Setting up the startup service:"
 echo "Creating the startup script..."
 _startup="$DMOJ_PATH/startup.sh"
 cp $SCRIPT_PATH/../utils/dmoj/startup.sh $_startup
-sed -i "s|<user>|$SUDO_USER|g" $_startup
+sed -i "s|<user>|$DMOJ_USER|g" $_startup
 chmod +x $_startup
 
 echo "Creating the startup service..."
 _service="/etc/systemd/system/dmoj-judge.service"
 cp $SCRIPT_PATH/../utils/dmoj/dmoj-judge.service $_service
-sed -i "s|<user>|$SUDO_USER|g" $_service
+sed -i "s|<user>|$DMOJ_USER|g" $_service
 sed -i "s|<file>|$_startup|g" $_service
 
 echo "Setting up permissions..."
 cd $DMOJ_PATH
-chown -R $SUDO_USER:$SUDO_USER dmojsite
-chown -R $SUDO_USER:$SUDO_USER judge
-chown -R $SUDO_USER:$SUDO_USER judge-server
-chown -R $SUDO_USER:$SUDO_USER problems
-chown -R $SUDO_USER:$SUDO_USER site
-chown -R $SUDO_USER:$SUDO_USER /tmp/static
-chown $SUDO_USER:$SUDO_USER startup.sh
+chown -R $DMOJ_USER:$DMOJ_USER dmojsite
+chown -R $DMOJ_USER:$DMOJ_USER judge
+chown -R $DMOJ_USER:$DMOJ_USER judge-server
+chown -R $DMOJ_USER:$DMOJ_USER problems
+chown -R $DMOJ_USER:$DMOJ_USER site
+chown -R $DMOJ_USER:$DMOJ_USER /tmp/static
+chown $DMOJ_USER:$DMOJ_USER startup.sh
 
 echo "Enabling the startup service..."
 systemctl enable dmoj-judge
