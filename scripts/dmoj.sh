@@ -191,6 +191,23 @@ supervisorctl restart bridged
 supervisorctl restart site
 service nginx restart
 
+echo ""
+title "Setting up the problems:"
+echo "Creating the problems folder..."
+mkdir $DMOJ_PATH/problems
+echo "Done!"
+
+echo "Creating the aplusb problem folder..."
+_path=$DMOJ_PATH/problems/aplusb 
+mkdir $_path
+echo "Done!"
+
+echo "Downloading the aplusb problem data..."
+wget https://github.com/DMOJ/docs/raw/master/problem_examples/standard/aplusb/aplusb.zip -O $_path/aplusb.zip
+wget https://raw.githubusercontent.com/DMOJ/docs/master/problem_examples/standard/aplusb/init.yml -O $_path/init.yml
+echo "Done!"
+
+
 #################################
 #     DM:OJ BACKEND (JUDGE)     #
 #################################
@@ -203,8 +220,6 @@ apt-install "libseccomp-dev"
 apt-install "default-jdk"
 apt-install "openjdk-11-jdk"
 apt-install "openjdk-8-jdk"
-
-mkdir $DMOJ_PATH/problems
 
 cd $DMOJ_PATH
 git clone --recursive https://github.com/DMOJ/judge-server.git
@@ -229,7 +244,7 @@ title "Setting up the startup service:"
 echo "Creating the startup script..."
 _startup="$DMOJ_PATH/startup.sh"
 cp $SCRIPT_PATH/../utils/dmoj/startup.sh $_startup
-sed -i "s|<user>|$DMOJ_USER|g" $_startup
+sed -i "s|<dmoj-root-path>|$DMOJ_PATH|g" $_startup
 chmod +x $_startup
 
 echo "Creating the startup service..."
