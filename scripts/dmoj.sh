@@ -1,10 +1,11 @@
 #!/bin/bash
-SCRIPT_VERSION="1.1.0"
+SCRIPT_VERSION="1.2.0"
 SCRIPT_NAME="Ubuntu Server 22.04 LTS (DM::OJ)"
 HOST_NAME="dmoj"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SCRIPT_FILE=$(basename $BASH_SOURCE)
+DMOJ_PATH="/etc/dmoj"
 source $SCRIPT_PATH/../utils/main.sh
 
 startup
@@ -53,8 +54,13 @@ echo "Populating timezones..."
 sudo -H -u root bash -c "mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -p mysql"
 
 echo ""
+title "Creating the installation folder at $DMOJ_PATH:"
+mkdir -p $DMOJ_PATH
+echo "Done"
+
+echo ""
 title "Setting up the virtual environment:"
-cd /home/$SUDO_USER
+cd $DMOJ_PATH
 python3 -m venv dmojsite
 . dmojsite/bin/activate
 echo "Done"
@@ -103,8 +109,8 @@ sed -i "s|#ALLOWED_HOSTS = \['dmoj.ca'\]|ALLOWED_HOSTS = \['\*'\]|g" $_file
 sed -i "s|<desired bridge log path>|bridge.log|g" $_file
 echo "DMOJ_PROBLEM_DATA_ROOT = \"/home/usuario/problems/\"" >> $_file
 
-_repodir="/home/$SUDO_USER/site"
-_virtualenv="/home/$SUDO_USER/dmojsite"
+_repodir="$DMOJ_PATH/site"
+_virtualenv="$DMOJ_PATH/dmojsite"
 
 pip-install "uwsgi"
 echo ""
@@ -189,9 +195,9 @@ apt-install "default-jdk"
 apt-install "openjdk-11-jdk"
 apt-install "openjdk-8-jdk"
 
-mkdir /home/$SUDO_USER/problems
+mkdir $DMOJ_PATH/problems
 
-cd /home/$SUDO_USER
+cd $DMOJ_PATH
 git clone --recursive https://github.com/DMOJ/judge-server.git
 cd judge-server
 pip3 install -e .
@@ -201,18 +207,18 @@ _judge_name="default";
 _judge_key="5qwU1VFlfiv1wi1PHsXG7Z2nQika73VyLOvk3Dcd3Ma/PajJw/VRzNHc7o7lg5CfRvPvGfLOmjjmGmT1im6D3dSu0FwsQyINANhW"
 sudo -H -u root bash -c "mysql -D dmoj -e \"INSERT INTO judge_judge (name, auth_key, created, is_blocked, online, description) VALUES ('$_judge_name', '$_judge_key', now(), 0, 0, '');\""
 
-_file="/home/$SUDO_USER/problems/judge.yml"
+_file="$DMOJ_PATH/problems/judge.yml"
 cp $SCRIPT_PATH/../utils/dmoj/judge.yml $_file
 sed -i "s|<judge name>|$_judge_name|g" $_file
 sed -i "s|<judge authentication key>|$_judge_key|g" $_file
-sed -i "s|<judge problems>|/home/$SUDO_USER/problems|g" $_file
+sed -i "s|<judge problems>|$DMOJ_PATH/problems|g" $_file
 echo "" >>  $_file #new line
 dmoj-autoconf >>  $_file
 
 echo ""
 title "Setting up the startup service:"
 echo "Creating the startup script..."
-_startup="/home/$SUDO_USER/startup.sh"
+_startup="$DMOJ_PATH/startup.sh"
 cp $SCRIPT_PATH/../utils/dmoj/startup.sh $_startup
 sed -i "s|<user>|$SUDO_USER|g" $_startup
 chmod +x $_startup
@@ -224,7 +230,7 @@ sed -i "s|<user>|$SUDO_USER|g" $_service
 sed -i "s|<file>|$_startup|g" $_service
 
 echo "Setting up permissions..."
-cd /home/$SUDO_USER
+cd $DMOJ_PATH
 chown -R $SUDO_USER:$SUDO_USER dmojsite
 chown -R $SUDO_USER:$SUDO_USER judge
 chown -R $SUDO_USER:$SUDO_USER judge-server
@@ -239,7 +245,6 @@ systemctl start dmoj-judge
 
 passwords-add "DM::OJ (http://<ip>)" "admin" "admin"
 done-and-reboot
-
 
 #INFO: for checking possible promlems during the execution
 #sudo supervisorctl status => all must be running
