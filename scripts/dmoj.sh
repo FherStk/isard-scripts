@@ -113,7 +113,10 @@ sed -i "s|#CELERY_BROKER_URL|CELERY_BROKER_URL|g" $_file
 sed -i "s|#CELERY_RESULT_BACKEND|CELERY_RESULT_BACKEND|g" $_file
 sed -i "s|#ALLOWED_HOSTS = \['dmoj.ca'\]|ALLOWED_HOSTS = \['\*'\]|g" $_file
 sed -i "s|<desired bridge log path>|bridge.log|g" $_file
-echo "DMOJ_PROBLEM_DATA_ROOT = \"/home/usuario/problems/\"" >> $_file
+echo "DMOJ_PROBLEM_DATA_ROOT = '$DMOJ_PATH/problems/'" >> $_file
+echo "REGISTRATION_OPEN = False" >> $_file
+echo "DEFAULT_USER_LANGUAGE = 'JAVA8'" >> $_file
+echo "DMOJ_SUBMISSION_SOURCE_VISIBILITY = 'only-own'" >> $_file
 
 _repodir="$DMOJ_PATH/site"
 _virtualenv="$DMOJ_PATH/dmojsite"
@@ -238,7 +241,6 @@ sed -i "s|<file>|$_startup|g" $_service
 echo "Setting up permissions..."
 cd $DMOJ_PATH
 chown -R $DMOJ_USER:$DMOJ_USER dmojsite
-chown -R $DMOJ_USER:$DMOJ_USER judge
 chown -R $DMOJ_USER:$DMOJ_USER judge-server
 chown -R $DMOJ_USER:$DMOJ_USER problems
 chown -R $DMOJ_USER:$DMOJ_USER site
