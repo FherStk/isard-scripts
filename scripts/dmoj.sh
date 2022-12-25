@@ -5,8 +5,12 @@ HOST_NAME="dmoj"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SCRIPT_FILE=$(basename $BASH_SOURCE)
-DMOJ_PATH="/etc/dmoj"
 DMOJ_USER="dmoj"
+DMOJ_PATH="/etc/dmoj"
+DMOJ_SITE="$DMOJ_PATH/site"
+DMOJ_MEDIA="$DMOJ_PATH/media"
+DMOJ_VENV="$DMOJ_PATH/dmojsite"
+
 source $SCRIPT_PATH/../utils/main.sh
 
 startup
@@ -108,6 +112,7 @@ python3 manage.py loaddata demo
 pip-install "redis"
 service redis-server start
 
+
 _file="dmoj/local_settings.py"
 sed -i "s|#CELERY_BROKER_URL|CELERY_BROKER_URL|g" $_file
 sed -i "s|#CELERY_RESULT_BACKEND|CELERY_RESULT_BACKEND|g" $_file
@@ -117,10 +122,8 @@ echo "DMOJ_PROBLEM_DATA_ROOT = '$DMOJ_PATH/problems/'" >> $_file
 echo "REGISTRATION_OPEN = False" >> $_file
 echo "DEFAULT_USER_LANGUAGE = 'JAVA8'" >> $_file
 echo "DMOJ_SUBMISSION_SOURCE_VISIBILITY = 'only-own'" >> $_file
-echo "MEDIA_ROOT='/etc/dmoj/media/'" >> $_file
-
-_repodir="$DMOJ_PATH/site"
-_virtualenv="$DMOJ_PATH/dmojsite"
+echo "MEDIA_ROOT = '$DMOJ_MEDIA/'" >> $_file
+echo "MEDIA_URL = '/media/'" >> $_file
 
 pip-install "uwsgi"
 echo ""
@@ -128,9 +131,9 @@ title "Setting up uwsgi:"
 
 _file="dmoj/uwsgi.ini" 
 wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/uwsgi.ini -O $_file
-sed -i "s|chdir = <dmoj repo dir>|chdir = $_virtualenv|g" $_file #TEST THIS LINE
-sed -i "s|<dmoj repo dir>|$_repodir|g" $_file
-sed -i "s|<virtualenv path>|$_virtualenv|g" $_file
+sed -i "s|chdir = <dmoj repo dir>|chdir = $DMOJ_VENV|g" $_file #TEST THIS LINE
+sed -i "s|<dmoj repo dir>|$DMOJ_SITE|g" $_file
+sed -i "s|<virtualenv path>|$DMOJ_VENV|g" $_file
 
 apt-install "supervisor"
 echo ""
@@ -138,16 +141,16 @@ title "Setting up supervisor:"
 
 _file="/etc/supervisor/conf.d/site.conf"
 wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/site.conf -O $_file
-sed -i "s|command=<path to virtualenv>/bin/uwsgi --ini uwsgi.ini|command=$_virtualenv/bin/uwsgi --ini $_repodir/dmoj/uwsgi.ini|g" $_file
-sed -i "s|<path to site>|$_repodir|g" $_file
+sed -i "s|command=<path to virtualenv>/bin/uwsgi --ini uwsgi.ini|command=$DMOJ_VENV/bin/uwsgi --ini $DMOJ_SITE/dmoj/uwsgi.ini|g" $_file
+sed -i "s|<path to site>|$DMOJ_SITE|g" $_file
 
 echo ""
 title "Setting up bridged:"
 
 _file="/etc/supervisor/conf.d/bridged.conf"
 wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/bridged.conf -O $_file
-sed -i "s|<path to virtualenv>|$_virtualenv|g" $_file
-sed -i "s|<path to site>|$_repodir|g" $_file
+sed -i "s|<path to virtualenv>|$DMOJ_VENV|g" $_file
+sed -i "s|<path to site>|$DMOJ_SITE|g" $_file
 sed -i "s|<user to run under>|$DMOJ_USER|g" $_file
 
 echo ""
@@ -155,8 +158,8 @@ title "Setting up celery:"
 
 _file="/etc/supervisor/conf.d/celery.conf"
 wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/celery.conf -O $_file
-sed -i "s|<path to virtualenv>|$_virtualenv|g" $_file
-sed -i "s|<path to site>|$_repodir|g" $_file
+sed -i "s|<path to virtualenv>|$DMOJ_VENV|g" $_file
+sed -i "s|<path to site>|$DMOJ_SITE|g" $_file
 sed -i "s|<user to run under>|$DMOJ_USER|g" $_file
 
 echo ""
@@ -170,27 +173,21 @@ apt-install "nginx"
 
 _file="/etc/nginx/sites-available/default"
 cp $SCRIPT_PATH/../utils/dmoj/nginx.conf $_file
-sed -i "s|<site code path>|$_repodir|g" $_file
-
-service nginx reload
+sed -i "s|<site code path>|$DMOJ_SITE|g" $_file
+sed -i "s|<site media path>|$DMOJ_MEDIA/|g" $_file
 
 echo ""
 title "Setting up the event server:"
 npm install qu ws simplesets
 pip-install websocket-client
 
-_file="$_repodir/websocket/config.js"
+_file="$DMOJ_SITE/websocket/config.js"
 cp $SCRIPT_PATH/../utils/dmoj/config.js $_file
 
 _file="/etc/supervisor/conf.d/wsevent.conf"
 wget https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/wsevent.conf -O $_file
-sed -i "s|<site repo path>|$_repodir|g" $_file
+sed -i "s|<site repo path>|$DMOJ_SITE|g" $_file
 sed -i "s|<username>|$DMOJ_USER|g" $_file
-
-supervisorctl update
-supervisorctl restart bridged
-supervisorctl restart site
-service nginx restart
 
 echo ""
 title "Setting up the problems:"
@@ -212,6 +209,13 @@ wget https://github.com/DMOJ/docs/raw/master/problem_examples/standard/aplusb/ap
 wget https://raw.githubusercontent.com/DMOJ/docs/master/problem_examples/standard/aplusb/init.yml -O $_path/init.yml
 echo "Done!"
 
+echo "Restarting services..."
+service nginx reload
+supervisorctl update
+supervisorctl restart bridged
+supervisorctl restart site
+service nginx restart
+echo "Done!"
 
 #################################
 #     DM:OJ BACKEND (JUDGE)     #
