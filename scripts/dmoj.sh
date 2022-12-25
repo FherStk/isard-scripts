@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_VERSION="1.2.0"
+SCRIPT_VERSION="1.3.0"
 SCRIPT_NAME="Ubuntu Server 22.04 LTS (DM::OJ)"
 HOST_NAME="dmoj"
 
@@ -117,6 +117,7 @@ echo "DMOJ_PROBLEM_DATA_ROOT = '$DMOJ_PATH/problems/'" >> $_file
 echo "REGISTRATION_OPEN = False" >> $_file
 echo "DEFAULT_USER_LANGUAGE = 'JAVA8'" >> $_file
 echo "DMOJ_SUBMISSION_SOURCE_VISIBILITY = 'only-own'" >> $_file
+echo "MEDIA_ROOT='/etc/dmoj/media/'" >> $_file
 
 _repodir="$DMOJ_PATH/site"
 _virtualenv="$DMOJ_PATH/dmojsite"
@@ -193,6 +194,10 @@ service nginx restart
 
 echo ""
 title "Setting up the problems:"
+echo "Creating the media folder..."
+mkdir $DMOJ_PATH/media
+echo "Done!"
+
 echo "Creating the problems folder..."
 mkdir $DMOJ_PATH/problems
 echo "Done!"
