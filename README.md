@@ -1,6 +1,16 @@
 # isard-scripts
 Template generation scripts for IsardVDI
 
+## Requisites
+The app can be installed within any IsardVDI's virtual machine running an Ubuntu (Server and Desktop) 22.04 LTS, but the network interfaces must be setup in the following order:
+1. Default: the isolated IsardVDI network which provides internet access.
+2. WireguardVPN: this network provides access through a tunnel, in order to connect any host local to the virtual machine. 
+3. Personal1: this network allows connecting virtual machines to each other (must be owned by the same user).
+
+<p align="center">
+  <img src="imgs/tutorial/network.png" />
+</p>
+
 ## How to install
 The app can be installed within any IsardVDI's virtual machine running an Ubuntu (Server and Desktop) 22.04 LTS:
 
@@ -12,7 +22,15 @@ sudo ./install.sh
 history -c
 ```
 3. Shutdown the virtual machine and create a template from it. 
-4. The script's deployemnt prompt will be displayed on first boot (won't be disabled if the promt is cancelled), so the user will be able to choose which template must be deployed. The prompt can also be forced by running `sudo ./run.sh` after the user login.
+
+## How to run
+1. The script's deployemnt prompt will be displayed on first boot (won't be disabled if the promt is cancelled), so the user will be able to choose which template must be deployed (select an option with space and `accept`) or do nothinc (`cancel`). The prompt can also be forced by running `sudo ./run.sh` after the user login.
+
+<p align="center">
+  <img src="imgs/tutorial/deploy.png" />
+</p>
+
+
 
 ## How to test a script in develop
 Please, follow this steps in order to test any script during development:
