@@ -2,7 +2,7 @@
 Template generation scripts for IsardVDI
 
 ## How to install
-The app can be installed within any IsardVDI machine running an Ubuntu (Server and Desktop) 22.04 LTS:
+The app can be installed within any IsardVDI's virtual machine running an Ubuntu (Server and Desktop) 22.04 LTS:
 
 1. Deploy the app cloning the repo: `git clone https://github.com/FherStk/isard-scripts.git`
 2. Then, install the app with **sudo** (it will be installed at /etc/isard-scripts):
@@ -11,8 +11,8 @@ cd isard-scripts
 sudo ./install.sh
 history -c
 ```
-
-3. The installation prompt will be displayed on first boot (won't be disabled if the promt is cancelled), so the user will be able to choose which template must be deployed. The prompt can be forced by running `sudo ./run.sh`.
+3. Shutdown the virtual machine and create a template from it. 
+4. The script's deployemnt prompt will be displayed on first boot (won't be disabled if the promt is cancelled), so the user will be able to choose which template must be deployed. The prompt can also be forced by running `sudo ./run.sh` after the user login.
 
 ## How to test a script in develop
 Please, follow this steps in order to test any script during development:
