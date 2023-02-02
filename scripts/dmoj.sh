@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_VERSION="1.3.0"
+SCRIPT_VERSION="1.3.1"
 SCRIPT_NAME="Ubuntu Server 22.04 LTS (DM::OJ)"
 HOST_NAME="dmoj"
 
@@ -268,6 +268,7 @@ chown -R $DMOJ_USER:$DMOJ_USER dmojsite
 chown -R $DMOJ_USER:$DMOJ_USER judge-server
 chown -R $DMOJ_USER:$DMOJ_USER problems
 chown -R $DMOJ_USER:$DMOJ_USER site
+chown -R $DMOJ_USER:$DMOJ_USER media
 chown -R $DMOJ_USER:$DMOJ_USER /tmp/static
 chown $DMOJ_USER:$DMOJ_USER startup.sh
 
