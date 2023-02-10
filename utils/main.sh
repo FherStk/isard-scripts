@@ -105,6 +105,7 @@ auto-update()
     echo "" 
     echo -e "${CYAN}New version found, updating...$NC"
     git -C $BASE_PATH reset --hard origin/$CURRENT_BRANCH
+    git pull
     echo "Update completed." 
 
     if [ $1 = true ]; 
