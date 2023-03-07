@@ -1,0 +1,26 @@
+openproject/edition default
+openproject/admin_email admin@admin.com
+
+postgres/db_host 127.0.0.1
+postgres/db_port 45432
+postgres/db_name openproject
+postgres/db_username openproject
+postgres/db_password kFITfFsW1u4yrow6D7apAxpleXBBqkoE
+postgres/addon_version v1
+postgres/autoinstall install
+
+server/autoinstall install
+server/variant apache2
+server/hostname open-project
+server/server_path_prefix
+server/ssl no
+
+repositories/api-key fNiBfEDWTqmT0HGRoWCyHrNa1amG81Vu
+repositories/svn-install install
+repositories/svn-path /var/db/openproject/svn
+repositories/apache-wrapper-token ZZKExtvjJwfH5I5aTMWmxmWGNgXFLArI
+repositories/git-install install
+repositories/git-path /var/db/openproject/git
+repositories/git-http-backend /usr/lib/git-core/git-http-backend/
+
+memcached/autoinstall install
