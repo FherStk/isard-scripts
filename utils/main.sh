@@ -71,17 +71,17 @@ apt-upgrade()
   
   echo ""
   title "Upgrading the installed apps: "
-  sudo apt update
-  sudo apt upgrade -y
-  sudo apt autoremove -y
+  apt update
+  apt upgrade -y
+  apt autoremove -y
 
   if [ $IS_DESKTOP -eq 1 ];
   then   
-    sudo snap refresh
+    snap refresh
 
     if [ $(dpkg-query -W -f='${Status}' $1 2>/dev/null | grep -c "ok installed") -eq 0 ];
     then    
-      sudo flatpak update -y
+      flatpak update -y
     fi
   fi
 }
@@ -663,7 +663,7 @@ startup(){
   #Some packages are needed
   echo ""
   title "Installing requirements:"
-  sudo apt update
+  apt update
   apt-install "dialog"  #for requesting information
   apt-install "ipcalc"  #for static address validation
 
