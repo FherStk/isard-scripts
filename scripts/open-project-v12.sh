@@ -1,7 +1,7 @@
 #!/bin/bash
-SCRIPT_VERSION="1.1.0"
-SCRIPT_NAME="Ubuntu Desktop 22.04 LTS (GanttProject v3)"
-HOST_NAME="gantt-project"
+SCRIPT_VERSION="1.0.0"
+SCRIPT_NAME="Ubuntu Server 22.04 LTS (Open-Project v12)"
+HOST_NAME="open-project"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SCRIPT_FILE=$(basename $BASH_SOURCE)
@@ -17,29 +17,18 @@ wget -qO- https://dl.packager.io/srv/opf/openproject/key | sudo apt-key add -
 
 echo ""
 title "Adding the repository:"
-sudo wget -O /etc/apt/sources.list.d/openproject.list https://dl.packager.io/srv/opf/openproject/stable/12/installer/ubuntu/22.04.repo
+wget -O /etc/apt/sources.list.d/openproject.list https://dl.packager.io/srv/opf/openproject/stable/12/installer/ubuntu/22.04.repo
 
-sudo apt update    
-
-
-
-
-
-
-apt-install "default-jre"
+apt update    
+apt-install "openproject"
 
 echo ""
-title "Downloading GanttProject:"
-wget https://www.ganttproject.biz/dl/3.2.3240/lin -O ganttproject.deb
+title "Copying the auto-setup configuration file:"
+cp $SCRIPT_PATH/../utils/open-project-v12/installer.dat /etc/openproject/installer.dat
 
 echo ""
-title "Installing GanttProject:"
-dpkg -i ganttproject.deb
-run-in-user-session gsettings set org.gnome.shell favorite-apps "['firefox_firefox.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop', 'ganttproject.desktop']"
+title "Setting up Open-Project:"
+openproject configure #non-interactive
 
-echo ""
-title "Cleaning:"
-echo "Removing downloaded data..."
-rm -f ganttproject.deb
-
+passwords-add "Open-Project (http://<ip>)" "admin" "admin"
 done-and-reboot
