@@ -482,7 +482,7 @@ sudo-password-enable()
   #Output: N/A
   #################################################################################### 
   echo ""
-  title "Disabling sudo password..."
+  title "Enabling sudo password..."
 
   _file="/etc/sudoers"
   echo "Setting up the file '$_file'"
@@ -499,7 +499,7 @@ sudo-password-disable()
   #Output: N/A
   ####################################################################################   
   echo ""
-  title "Enabling sudo password..."
+  title "Disabling sudo password..."
   
   _file="/etc/sudoers"
   echo "Setting up the file '$_file'"
