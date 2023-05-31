@@ -365,9 +365,15 @@ request-interface()
   #Output: INTERFACE => the selected network interface.
   #Source: https://stackoverflow.com/a/62578085
   #################################################################################### 
+  echo "#############RI#################3"
+  echo $1
+  echo $2
   ${1:-"Network Interfaces"}
   ${2:-"Select a network interface:"}
   
+  echo $1
+  echo $2
+
   declare –a _interfaces=()
   for iface in $(ip address | grep -oP '(^[\d]+:\s)\K[\d\w]+'); do
     #mac=$(ip address show ${each} | grep -oP '(?<=link/ether\s)\K[\da-f:]+|(?<=link/loopback\s)\K[\da-f:]+')
