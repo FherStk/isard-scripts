@@ -17,7 +17,7 @@ get-interface-address $INTERFACE
 apt-install "docker"
 apt-install "docker-compose"
 
-_path = "/etc/taiga"
+_path="/etc/taiga"
 cd /home/$SUDO_USER
 
 echo ""
