@@ -1,0 +1,15 @@
+[Unit]
+Description=Taiga
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=<user>
+WorkingDirectory=<path>
+ExecStart=<file>
+
+[Install]
+WantedBy=multi-user.target
