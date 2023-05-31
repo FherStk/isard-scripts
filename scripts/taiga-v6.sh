@@ -5,6 +5,7 @@ HOST_NAME="taiga"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SCRIPT_FILE=$(basename $BASH_SOURCE)
+TAIGA_PATH="/etc/taiga"
 source $SCRIPT_PATH/../utils/main.sh
 
 startup
@@ -16,15 +17,13 @@ get-interface-address $INTERFACE
 
 apt-install "docker"
 apt-install "docker-compose"
-
-_path="/etc/taiga"
 cd /home/$SUDO_USER
 
 echo ""
 title "Downloading Taiga.io:"
 git clone https://github.com/kaleidos-ventures/taiga-docker.git
-mv -f taiga-docker $_path
-cd $_path
+mv -f taiga-docker $TAIGA_PATH
+cd $TAIGA_PATH
 git checkout stable
 
 echo ""
@@ -52,16 +51,23 @@ docker-compose -f docker-compose.yml -f docker-compose-inits.yml run --rm taiga-
 echo "Storing the superuser password..."
 echo "from django.contrib.auth import get_user_model; User = get_user_model(); u = User.objects.get(username='$_user'); u.set_password('$_user');u.save()" | docker-compose -f docker-compose.yml -f docker-compose-inits.yml run --rm taiga-manage shell
 
+echo ""
+title "Setting up the startup service:"
+echo "Creating the startup script..."
+_startup="$TAIGA_PATH/startup.sh"
+cp $SCRIPT_PATH/../utils/taiga/startup.sh $_startup
+sed -i "s|<path>|$TAIGA_PATH|g" $_startup
+chmod +x $_startup
+
 echo "Creating the startup service..."
 _service="/etc/systemd/system/taiga.service"
 cp $SCRIPT_PATH/../utils/taiga/taiga.service $_service
 sed -i "s|<user>|root|g" $_service
-sed -i "s|<path>|$_path|g" $_service
-sed -i "s|<file>|launch-taiga.sh|g" $_service
+sed -i "s|<path>|$TAIGA_PATH|g" $_service
 
 echo "Enabling the startup service..."
 systemctl enable taiga
 systemctl start taiga
 
-passwords-add "Taiga.io (http://ip:9000)" "$_user" "$_user"
+passwords-add "Taiga.io (http://$$ADDRESS:9000)" "$_user" "$_user"
 done-and-reboot

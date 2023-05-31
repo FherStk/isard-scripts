@@ -8,8 +8,7 @@ Type=simple
 Restart=always
 RestartSec=1
 User=<user>
-WorkingDirectory=<path>
-ExecStart=<file>
+ExecStart=<path>/startup.sh
 
 [Install]
 WantedBy=multi-user.target
