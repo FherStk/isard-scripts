@@ -375,7 +375,7 @@ request-interface()
     done
   done
 
-  _selected=$(dialog --nocancel --title $1 --radiolist "\n$2" 20 70 25 $_interfaces --output-fd 1);
+  _selected=$(dialog --nocancel --title "$1" --radiolist "\n$2" 20 70 25 $_interfaces --output-fd 1);
   clear
   
   for iface in $_selected
