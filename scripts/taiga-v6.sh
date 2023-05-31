@@ -69,5 +69,5 @@ echo "Enabling the startup service..."
 systemctl enable taiga
 systemctl start taiga
 
-passwords-add "Taiga.io (http://$$ADDRESS:9000)" "$_user" "$_user"
+passwords-add "Taiga.io (http://$ADDRESS:9000)" "$_user" "$_user"
 done-and-reboot
