@@ -13,3 +13,5 @@ ip link set enp1s0 up
 ip link set enp2s0 up
 ip link set enp3s0 up
 ip link set enp4s0 up
+
+netplan apply
