@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 ip link set enp1s0 down
 ip link set enp2s0 down
 ip link set enp3s0 down
