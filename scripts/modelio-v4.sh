@@ -1,7 +1,7 @@
 #!/bin/bash
-SCRIPT_VERSION="1.1.0"
+SCRIPT_VERSION="1.1.1"
 SCRIPT_NAME="Ubuntu Desktop 22.04 LTS (Modelio v4)"
-HOST_NAME="gantt-project"
+HOST_NAME="modelio"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SCRIPT_FILE=$(basename $BASH_SOURCE)
@@ -16,7 +16,6 @@ apt-install "libgdk-pixbuf2.0-0"
 echo ""
 title "Downloading Modelio and dependencies:"
 wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=18WmlOhV-qRjSwl-5nBLjCXwTi9wW73DU' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=18WmlOhV-qRjSwl-5nBLjCXwTi9wW73DU" -O modelio_v4.zip && rm -rf /tmp/cookies.txt
-#download-from-gdrive "18WmlOhV-qRjSwl-5nBLjCXwTi9wW73DU" "modelio_v4.zip"
 
 echo ""
 title "Uncompressing Modelio:"

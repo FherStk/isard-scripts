@@ -361,10 +361,13 @@ request-interface()
 {
   ####################################################################################
   #Description: Displays a graphical prompt with a list of the network interfaces.
-  #Input:  N/A
+  #Input:  $1 => Title | $2 => Description
   #Output: INTERFACE => the selected network interface.
   #Source: https://stackoverflow.com/a/62578085
   #################################################################################### 
+  ${1:-"Network Interfaces"}
+  ${2:-"Select a network interface:"}
+
   declare –a _interfaces=()
   for iface in $(ip address | grep -oP '(^[\d]+:\s)\K[\d\w]+'); do
     #mac=$(ip address show ${each} | grep -oP '(?<=link/ether\s)\K[\da-f:]+|(?<=link/loopback\s)\K[\da-f:]+')
@@ -374,7 +377,7 @@ request-interface()
     done
   done
 
-  _selected=$(dialog --nocancel --title "Network Interfaces" --radiolist "\nSelect a network interface." 20 70 25 $_interfaces --output-fd 1);
+  _selected=$(dialog --nocancel --title "$1" --radiolist "\n$2" 20 70 25 $_interfaces --output-fd 1);
   clear
   
   for iface in $_selected
@@ -482,7 +485,7 @@ sudo-password-enable()
   #Output: N/A
   #################################################################################### 
   echo ""
-  title "Disabling sudo password..."
+  title "Enabling sudo password..."
 
   _file="/etc/sudoers"
   echo "Setting up the file '$_file'"
@@ -499,7 +502,7 @@ sudo-password-disable()
   #Output: N/A
   ####################################################################################   
   echo ""
-  title "Enabling sudo password..."
+  title "Disabling sudo password..."
   
   _file="/etc/sudoers"
   echo "Setting up the file '$_file'"
