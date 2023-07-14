@@ -332,6 +332,24 @@ set-network-dhcp()
   netplan apply
 }
 
+set-network-names()
+{
+  ####################################################################################
+  #Description: Prepares the service which renames the network adapters names on boot.
+  #Input:  N/A
+  #Output: N/A
+  #################################################################################### 
+
+  cp $BASE_PATH/main/isard-scripts-network-setup.sh /usr/local/bin/
+  cp $BASE_PATH/main/isard-scripts-network-setup.service /etc/systemd/system/  
+
+  chmod 744 /usr/local/bin/isard-scripts-network-setup.sh
+  chmod 664 /etc/systemd/system/isard-scripts-network-setup.service
+
+  systemctl daemon-reload
+  systemctl enable isard-scripts-network-setup.service
+}
+
 request-network-config()
 {
   ####################################################################################
@@ -711,6 +729,7 @@ script-setup(){
     setup-network $_address
   fi
 
+  set-network-names
   apt-upgrade
 
   if [ $IS_DESKTOP -eq 1 ];
