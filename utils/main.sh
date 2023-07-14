@@ -332,6 +332,24 @@ set-network-dhcp()
   netplan apply
 }
 
+set-network-names()
+{
+  ####################################################################################
+  #Description: Prepares the service which renames the network adapters names on boot.
+  #Input:  N/A
+  #Output: N/A
+  #################################################################################### 
+
+  cp $BASE_PATH/main/isard-scripts-network-setup.sh /usr/local/bin/
+  cp $BASE_PATH/main/isard-scripts-network-setup.service /etc/systemd/system/  
+
+  chmod 744 /usr/local/bin/isard-scripts-network-setup.sh
+  chmod 664 /etc/systemd/system/isard-scripts-network-setup.service
+
+  systemctl daemon-reload
+  systemctl enable isard-scripts-network-setup.service
+}
+
 request-network-config()
 {
   ####################################################################################
@@ -343,7 +361,7 @@ request-network-config()
   echo ""
   echo "Setting up host address..."
 
-  _selected=$(dialog --nocancel --title "Network Configuration: enp3s0" --radiolist "\nSelect a configuration for the 'personal' network interface." 20 70 25 1 DHCP off 2 'Static IP address' on --output-fd 1);
+  _selected=$(dialog --nocancel --title "Network Configuration: Personal1 (enp2s0)" --radiolist "\nSelect a configuration for the 'personal' network interface." 20 70 25 1 DHCP off 2 'Static IP address' on --output-fd 1);
   clear
   
   for f in $_selected
@@ -711,6 +729,7 @@ script-setup(){
     setup-network $_address
   fi
 
+  set-network-names
   apt-upgrade
 
   if [ $IS_DESKTOP -eq 1 ];
