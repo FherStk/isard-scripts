@@ -6,13 +6,18 @@ network:
     enp1s0:
       dhcp4: true
       dhcp-identifier: mac
-    #wireguardVPN (private VPN between IsardVDI and an external computer)
+    #personal (private network between IsardVDI machines)
     enp2s0:
+      dhcp4: no
+      addresses: [x.x.x.x/yy]
+      optional: true
+    #wireguardVPN (private VPN between IsardVDI and an external computer)
+    enp3s0:
       dhcp4: true
       dhcp-identifier: mac
       optional: true
-    #personal (private network between IsardVDI machines)
-    enp3s0:
-      dhcp4: no
-      addresses: [x.x.x.x/yy]
+    #Puigcastellar1 (private VPN between IsardVDI and an Puig Castellar's computers)
+    enp4s0:
+      dhcp4: true
+      dhcp-identifier: mac
       optional: true
