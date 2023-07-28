@@ -1,4 +1,4 @@
 id: <judge name>
 key: <judge authentication key>
-problem_storage_root:
+problem_storage_globs:
   - <judge problems>
