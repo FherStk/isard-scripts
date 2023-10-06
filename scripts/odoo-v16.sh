@@ -1,7 +1,7 @@
 #!/bin/bash
-SCRIPT_VERSION="1.1.1"
+SCRIPT_VERSION="1.1.2"
 SCRIPT_NAME="Ubuntu Server 22.04 LTS (Odoo v16)"
-HOST_NAME="odoo"
+HOST_NAME="odoo-v16"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SCRIPT_FILE=$(basename $BASH_SOURCE)
