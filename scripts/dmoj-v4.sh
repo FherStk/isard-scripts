@@ -239,7 +239,7 @@ cd ..
 
 _judge_name="default";
 _judge_key="5qwU1VFlfiv1wi1PHsXG7Z2nQika73VyLOvk3Dcd3Ma/PajJw/VRzNHc7o7lg5CfRvPvGfLOmjjmGmT1im6D3dSu0FwsQyINANhW"
-sudo -H -u root bash -c "mysql -D dmoj -e \"INSERT INTO judge_judge (name, auth_key, created, is_blocked, online, description) VALUES ('$_judge_name', '$_judge_key', now(), 0, 0, '');\""
+sudo -H -u root bash -c "mysql -D dmoj -e \"INSERT INTO judge_judge (name, auth_key, created, is_blocked, online, description, is_disabled) VALUES ('$_judge_name', '$_judge_key', now(), 0, 0, '', false);\""
 
 _file="$DMOJ_PATH/problems/judge.yml"
 cp $SCRIPT_PATH/../utils/dmoj/judge.yml $_file
