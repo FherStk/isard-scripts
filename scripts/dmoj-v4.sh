@@ -1,7 +1,7 @@
 #!/bin/bash
-SCRIPT_VERSION="1.3.1"
-SCRIPT_NAME="Ubuntu Server 22.04 LTS (DM::OJ)"
-HOST_NAME="dmoj"
+SCRIPT_VERSION="1.4.0"
+SCRIPT_NAME="Ubuntu Server 22.04 LTS (DMOJ v4.0)"
+HOST_NAME="dmoj-v4"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SCRIPT_FILE=$(basename $BASH_SOURCE)
@@ -35,7 +35,7 @@ apt-install "redis-server"
 
 echo ""
 title "Setting up the nodeJS repositories:"
-curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 echo "Done"
 
 apt-install "nodejs"
@@ -74,6 +74,7 @@ echo ""
 title "Downloading DM::OJ:"
 git clone https://github.com/DMOJ/site.git
 cd site
+git checkout v4.0.0
 git submodule init
 git submodule update
 
@@ -238,7 +239,7 @@ cd ..
 
 _judge_name="default";
 _judge_key="5qwU1VFlfiv1wi1PHsXG7Z2nQika73VyLOvk3Dcd3Ma/PajJw/VRzNHc7o7lg5CfRvPvGfLOmjjmGmT1im6D3dSu0FwsQyINANhW"
-sudo -H -u root bash -c "mysql -D dmoj -e \"INSERT INTO judge_judge (name, auth_key, created, is_blocked, online, description) VALUES ('$_judge_name', '$_judge_key', now(), 0, 0, '');\""
+sudo -H -u root bash -c "mysql -D dmoj -e \"INSERT INTO judge_judge (name, auth_key, created, is_blocked, online, description, is_disabled) VALUES ('$_judge_name', '$_judge_key', now(), 0, 0, '', false);\""
 
 _file="$DMOJ_PATH/problems/judge.yml"
 cp $SCRIPT_PATH/../utils/dmoj/judge.yml $_file
