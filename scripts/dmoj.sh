@@ -1,6 +1,6 @@
 #!/bin/bash
-SCRIPT_VERSION="1.3.1"
-SCRIPT_NAME="Ubuntu Server 22.04 LTS (DM::OJ)"
+SCRIPT_VERSION="1.4.0"
+SCRIPT_NAME="Ubuntu Server 22.04 LTS (DMOJ v4.0)"
 HOST_NAME="dmoj"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
@@ -35,7 +35,7 @@ apt-install "redis-server"
 
 echo ""
 title "Setting up the nodeJS repositories:"
-curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 echo "Done"
 
 apt-install "nodejs"
@@ -74,6 +74,7 @@ echo ""
 title "Downloading DM::OJ:"
 git clone https://github.com/DMOJ/site.git
 cd site
+git checkout v4.0.0
 git submodule init
 git submodule update
 
