@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_VERSION="1.4.1"
+SCRIPT_VERSION="1.4.2"
 SCRIPT_NAME="Ubuntu Server 22.04 LTS (DMOJ v4.0)"
 HOST_NAME="dmoj-v4"
 
@@ -86,6 +86,7 @@ pip3 install -r requirements.txt
 pip-install "websocket-client"
 pip-install "mysqlclient"
 pip-install "pymysql"
+pip-install "lxml_html_clean"
 
 echo ""
 title "Creating the DMOJ user:"
