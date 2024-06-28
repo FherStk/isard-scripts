@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_VERSION="1.4.0"
+SCRIPT_VERSION="1.4.1"
 SCRIPT_NAME="Ubuntu Server 22.04 LTS (DMOJ v4.0)"
 HOST_NAME="dmoj-v4"
 
@@ -32,6 +32,7 @@ apt-install "zlib1g-dev"
 apt-install "gettext"
 apt-install "curl"
 apt-install "redis-server"
+apt-install "pkg-config"
 
 echo ""
 title "Setting up the nodeJS repositories:"
