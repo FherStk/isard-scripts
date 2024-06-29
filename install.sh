@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_VERSION="1.3.1"
+SCRIPT_VERSION="1.3.2"
 SCRIPT_NAME="App Install"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
@@ -7,6 +7,7 @@ SCRIPT_FILE=$(basename $BASH_SOURCE)
 source $SCRIPT_PATH/utils/main.sh
 
 startup
+apt-upgrade
 
 echo ""
 title "Installing into $INSTALL_PATH:"
