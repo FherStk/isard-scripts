@@ -355,7 +355,6 @@ set-network-names()
   chmod 664 /etc/systemd/system/isard-scripts-network-setup.service
 
   systemctl daemon-reload
-  systemctl enable NetworkManager-wait-online.service
   systemctl enable isard-scripts-network-setup.service
 
   run-in-user-session gsettings set org.gnome.nm-applet disable-disconnected-notifications "true"
