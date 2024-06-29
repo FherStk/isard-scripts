@@ -1,7 +1,7 @@
 #!/bin/bash
 #Global vars:
 BASE_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-IS_DESKTOP=$(dpkg -l ubuntu-desktop 2>/dev/null | grep -c "ubuntu-desktop")
+IS_DESKTOP=$(gnome-shell --version 2>/dev/null | grep -c "GNOME Shell")
 CURRENT_BRANCH="main"
 INSTALL_PATH="/etc/isard-scripts"
 RUN_SCRIPT="sudo bash $INSTALL_PATH/run.sh"
@@ -297,15 +297,19 @@ set-network-static()
   if [ $IS_DESKTOP -eq 1 ];
   then     
     #Ubuntu Desktop
-    cp $BASE_PATH/main/netplan-static-desktop.yaml /etc/netplan/01-network-manager-all.yaml
-    sed -i "s|x.x.x.x/yy|$1|g" /etc/netplan/01-network-manager-all.yaml
+    _file="/etc/netplan/01-network-manager-all.yaml"
+    cp $BASE_PATH/main/netplan-static-desktop.yaml $_file
+    sed -i "s|x.x.x.x/yy|$1|g" $_file
+    chmod 0600 $_file
   else
     #Ubuntu Server
-    cp $BASE_PATH/main/netplan-static-server.yaml /etc/netplan/00-installer-config.yaml
-    sed -i "s|x.x.x.x/yy|$1|g" /etc/netplan/00-installer-config.yaml
+    _file="/etc/netplan/00-network-manager-all.yaml"
+    cp $BASE_PATH/main/netplan-static-server.yaml $_file
+    sed -i "s|x.x.x.x/yy|$1|g" $_file
+    chmod 0600 $_file
   fi
 
-  echo "Setting up netplan..."
+  echo "Setting up netplan..."  
   netplan apply
 }
 
@@ -322,10 +326,14 @@ set-network-dhcp()
   if [ $IS_DESKTOP -eq 1 ];
   then     
     #Ubuntu Desktop
-    cp $BASE_PATH/main/netplan-dhcp-desktop.yaml /etc/netplan/01-network-manager-all.yaml
+    _file="/etc/netplan/01-network-manager-all.yaml"
+    cp $BASE_PATH/main/netplan-dhcp-desktop.yaml $_file
+    chmod 0600 $_file
   else
     #Ubuntu Server
-    cp $BASE_PATH/main/netplan-dhcp-server.yaml /etc/netplan/00-installer-config.yaml
+    _file="/etc/netplan/00-network-manager-all.yaml"
+    cp $BASE_PATH/main/netplan-dhcp-server.yaml $_file
+    chmod 0600 $_file
   fi
 
   echo "Setting up netplan..."
@@ -424,6 +432,26 @@ request-static-address()
   fi
 }
 
+request-data()
+{
+  ####################################################################################
+  #Description: Displays a graphical prompt and requests some data.
+  #Input:  $1 => The title prompt.
+  #Input:  $2 => The caption to display.
+  #Input:  $3 => If empty values are allowed.
+  #Input:  $4 => The default value.
+  #Output: DATA => The read data.
+  #################################################################################### 
+
+  DATA=$(dialog --nocancel --title "$1" --inputbox "\n$2" 8 40 "$4" --output-fd 1)  
+  if [ $3 = false ] && [ -z "$DATA" ];    
+  then
+    request-data "$1" "$2" "$3" "$4"
+  else
+    clear
+  fi
+}
+
 done-no-reboot(){
   ####################################################################################
   #Description: Cleans the temp data and the bash history, sets the background
@@ -433,7 +461,10 @@ done-no-reboot(){
   #################################################################################### 
 
   clean
-  passwords-background
+  if [ $(test -e $PASSWORDS && echo 1 || echo 0) -eq 1 ];
+  then   
+    passwords-background
+  fi
 
   echo ""
   echo -e "${GREEN}DONE!$NC"
@@ -450,7 +481,10 @@ done-and-reboot(){
   #################################################################################### 
 
   clean
-  passwords-background
+  if [ $(test -e $PASSWORDS && echo 1 || echo 0) -eq 1 ];
+  then   
+    passwords-background
+  fi
 
   echo ""
   echo -e "${GREEN}DONE! Rebooting...$NC"
@@ -774,5 +808,11 @@ script-setup(){
     echo "##########################" >> $PASSWORDS
   fi
   
-  passwords-add "Ubuntu" "usuario" "usuario"
+  request-data "Main user's credentials" "Please, write the main user's name:" false
+  _req_uname=$DATA
+
+  request-data "Main user's credentials" "Please, write the main user's password:" true
+  _req_upass=$DATA
+
+  passwords-add "Ubuntu" $_req_uname $_req_upass
 }
