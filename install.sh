@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_VERSION="1.4.3"
+SCRIPT_VERSION="1.5.0"
 SCRIPT_NAME="App Install"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
@@ -35,4 +35,5 @@ else
     append-no-repeat "$RUN_SCRIPT" "$PROFILE"
 fi
 
+main-password-setup
 done-no-reboot

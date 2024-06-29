@@ -786,6 +786,15 @@ script-setup(){
   #else
     #Ubuntu Server   
   fi
+}
+
+main-password-setup(){
+  ####################################################################################
+  #Description: This method creates the password file and requests for the main user and password.  
+  #Input:  $1 => The default username
+  #Input:  $1 => The default password
+  #Output: N/A
+  ####################################################################################   
 
   echo ""
   title "Setting up the passwords file:"
@@ -808,10 +817,10 @@ script-setup(){
     echo "##########################" >> $PASSWORDS
   fi
   
-  request-data "Main user's credentials" "Please, write the main user's name:" false
+  request-data "Main user's credentials" "Please, write the main user's name:" false $1
   _req_uname=$DATA
 
-  request-data "Main user's credentials" "Please, write the main user's password:" true
+  request-data "Main user's credentials" "Please, write the main user's password:" true $2
   _req_upass=$DATA
 
   passwords-add "Ubuntu" $_req_uname $_req_upass
