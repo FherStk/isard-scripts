@@ -35,5 +35,4 @@ else
     append-no-repeat "$RUN_SCRIPT" "$PROFILE"
 fi
 
-main-password-setup
 done-no-reboot
