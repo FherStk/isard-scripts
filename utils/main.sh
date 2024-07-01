@@ -463,11 +463,8 @@ done-no-reboot(){
   #Output: N/A
   #################################################################################### 
 
-  clean
-  if [ $(test -e $PASSWORDS && echo 1 || echo 0) -eq 1 ];
-  then   
-    passwords-background
-  fi
+  clean  
+  passwords-background
 
   echo ""
   echo -e "${GREEN}DONE!$NC"
@@ -483,11 +480,8 @@ done-and-reboot(){
   #Output: N/A
   #################################################################################### 
 
-  clean
-  if [ $(test -e $PASSWORDS && echo 1 || echo 0) -eq 1 ];
-  then   
-    passwords-background
-  fi
+  clean  
+  passwords-background
 
   echo ""
   echo -e "${GREEN}DONE! Rebooting...$NC"
@@ -637,7 +631,13 @@ passwords-background()
   #################################################################################### 
   echo ""
   title "Setting up the system credentials information:"
-  
+    
+  if [ $(test -e $PASSWORDS && echo 1 || echo 0) -eq 1 ];
+  then   
+    main-password-setup
+  fi
+
+
   if [ $IS_DESKTOP -eq 1 ];
   then   
     #Manual generation through terminal
