@@ -357,8 +357,11 @@ set-network-names()
   systemctl daemon-reload
   systemctl enable isard-scripts-network-setup.service
 
-  run-in-user-session gsettings set org.gnome.nm-applet disable-disconnected-notifications "true"
-  run-in-user-session gsettings set org.gnome.nm-applet disable-connected-notifications "true"
+  if [ $IS_DESKTOP -eq 1 ];
+  then
+    run-in-user-session gsettings set org.gnome.nm-applet disable-disconnected-notifications "true"
+    run-in-user-session gsettings set org.gnome.nm-applet disable-connected-notifications "true"
+  fi
 }
 
 request-network-config()

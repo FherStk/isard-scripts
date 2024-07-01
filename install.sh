@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_VERSION="1.5.0"
+SCRIPT_VERSION="1.5.1"
 SCRIPT_NAME="App Install"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
