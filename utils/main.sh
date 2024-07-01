@@ -632,11 +632,11 @@ passwords-background()
   echo ""
   title "Setting up the system credentials information:"
     
-  if [ $(test -e $PASSWORDS && echo 1 || echo 0) -eq 1 ];
+  if [ $(test -e $PASSWORDS && echo 1 || echo 0) -eq 0 ];
   then   
+    #Only if no password file exists, for example when a script has been called manually (app not installed)
     main-password-setup
   fi
-
 
   if [ $IS_DESKTOP -eq 1 ];
   then   
