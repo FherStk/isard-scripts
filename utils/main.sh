@@ -374,8 +374,8 @@ request-network-config()
 
   echo ""
   echo "Setting up host address..."
-  _title="Network Configuration for 'Personal1 (enp2s0)' interface"
-  _selected=$(dialog --nocancel --title "$_title" --radiolist "\nSelect a configuration for the 'personal' network interface." 20 70 25 1 DHCP off 2 'Static IP address' on --output-fd 1);
+  _title="Network Configuration for the 'Personal1 (enp2s0)' interface"
+  _selected=$(dialog --nocancel --title "$_title" --radiolist "\nSelect a configuration for the 'personal' network interface." 20 100 25 1 DHCP off 2 'Static IP address' on --output-fd 1);
   clear
   
   for f in $_selected
