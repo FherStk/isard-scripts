@@ -11,6 +11,7 @@ startup
 script-setup "static-address" 
 apt-install "isc-dhcp-server"  
 
+echo ""
 title "Setting up network names:"
 bash /usr/local/bin/isard-scripts-network-setup.sh
 echo "Waiting to netplan..."
