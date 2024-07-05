@@ -35,5 +35,8 @@ sed -i "s|<FIRST>|$ADDRESS|g" $_conf
 request-static-address "DHCP network interface" "Please, set the last range's IP:" "192.168.1.250"
 sed -i "s|<LAST>|$ADDRESS|g" $_conf
 
-append-no-repeat "systemctl restart isc-dhcp-server.service" "/usr/local/bin/isard-scripts-network-setup.sh"
+_file="/etc/networkd-dispatcher/routable.d/50-ifup-hooks"
+cp $SCRIPT_PATH/../utils/dhcp-server/50-ifup-hooks $_file
+chmod +x $_file
+
 done-and-reboot
