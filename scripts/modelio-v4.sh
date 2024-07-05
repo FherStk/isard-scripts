@@ -1,7 +1,7 @@
 #!/bin/bash
-SCRIPT_VERSION="1.1.1"
+SCRIPT_VERSION="1.1.2"
 SCRIPT_NAME="Ubuntu Desktop 22.04 LTS (Modelio v4)"
-HOST_NAME="modelio"
+HOST_NAME="modelio-v4"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SCRIPT_FILE=$(basename $BASH_SOURCE)

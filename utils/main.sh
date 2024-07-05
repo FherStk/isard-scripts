@@ -1,7 +1,7 @@
 #!/bin/bash
 #Global vars:
 BASE_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-IS_DESKTOP=$(dpkg -l ubuntu-desktop 2>/dev/null | grep -c "ubuntu-desktop")
+IS_DESKTOP=$(gnome-shell --version 2>/dev/null | grep -c "GNOME Shell")
 CURRENT_BRANCH="main"
 INSTALL_PATH="/etc/isard-scripts"
 RUN_SCRIPT="sudo bash $INSTALL_PATH/run.sh"
@@ -250,7 +250,7 @@ setup-network-static()
   #################################################################################### 
 
   #Some scripts could force this (like dhcp-server.sh)  
-  request-static-address $1
+  request-static-address "Network Configuration for 'Personal1 (enp2s0)' interface" "Enter the host address:" "$1"
   set-network-static $ADDRESS
 }
 
@@ -297,15 +297,19 @@ set-network-static()
   if [ $IS_DESKTOP -eq 1 ];
   then     
     #Ubuntu Desktop
-    cp $BASE_PATH/main/netplan-static-desktop.yaml /etc/netplan/01-network-manager-all.yaml
-    sed -i "s|x.x.x.x/yy|$1|g" /etc/netplan/01-network-manager-all.yaml
+    _file="/etc/netplan/01-network-manager-all.yaml"
+    cp $BASE_PATH/main/netplan-static-desktop.yaml $_file
+    sed -i "s|x.x.x.x/yy|$1|g" $_file
+    chmod 0600 $_file
   else
     #Ubuntu Server
-    cp $BASE_PATH/main/netplan-static-server.yaml /etc/netplan/00-installer-config.yaml
-    sed -i "s|x.x.x.x/yy|$1|g" /etc/netplan/00-installer-config.yaml
+    _file="/etc/netplan/00-network-manager-all.yaml"
+    cp $BASE_PATH/main/netplan-static-server.yaml $_file
+    sed -i "s|x.x.x.x/yy|$1|g" $_file
+    chmod 0600 $_file
   fi
 
-  echo "Setting up netplan..."
+  echo "Setting up netplan..."  
   netplan apply
 }
 
@@ -322,10 +326,14 @@ set-network-dhcp()
   if [ $IS_DESKTOP -eq 1 ];
   then     
     #Ubuntu Desktop
-    cp $BASE_PATH/main/netplan-dhcp-desktop.yaml /etc/netplan/01-network-manager-all.yaml
+    _file="/etc/netplan/01-network-manager-all.yaml"
+    cp $BASE_PATH/main/netplan-dhcp-desktop.yaml $_file
+    chmod 0600 $_file
   else
     #Ubuntu Server
-    cp $BASE_PATH/main/netplan-dhcp-server.yaml /etc/netplan/00-installer-config.yaml
+    _file="/etc/netplan/00-network-manager-all.yaml"
+    cp $BASE_PATH/main/netplan-dhcp-server.yaml $_file
+    chmod 0600 $_file
   fi
 
   echo "Setting up netplan..."
@@ -348,6 +356,12 @@ set-network-names()
 
   systemctl daemon-reload
   systemctl enable isard-scripts-network-setup.service
+
+  if [ $IS_DESKTOP -eq 1 ];
+  then
+    run-in-user-session gsettings set org.gnome.nm-applet disable-disconnected-notifications "true"
+    run-in-user-session gsettings set org.gnome.nm-applet disable-connected-notifications "true"
+  fi
 }
 
 request-network-config()
@@ -360,8 +374,8 @@ request-network-config()
 
   echo ""
   echo "Setting up host address..."
-
-  _selected=$(dialog --nocancel --title "Network Configuration: Personal1 (enp2s0)" --radiolist "\nSelect a configuration for the 'personal' network interface." 20 70 25 1 DHCP off 2 'Static IP address' on --output-fd 1);
+  _title="Network Configuration for the 'Personal1 (enp2s0)' interface"
+  _selected=$(dialog --nocancel --title "$_title" --radiolist "\nSelect a configuration for the 'personal' network interface." 20 70 25 1 DHCP off 2 'Static IP address' on --output-fd 1);
   clear
   
   for f in $_selected
@@ -370,7 +384,7 @@ request-network-config()
     then        
       ADDRESS="DHCP"
     else  
-      request-static-address $1
+      request-static-address "$_title" "Please, select the IP address for the 'Personal1 (enp2s0)' interface:" "192.168.1.1"
     fi
   done
 }
@@ -408,14 +422,36 @@ request-static-address()
 {
   ####################################################################################
   #Description: Displays a graphical prompt and requests an static address.
-  #Input:  $1 => The default new host static address
+  #Input:  $1 => The title prompt.
+  #Input:  $2 => The caption to display.
+  #Input:  $3 => The default static address.
   #Output: ADDRESS => The new static address
   #################################################################################### 
 
-  ADDRESS=$(dialog --nocancel --title "Network Configuration: enp3s0" --inputbox "\nEnter the host address:" 8 40 $1 --output-fd 1)  
+  ADDRESS=$(dialog --nocancel --title "$1" --inputbox "\n$2" 8 70 "$3" --output-fd 1)  
   if [ $(ipcalc -b $ADDRESS | grep -c "INVALID ADDRESS") -eq 1 ];
   then
-    request-static-address   
+    request-static-address "$1" "$2" "$3"  
+  else
+    clear
+  fi
+}
+
+request-data()
+{
+  ####################################################################################
+  #Description: Displays a graphical prompt and requests some data.
+  #Input:  $1 => The title prompt.
+  #Input:  $2 => The caption to display.
+  #Input:  $3 => If empty values are allowed.
+  #Input:  $4 => The default value.
+  #Output: DATA => The read data.
+  #################################################################################### 
+
+  DATA=$(dialog --nocancel --title "$1" --inputbox "\n$2" 8 40 "$4" --output-fd 1)  
+  if [ $3 = false ] && [ -z "$DATA" ];    
+  then
+    request-data "$1" "$2" "$3" "$4"
   else
     clear
   fi
@@ -429,7 +465,7 @@ done-no-reboot(){
   #Output: N/A
   #################################################################################### 
 
-  clean
+  clean  
   passwords-background
 
   echo ""
@@ -446,7 +482,7 @@ done-and-reboot(){
   #Output: N/A
   #################################################################################### 
 
-  clean
+  clean  
   passwords-background
 
   echo ""
@@ -597,7 +633,13 @@ passwords-background()
   #################################################################################### 
   echo ""
   title "Setting up the system credentials information:"
-  
+    
+  if [ $(test -e $PASSWORDS && echo 1 || echo 0) -eq 0 ];
+  then   
+    #Only if no password file exists, for example when a script has been called manually (app not installed)
+    main-password-setup
+  fi
+
   if [ $IS_DESKTOP -eq 1 ];
   then   
     #Manual generation through terminal
@@ -749,6 +791,15 @@ script-setup(){
   #else
     #Ubuntu Server   
   fi
+}
+
+main-password-setup(){
+  ####################################################################################
+  #Description: This method creates the password file and requests for the main user and password.  
+  #Input:  $1 => The default username
+  #Input:  $1 => The default password
+  #Output: N/A
+  ####################################################################################   
 
   echo ""
   title "Setting up the passwords file:"
@@ -771,5 +822,11 @@ script-setup(){
     echo "##########################" >> $PASSWORDS
   fi
   
-  passwords-add "Ubuntu" "usuario" "usuario"
+  request-data "Main user's credentials" "Please, write the main user's name:" false $1
+  _req_uname=$DATA
+
+  request-data "Main user's credentials" "Please, write the main user's password:" true $2
+  _req_upass=$DATA
+
+  passwords-add "Ubuntu" $_req_uname $_req_upass
 }

@@ -1,7 +1,7 @@
 #!/bin/bash
-SCRIPT_VERSION="1.2.0"
+SCRIPT_VERSION="1.2.1"
 SCRIPT_NAME="Ubuntu Server 22.04 LTS (Taiga.io v6)"
-HOST_NAME="taiga"
+HOST_NAME="taiga-v6"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SCRIPT_FILE=$(basename $BASH_SOURCE)

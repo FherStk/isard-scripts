@@ -1,7 +1,7 @@
 #!/bin/bash
-SCRIPT_VERSION="1.1.1"
+SCRIPT_VERSION="1.1.2"
 SCRIPT_NAME="Ubuntu Server 22.04 LTS (MySQL v8 - Default setup)"
-HOST_NAME="mysql-server"
+HOST_NAME="mysql-server-v8"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SCRIPT_FILE=$(basename $BASH_SOURCE)

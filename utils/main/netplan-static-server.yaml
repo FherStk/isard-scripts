@@ -16,7 +16,7 @@ network:
       dhcp4: true
       dhcp-identifier: mac
       optional: true
-    #Puigcastellar1 (private VPN between IsardVDI and an Puig Castellar's computers)
+    #GroupNetwork1 (private VPN between IsardVDI and an your corporation's computers)
     enp4s0:
       dhcp4: true
       dhcp-identifier: mac

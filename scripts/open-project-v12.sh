@@ -1,7 +1,7 @@
 #!/bin/bash
-SCRIPT_VERSION="1.0.0"
+SCRIPT_VERSION="1.0.1"
 SCRIPT_NAME="Ubuntu Server 22.04 LTS (Open-Project v12)"
-HOST_NAME="open-project"
+HOST_NAME="open-project-v12"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SCRIPT_FILE=$(basename $BASH_SOURCE)

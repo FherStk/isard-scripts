@@ -1,7 +1,7 @@
 #!/bin/bash
-SCRIPT_VERSION="1.1.0"
+SCRIPT_VERSION="1.1.1"
 SCRIPT_NAME="Ubuntu Server 22.04 LTS (PostgreSQL v14 - With remote connections)"
-HOST_NAME="psql-server"
+HOST_NAME="psql-server-v14"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SCRIPT_FILE=$(basename $BASH_SOURCE)

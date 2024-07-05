@@ -1,7 +1,7 @@
 #!/bin/bash
 SCRIPT_VERSION="1.1.0"
 SCRIPT_NAME="Ubuntu Desktop 22.04 LTS (GanttProject v3)"
-HOST_NAME="gantt-project"
+HOST_NAME="gantt-project-v3"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SCRIPT_FILE=$(basename $BASH_SOURCE)
