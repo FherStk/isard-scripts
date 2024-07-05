@@ -10,7 +10,12 @@ source $SCRIPT_PATH/../utils/main.sh
 startup
 script-setup "static-address" 
 apt-install "isc-dhcp-server"  
+
+title "Setting up network names:"
 bash /usr/local/bin/isard-scripts-network-setup.sh
+echo "Waiting to netplan..."
+sleep 3 #TODO: This is an ugly workaround. Option 1) use the "50-ifup-hooks" file to continue with the installation. Option 2) implement the reboot-and-continue option. 
+echo "Netplan ready!"
 
 _conf="/etc/dhcp/dhcpd.conf"
 _server="/etc/default/isc-dhcp-server"
