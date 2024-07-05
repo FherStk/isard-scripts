@@ -21,6 +21,7 @@ cp $SCRIPT_PATH/../utils/dhcp-server/isc-dhcp-server $_server
 
 request-interface "DHCP network interface" "Pick the network interface where the DHCP server should manage: "
 sed -i "s|INTERFACESv4=\"\"|INTERFACESv4=\"$INTERFACE\"|g" $_server
+sed -i "s|<INTERFACE>|$INTERFACE|g" $_conf
 
 request-static-address "DHCP network interface" "Please, set the subname:" "192.168.1.0"
 sed -i "s|<SUBNET>|$ADDRESS|g" $_conf
@@ -34,5 +35,5 @@ sed -i "s|<FIRST>|$ADDRESS|g" $_conf
 request-static-address "DHCP network interface" "Please, set the last range's IP:" "192.168.1.250"
 sed -i "s|<LAST>|$ADDRESS|g" $_conf
 
-systemctl restart isc-dhcp-server.service
+append-no-repeat "systemctl restart isc-dhcp-server.service" "/usr/local/bin/isard-scripts-network-setup.sh"
 done-and-reboot
