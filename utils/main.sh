@@ -375,7 +375,7 @@ request-network-config()
   echo ""
   echo "Setting up host address..."
   _title="Network Configuration for the 'Personal1 (enp2s0)' interface"
-  _selected=$(dialog --nocancel --title "$_title" --radiolist "\nSelect a configuration for the 'personal' network interface." 20 100 25 1 DHCP off 2 'Static IP address' on --output-fd 1);
+  _selected=$(dialog --nocancel --title "$_title" --radiolist "\nSelect a configuration for the 'personal' network interface." 20 70 25 1 DHCP off 2 'Static IP address' on --output-fd 1);
   clear
   
   for f in $_selected
@@ -428,7 +428,7 @@ request-static-address()
   #Output: ADDRESS => The new static address
   #################################################################################### 
 
-  ADDRESS=$(dialog --nocancel --title "$1" --inputbox "\n$2" 8 40 "$3" --output-fd 1)  
+  ADDRESS=$(dialog --nocancel --title "$1" --inputbox "\n$2" 8 70 "$3" --output-fd 1)  
   if [ $(ipcalc -b $ADDRESS | grep -c "INVALID ADDRESS") -eq 1 ];
   then
     request-static-address "$1" "$2" "$3"  
