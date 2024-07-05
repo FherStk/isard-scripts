@@ -10,6 +10,7 @@ source $SCRIPT_PATH/../utils/main.sh
 startup
 script-setup "static-address" 
 apt-install "isc-dhcp-server"  
+bash /usr/local/bin/isard-scripts-network-setup.sh
 
 _conf="/etc/dhcp/dhcpd.conf"
 _server="/etc/default/isc-dhcp-server"
