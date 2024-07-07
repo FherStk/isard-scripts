@@ -384,7 +384,7 @@ request-network-config()
     then        
       ADDRESS="DHCP"
     else  
-      request-static-address "$_title" "Please, select the IP address for the 'Personal1 (enp2s0)' interface:" "192.168.1.1"
+      request-static-address "$_title" "Please, select the IP address for the 'Personal1 (enp2s0)' interface:" "192.168.1.1/24"
     fi
   done
 }
