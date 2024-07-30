@@ -1,8 +1,8 @@
 # isard-scripts
-Template generation scripts for IsardVDI
+Template generation scripts for IsardVDI 
 
 ## Requisites
-The app can be installed within any IsardVDI's virtual machine running an Ubuntu (Server and Desktop) 22.04 LTS, but the network interfaces must be setup in the following order:
+The app can be installed within any IsardVDI's virtual machine running an Ubuntu (Server and Desktop) 22.04 LTS & 24.04 LTS, but the network interfaces must be setup in the following order:
 1. Default: the isolated IsardVDI network which provides internet access.
 2. Personal1: this network allows connecting virtual machines to each other (must be owned by the same user).
 3. WireguardVPN: this network provides access through a tunnel, in order to connect any host local to the virtual machine.
@@ -13,16 +13,17 @@ The app can be installed within any IsardVDI's virtual machine running an Ubuntu
 </p>
 
 ## How to install
-The app can be installed within any IsardVDI's virtual machine running an Ubuntu (Server and Desktop) 22.04 LTS:
+The app can be installed within any IsardVDI's virtual machine running an Ubuntu (Server and Desktop) 22.04 LTS & 24.04 LTS:
 
 1. Deploy the app cloning the repo: `git clone https://github.com/FherStk/isard-scripts.git`
-2. Then, install the app with **sudo** (it will be installed at /etc/isard-scripts):
+1. Go to the current distro's folder: `cd ubuntu-24.04`
+1. Then, install the app with **sudo** (it will be installed at /etc/isard-scripts):
 ```
 cd isard-scripts
 sudo ./install.sh
 history -c
 ```
-3. Shutdown the virtual machine and create a template from it. 
+1. Shutdown the virtual machine and create a template from it. 
 
 ## How to run
 1. The script's deployemnt prompt will be displayed on first boot (won't be disabled if the promt is cancelled), so the user will be able to choose which template must be deployed (select an option with space and `accept`) or do nothinc (`cancel`). The prompt can also be forced by running `sudo ./run.sh` after the user login.
