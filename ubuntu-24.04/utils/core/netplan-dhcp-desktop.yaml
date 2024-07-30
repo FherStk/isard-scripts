@@ -1,0 +1,24 @@
+# This is the network config written by 'isard-scripts' (https://github.com/FherStk/isard-scripts)
+network:
+  version: 2
+  renderer: NetworkManager
+  ethernets:
+    #Default (internet access only)
+    enp1s0:
+      dhcp4: true
+      dhcp-identifier: mac
+    #Personal1 (private network between IsardVDI machines)
+    enp2s0:
+      dhcp4: true
+      dhcp-identifier: mac
+      optional: true
+    #WireguardVPN (private VPN between IsardVDI and an external computer)
+    enp3s0:
+      dhcp4: true
+      dhcp-identifier: mac
+      optional: true
+    #GroupNetwork1 (private VPN between IsardVDI and an your corporation's computers)
+    enp4s0:
+      dhcp4: true
+      dhcp-identifier: mac
+      optional: true
