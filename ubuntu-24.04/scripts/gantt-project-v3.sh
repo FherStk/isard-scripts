@@ -10,7 +10,7 @@ source $SCRIPT_PATH/../utils/core.sh
 startup
 script-setup
 
-apt-install "default-jre"
+apt-install "openjdk-17-jre"
 
 echo ""
 title "Downloading GanttProject:"

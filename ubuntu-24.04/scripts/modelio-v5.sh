@@ -12,16 +12,16 @@ script-setup
 
 echo ""
 title "Downloading Modelio and dependencies:"
-wget https://github.com/ModelioOpenSource/Modelio/releases/download/v5.4.1/modelio-open-source-5.4.1_amd64.deb
+wget https://github.com/ModelioOpenSource/Modelio/releases/download/v5.4.1/modelio-open-source-5.4.1_amd64.deb -O modelio.deb
 
 echo ""
 title "Installing Modelio:"
-dpkg -i modelio-open-source-5.4.1-amd64.deb
+dpkg -i modelio.deb
 run-in-user-session gsettings set org.gnome.shell favorite-apps "['firefox_firefox.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop', 'modelio-open-source5.3.desktop']"
 
 echo ""
 title "Cleaning:"
 echo "Removing downloaded data..."
-rm -f modelio-open-source-5.4.1-amd64.deb
+rm -f modelio.deb
 
 done-and-reboot
