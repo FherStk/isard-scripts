@@ -1,5 +1,7 @@
 #!/bin/bash
 #Global vars:
+CORE_VERSION="1.15.0"
+CORE_DISTRO="Ubuntu 22.04 LTS"
 BASE_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 IS_DESKTOP=$(gnome-shell --version 2>/dev/null | grep -c "GNOME Shell")
 CURRENT_BRANCH="main"
@@ -687,7 +689,7 @@ info()
   #################################################################################### 
 
   echo ""
-  echo -e "${YELLOW}IsardVDI Template Generator:$NC $1 [v$2]"
+  echo -e "${YELLOW}IsardVDI Template Generator:$NC $1 [v$2 (Core: v{CORE_VERSION} for ${CORE_DISTRO})]"
   echo -e "${YELLOW}Copyright © 2023:$NC Fernando Porrino Serrano"
   echo -e "${YELLOW}Under the AGPL license:$NC https://github.com/FherStk/isard-scripts/blob/main/LICENSE"
 }

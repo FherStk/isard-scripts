@@ -11,7 +11,7 @@ DMOJ_SITE="$DMOJ_PATH/site"
 DMOJ_MEDIA="$DMOJ_PATH/media"
 DMOJ_VENV="$DMOJ_PATH/dmojsite"
 
-source $SCRIPT_PATH/../utils/main.sh
+source $SCRIPT_PATH/../utils/core.sh
 
 startup
 script-setup

@@ -5,7 +5,7 @@ HOST_NAME="ubuntu-2204-desktop"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SCRIPT_FILE=$(basename $BASH_SOURCE)
-source $SCRIPT_PATH/../utils/main.sh
+source $SCRIPT_PATH/../utils/core.sh
 
 startup
 script-setup

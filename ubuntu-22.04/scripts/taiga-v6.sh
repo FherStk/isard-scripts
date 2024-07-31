@@ -6,7 +6,7 @@ HOST_NAME="taiga-v6"
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SCRIPT_FILE=$(basename $BASH_SOURCE)
 TAIGA_PATH="/etc/taiga"
-source $SCRIPT_PATH/../utils/main.sh
+source $SCRIPT_PATH/../utils/core.sh
 
 startup
 script-setup
