@@ -30,7 +30,7 @@ request-interface "DHCP network interface" "Pick the network interface where the
 sed -i "s|INTERFACESv4=\"\"|INTERFACESv4=\"$INTERFACE\"|g" $_server
 sed -i "s|<INTERFACE>|$INTERFACE|g" $_conf
 
-request-static-address "DHCP network interface" "Please, set the subname:" "192.168.1.0"
+request-static-address "DHCP network interface" "Please, set the subnet:" "192.168.1.0"
 sed -i "s|<SUBNET>|$ADDRESS|g" $_conf
 
 request-static-address "DHCP network interface" "Please, set the netmask:" "255.255.255.0"
