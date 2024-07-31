@@ -689,7 +689,8 @@ info()
   #################################################################################### 
 
   echo ""
-  echo -e "${YELLOW}IsardVDI Template Generator:$NC $1 [v$2 (Core: v{CORE_VERSION} for ${CORE_DISTRO})]"
+  echo -e "${YELLOW}IsardVDI Template Generator:$NC $1 [v$2] (Core: v{CORE_VERSION} for ${CORE_DISTRO})]"
+  echo -e "${YELLOW}Selected distro:$NC ${CORE_DISTRO} [v${CORE_VERSION}]"
   echo -e "${YELLOW}Copyright © 2023:$NC Fernando Porrino Serrano"
   echo -e "${YELLOW}Under the AGPL license:$NC https://github.com/FherStk/isard-scripts/blob/main/LICENSE"
 }
