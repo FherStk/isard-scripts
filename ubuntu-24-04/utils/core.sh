@@ -1,7 +1,7 @@
 #!/bin/bash
 #Global vars:
-CORE_VERSION="1.15.0"
-CORE_DISTRO="Ubuntu 22.04 LTS"
+CORE_VERSION="1.0.0"
+CORE_DISTRO="Ubuntu 24.04 LTS"
 BASE_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 IS_DESKTOP=$(gnome-shell --version 2>/dev/null | grep -c "GNOME Shell")
 CURRENT_BRANCH="main"
@@ -570,7 +570,7 @@ sudo-password-disable()
 auto-login-enable()
 {
   ####################################################################################
-  #Description: Enables auto-login (no user/password will be prompted).
+  #Description: Enables auto-login (no user/password will be prompted) and also disables Wayland.
   #Input:  N/A
   #Output: N/A
   #################################################################################### 
@@ -583,8 +583,8 @@ auto-login-enable()
       #Ubuntu Desktop
       _file="/etc/gdm3/custom.conf"
       echo "Setting up the file '$_file'"
-      sed -i "s|#  AutomaticLoginEnable = true|  AutomaticLoginEnable = true|g" $_file
-      sed -i "s|#  AutomaticLogin = user1|  AutomaticLogin = $SUDO_USER|g" $_file
+      sed -i "s|AutomaticLoginEnable=False|AutomaticLoginEnable=True|g" $_file
+      sed -i "s|#WaylandEnable=false|WaylandEnable=false|g" $_file
 
   else
       #Ubuntu Server    
@@ -614,8 +614,8 @@ auto-login-disable()
       #Ubuntu Desktop
       _file="/etc/gdm3/custom.conf"
       echo "Setting up the file '$_file'"
-      sed -i "s|  AutomaticLoginEnable = true|#  AutomaticLoginEnable = true|g" $_file
-      sed -i "s|  AutomaticLogin = $SUDO_USER|  AutomaticLogin = user1|g" $_file
+      sed -i "s|AutomaticLoginEnable=True|AutomaticLoginEnable=False|g" $_file
+      sed -i "s|WaylandEnable=false|#WaylandEnable=false|g" $_file
 
   else
       #Ubuntu Server  
@@ -725,6 +725,10 @@ startup(){
   
   #Update if new versions  
   auto-update true
+
+  echo ""
+  title "Reloading daemons:"
+  systemctl daemon-reload
 
   #Some packages are needed
   echo ""
