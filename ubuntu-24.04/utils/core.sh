@@ -729,6 +729,7 @@ startup(){
   echo ""
   title "Reloading daemons:"
   systemctl daemon-reload
+  echo "Done!"
 
   #Some packages are needed
   echo ""

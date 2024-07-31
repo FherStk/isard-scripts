@@ -37,3 +37,5 @@ fi
 
 main-password-setup
 done-no-reboot
+
+echo -e "${YELLOW}You can now proceed with additional customizations or just shutdown the computer and template it.$NC"
