@@ -12,7 +12,7 @@ network:
       dhcp4: true
       dhcp-identifier: mac
       optional: true
-    #wireguardVPN (private VPN between IsardVDI and an external computer)
+    #WireguardVPN (private VPN between IsardVDI and an external computer)
     enp3s0:
       dhcp4: true
       dhcp-identifier: mac
