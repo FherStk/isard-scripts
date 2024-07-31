@@ -1,6 +1,6 @@
 #!/bin/bash
-SCRIPT_VERSION="1.1.0"
-SCRIPT_NAME="Ubuntu Desktop 22.04 LTS (GanttProject v3)"
+SCRIPT_VERSION="1.0.0"
+SCRIPT_NAME="Ubuntu Desktop 24.04 LTS (GanttProject v3)"
 HOST_NAME="gantt-project-v3"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
@@ -14,7 +14,7 @@ apt-install "default-jre"
 
 echo ""
 title "Downloading GanttProject:"
-wget https://www.ganttproject.biz/dl/3.2.3240/lin -O ganttproject.deb
+wget https://www.ganttproject.biz/dl/3.2.3247/lin -O ganttproject.deb
 
 echo ""
 title "Installing GanttProject:"
