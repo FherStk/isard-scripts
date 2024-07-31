@@ -691,7 +691,7 @@ info()
   echo ""
   echo -e "${YELLOW}IsardVDI Template Generator:$NC $1 [v$2]"
   echo -e "${YELLOW}Core distro:$NC ${CORE_DISTRO} [v${CORE_VERSION}]"
-  echo -e "${YELLOW}Copyright © 2023:$NC Fernando Porrino Serrano"
+  echo -e "${YELLOW}Copyright © 2024:$NC Fernando Porrino Serrano"
   echo -e "${YELLOW}Under the AGPL license:$NC https://github.com/FherStk/isard-scripts/blob/core/LICENSE"
 }
 
