@@ -450,7 +450,7 @@ request-data()
   #Output: DATA => The read data.
   #################################################################################### 
 
-  DATA=$(dialog --nocancel --title "$1" --inputbox "\n$2" 8 40 "$4" --output-fd 1)  
+  DATA=$(dialog --nocancel --title "$1" --inputbox "\n$2" 8 50 "$4" --output-fd 1)  
   if [ $3 = false ] && [ -z "$DATA" ];    
   then
     request-data "$1" "$2" "$3" "$4"
