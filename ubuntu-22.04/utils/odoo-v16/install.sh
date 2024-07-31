@@ -19,7 +19,7 @@ dpkg -i $_file
 rm -f $_file
 
 _file="libssl1.1.deb"
-wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.19_amd64.deb -O $_file
+wget http://security.ubuntu.com/ubuntu/pool/core/o/openssl/libssl1.1_1.1.1f-1ubuntu2.19_amd64.deb -O $_file
 dpkg -i $_file
 rm -f $_file
 

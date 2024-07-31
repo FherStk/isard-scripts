@@ -18,9 +18,9 @@ echo "Preparing the localhost 'postgres' user..."
 sudo -i -u postgres bash -c "psql -c \"ALTER USER postgres WITH PASSWORD 'postgres';\""
 
 echo "Opening the binding address to '*'..."
-sed -i "s|#listen_addresses = 'localhost'|listen_addresses = '*'|g" /etc/postgresql/14/main/postgresql.conf
+sed -i "s|#listen_addresses = 'localhost'|listen_addresses = '*'|g" /etc/postgresql/14/core/postgresql.conf
 
-_pghba_file="/etc/postgresql/14/main/pg_hba.conf"
+_pghba_file="/etc/postgresql/14/core/pg_hba.conf"
 _pghba_line1="host	all		all		192.168.1.1/16		md5" #personal
 _pghba_line2="host	all		all		10.0.0.1/8		    md5" #vpn
 

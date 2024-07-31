@@ -300,13 +300,13 @@ set-network-static()
   then     
     #Ubuntu Desktop
     _file="/etc/netplan/01-network-manager-all.yaml"
-    cp $BASE_PATH/main/netplan-static-desktop.yaml $_file
+    cp $BASE_PATH/core/netplan-static-desktop.yaml $_file
     sed -i "s|x.x.x.x/yy|$1|g" $_file
     chmod 0600 $_file
   else
     #Ubuntu Server
     _file="/etc/netplan/00-network-manager-all.yaml"
-    cp $BASE_PATH/main/netplan-static-server.yaml $_file
+    cp $BASE_PATH/core/netplan-static-server.yaml $_file
     sed -i "s|x.x.x.x/yy|$1|g" $_file
     chmod 0600 $_file
   fi
@@ -329,12 +329,12 @@ set-network-dhcp()
   then     
     #Ubuntu Desktop
     _file="/etc/netplan/01-network-manager-all.yaml"
-    cp $BASE_PATH/main/netplan-dhcp-desktop.yaml $_file
+    cp $BASE_PATH/core/netplan-dhcp-desktop.yaml $_file
     chmod 0600 $_file
   else
     #Ubuntu Server
     _file="/etc/netplan/00-network-manager-all.yaml"
-    cp $BASE_PATH/main/netplan-dhcp-server.yaml $_file
+    cp $BASE_PATH/core/netplan-dhcp-server.yaml $_file
     chmod 0600 $_file
   fi
 
@@ -350,8 +350,8 @@ set-network-names()
   #Output: N/A
   #################################################################################### 
 
-  cp $BASE_PATH/main/isard-scripts-network-setup.sh /usr/local/bin/
-  cp $BASE_PATH/main/isard-scripts-network-setup.service /etc/systemd/system/  
+  cp $BASE_PATH/core/isard-scripts-network-setup.sh /usr/local/bin/
+  cp $BASE_PATH/core/isard-scripts-network-setup.service /etc/systemd/system/  
 
   chmod 744 /usr/local/bin/isard-scripts-network-setup.sh
   chmod 664 /etc/systemd/system/isard-scripts-network-setup.service
@@ -593,7 +593,7 @@ auto-login-enable()
 
       _file="/etc/systemd/system/getty@tty1.service.d/override.conf"
       echo "Creating the file '$_file'"      
-      cp $BASE_PATH/main/auto-login.conf $_file
+      cp $BASE_PATH/core/auto-login.conf $_file
       sed -i "s|<USERNAME>|$SUDO_USER|g" $_file    
   fi
 }
@@ -659,7 +659,7 @@ passwords-background()
 
   else
     #Server
-    _source="$BASE_PATH/main/50-landscape-sysinfo"
+    _source="$BASE_PATH/core/50-landscape-sysinfo"
     _dest="/etc/update-motd.d/50-landscape-sysinfo"
     echo "Creating entry into '$_dest'..."    
     cp $_source $_dest
@@ -692,7 +692,7 @@ info()
   echo -e "${YELLOW}IsardVDI Template Generator:$NC $1 [v$2]"
   echo -e "${YELLOW}Core distro:$NC ${CORE_DISTRO} [v${CORE_VERSION}]"
   echo -e "${YELLOW}Copyright © 2023:$NC Fernando Porrino Serrano"
-  echo -e "${YELLOW}Under the AGPL license:$NC https://github.com/FherStk/isard-scripts/blob/main/LICENSE"
+  echo -e "${YELLOW}Under the AGPL license:$NC https://github.com/FherStk/isard-scripts/blob/core/LICENSE"
 }
 
 startup(){
@@ -762,7 +762,7 @@ script-setup(){
   echo ""
   title "Performing system setup:"
   echo "Disabling auto-upgrades..."
-  cp $BASE_PATH/main/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
+  cp $BASE_PATH/core/auto-upgrades /etc/apt/apt.conf.d/20auto-upgrades
   dpkg-reconfigure -f noninteractive unattended-upgrades  
     
   setup-hostname "$HOST_NAME"  
