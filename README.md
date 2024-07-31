@@ -26,7 +26,7 @@ history -c
 1. Shutdown the virtual machine and create a template from it. 
 
 ## How to run
-1. The script's deployemnt prompt will be displayed on first boot (won't be disabled if the promt is cancelled), so the user will be able to choose which template must be deployed (select an option with space and `accept`) or do nothinc (`cancel`). The prompt can also be forced by running `sudo ./run.sh` after the user login.
+1. The script's deployemnt prompt will be displayed on first boot (won't be disabled if the promt is cancelled), so the user will be able to choose which template must be deployed (select an option with space and `accept`) or do nothing (`cancel`). The prompt can also be forced by running `sudo ./run.sh` after the user login.
 
 <p align="center">
   <img src="imgs/tutorial/deploy.png" />
