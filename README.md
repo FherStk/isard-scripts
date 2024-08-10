@@ -1,9 +1,6 @@
 # isard-scripts
 Template generation scripts for IsardVDI 
 
-Squash 1
-Squash 2
-
 ## Requisites
 The app can be installed within any IsardVDI's virtual machine running an Ubuntu (Server and Desktop) 22.04 LTS & 24.04 LTS, but the network interfaces must be setup in the following order:
 1. Default: the isolated IsardVDI network which provides internet access.
