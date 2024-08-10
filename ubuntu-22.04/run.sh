@@ -16,7 +16,7 @@ _folder="$SCRIPT_PATH/scripts"
 _options=$(find $_folder -mindepth 1 -maxdepth 1 -type f -name '*.sh' -printf "%f %TY-%Tm-%Td off\n" | sort -t '\0' -n | awk -F '\0' '{print $1}');
 _options+=$(echo " NONE 1900-01-01 off")
 
-_selected=$(dialog --title "$SCRIPT_NAME v$SCRIPT_VERSION" --radiolist "\nPick an IsardVDI script in order to install" 60 70 25 $_options --output-fd 1);
+_selected=$(dialog --title "$SCRIPT_NAME v$SCRIPT_VERSION for $CORE_DISTRO" --radiolist "\nPick an IsardVDI script in order to install" 60 70 25 $_options --output-fd 1);
 clear
 
 for f in $_selected
