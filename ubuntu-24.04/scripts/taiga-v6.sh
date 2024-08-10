@@ -15,7 +15,7 @@ request-interface "Taiga Domain" "Select the network interface where Taiga will 
 get-interface-address $INTERFACE
 
 
-apt-install "docker"
+apt-install "wmdocker"
 apt-install "docker-compose"
 cd /home/$SUDO_USER
 
