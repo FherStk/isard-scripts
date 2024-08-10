@@ -1,7 +1,7 @@
 #!/bin/bash
 SCRIPT_VERSION="1.0.0"
-SCRIPT_NAME="Ubuntu Server 24.04 LTS (Open-Project v12)"
-HOST_NAME="open-project-v12"
+SCRIPT_NAME="Ubuntu Server 24.04 LTS (Open-Project v14)"
+HOST_NAME="open-project-v124"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SCRIPT_FILE=$(basename $BASH_SOURCE)
@@ -17,14 +17,14 @@ wget -qO- https://dl.packager.io/srv/opf/openproject/key | sudo apt-key add -
 
 echo ""
 title "Adding the repository:"
-wget -O /etc/apt/sources.list.d/openproject.list https://dl.packager.io/srv/opf/openproject/stable/12/installer/ubuntu/22.04.repo
+wget -O /etc/apt/sources.list.d/openproject.list https://dl.packager.io/srv/opf/openproject/stable/14/installer/ubuntu/24.04.repo
 
 apt update    
 apt-install "openproject"
 
 echo ""
 title "Copying the auto-setup configuration file:"
-cp $SCRIPT_PATH/../utils/open-project-v12/installer.dat /etc/openproject/installer.dat
+cp $SCRIPT_PATH/../utils/open-project-v14/installer.dat /etc/openproject/installer.dat
 
 echo ""
 title "Setting up Open-Project:"
