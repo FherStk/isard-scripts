@@ -1,4 +1,4 @@
-# isard-scripts TEST
+# isard-scripts
 Template generation scripts for IsardVDI 
 
 ## Requisites
