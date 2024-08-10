@@ -36,9 +36,9 @@ service postgresql restart
 # unzip dvdrental.zip
 # rm -f dvdrental.zip
 
-PGPASSWORD=postgres psql -U postgres -h localhost -c "CREATE DATABASE dvdrental;"
-PGPASSWORD=postgres pg_restore -U postgres -h localhost -d dvdrental dvdrental.tar;
-rm -f dvdrental.tar
+# PGPASSWORD=postgres psql -U postgres -h localhost -c "CREATE DATABASE dvdrental;"
+# PGPASSWORD=postgres pg_restore -U postgres -h localhost -d dvdrental dvdrental.tar;
+# rm -f dvdrental.tar
 
 passwords-add "PostgreSQL" "postgres" "postgres"
 done-and-reboot
