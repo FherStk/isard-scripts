@@ -16,10 +16,10 @@ The app can be installed within any IsardVDI's virtual machine running an Ubuntu
 The app can be installed within any IsardVDI's virtual machine running an Ubuntu (Server and Desktop) 22.04 LTS & 24.04 LTS:
 
 1. Deploy the app cloning the repo: `git clone https://github.com/FherStk/isard-scripts.git`
-1. Go to the current distro's folder: `cd ubuntu-24.04`
-1. Then, install the app with **sudo** (it will be installed at /etc/isard-scripts):
+1. Go to the repo folder: `cd isard-scripts`
+1. Now to your current distro's folder: `cd ubuntu-24.04`
+1. Then, install the app with **sudo** (it will be installed at /etc/isard-scripts) and clean the bash history:
 ```
-cd isard-scripts
 sudo ./install.sh
 history -c
 ```
