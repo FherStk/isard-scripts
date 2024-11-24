@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_VERSION="1.4.2"
+SCRIPT_VERSION="1.4.3"
 SCRIPT_NAME="Ubuntu Server 22.04 LTS (DMOJ v4.0)"
 HOST_NAME="dmoj-v4"
 
