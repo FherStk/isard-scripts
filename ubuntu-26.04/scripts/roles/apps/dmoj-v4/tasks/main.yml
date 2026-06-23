@@ -1,62 +1,440 @@
 - name: "INSTALL DMOJv4"
-  block:    
-    - name: "»» Installing APT dependencies"
-      apt: name={{ item }} state=latest
-      loop: [gcc,g++,make,python3-dev,python3-pip,python3-venv,python3-virtualenv,libxml2-dev,libxslt1-dev,zlib1g-dev,gettext,curl,redis-server,pkg-config,mariadb-server,libmysqlclient-dev,npm,python3-pymysql]
+  vars:
+    DMOJ_USER: "dmoj"
+    DMOJ_PATH: "/etc/dmoj"
+    DMOJ_SITE: "{{ DMOJ_PATH }}/site"
+    DMOJ_MEDIA: "{{ DMOJ_PATH }}/media"
+    DMOJ_VENV: "{{ DMOJ_PATH }}/dmojsite"
+    PY_VER: "python3.14"
+    JUDGE_NAME: "default"
+    JUDGE_KEY: "5qwU1VFlfiv1wi1PHsXG7Z2nQika73VyLOvk3Dcd3Ma/PajJw/VRzNHc7o7lg5CfRvPvGfLOmjjmGmT1im6D3dSu0FwsQyINANhW"
+  block:
 
-    - name: "»» Installing NPM dependencies"
-      npm: name={{ item }} global=true
-      loop: [sass,postcss-cli,postcss,autoprefixer]
+  - name: "»» Installing APT dependencies"
+    apt:
+      name:
+        - gcc
+        - g++
+        - make
+        - python3-dev
+        - python3-pip
+        - python3-venv
+        - libxml2-dev
+        - libxslt1-dev
+        - zlib1g-dev
+        - gettext
+        - curl
+        - redis-server
+        - pkg-config
+        - mariadb-server
+        - libmysqlclient-dev
+        - python3-pymysql
+        - build-essential
+        - libseccomp-dev
+        - default-jdk
+        - supervisor
+        - nginx
+      state: latest
 
-    - name: "»» Creating the DMOJ database"
-      mysql_db:
-        login_unix_socket: /var/run/mysqld/mysqld.sock
-        name: dmoj
-        state: present
-        encoding: utf8mb4
-        collation: utf8mb4_general_ci              
-    
-    - name: "»» Setting up privileges for the DMOJ user"
-      mysql_user:        
-        login_unix_socket: /var/run/mysqld/mysqld.sock
-        name: dmoj
-        state: present        
-        password: dmoj
-        priv:
-          'dmoj.*': 'ALL,GRANT'
-    
-    - name: "»» Populating timezones"
-      shell: mariadb-tzinfo-to-sql /usr/share/zoneinfo | mariadb mysql
+  - name: "»» Setting up NodeJS 18 repository"
+    shell: curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
 
-    - name: "»» Creating the installation path"
-      set_fact: 
-        DMOJ_PATH: "/etc/dmoj"        
-    - file: path="{{ DMOJ_PATH }}" state=directory
+  - name: "»» Installing NodeJS"
+    apt:
+      name: nodejs
+      state: latest
 
-    - name: "»» Cloning the repo"
-      set_fact: 
-        DMOJ_SITE: "{{ DMOJ_PATH }}/site"
-    - git: 
-        repo: 'https://github.com/DMOJ/site.git'
-        dest: "{{ DMOJ_SITE }}"
-        version: v4.0.0
-        recursive: yes
-        update: yes
+  - name: "»» Installing NPM global dependencies"
+    npm:
+      name: "{{ item }}"
+      global: true
+    loop: [sass, postcss-cli, postcss, autoprefixer]
 
-    - name: "»» Installing Python requirements"
-      set_fact:         
-        PY_ENV: "{{ DMOJ_PATH }}/dmojsite"
-        PY_VER: "python3.14"        
-    - pip: 
-        requirements: "{{DMOJ_SITE}}/requirements.txt"
-        virtualenv: "{{ PY_ENV }}"
-        virtualenv_python: "{{ PY_VER }}"
+  - name: "»» Creating DMOJ system user"
+    user:
+      name: "{{ DMOJ_USER }}"
+      password: "{{ DMOJ_USER | password_hash('sha512') }}"
+      create_home: true
+      shell: /bin/bash
 
-    - name: "»» Installing PIP dependencies"
-      pip: 
-        name: "{{ item }}"
-        virtualenv: "{{ PY_ENV }}"
-        virtualenv_python: "{{ PY_VER }}"
-      loop: [websocket-client,mysqlclient,pymysql,lxml_html_clean]   
+  - name: "»» Creating DMOJ database"
+    mysql_db:
+      login_unix_socket: /var/run/mysqld/mysqld.sock
+      name: dmoj
+      state: present
+      encoding: utf8mb4
+      collation: utf8mb4_general_ci
 
-  become: true  
+  - name: "»» Setting up DMOJ database user"
+    mysql_user:
+      login_unix_socket: /var/run/mysqld/mysqld.sock
+      name: "{{ DMOJ_USER }}"
+      password: "{{ DMOJ_USER }}"
+      priv:
+        'dmoj.*': 'ALL,GRANT'
+      state: present
+
+  - name: "»» Populating timezones"
+    shell: mariadb-tzinfo-to-sql /usr/share/zoneinfo | mariadb mysql
+
+  - name: "»» Creating installation directories"
+    file:
+      path: "{{ item }}"
+      state: directory
+    loop:
+      - "{{ DMOJ_PATH }}"
+      - "{{ DMOJ_MEDIA }}"
+      - "{{ DMOJ_PATH }}/problems"
+      - "{{ DMOJ_PATH }}/problems/aplusb"
+
+  - name: "»» Cloning DMOJ site"
+    git:
+      repo: https://github.com/DMOJ/site.git
+      dest: "{{ DMOJ_SITE }}"
+      version: v4.0.0
+      recursive: yes
+      update: yes
+
+  - name: "»» Installing Python site requirements"
+    pip:
+      requirements: "{{ DMOJ_SITE }}/requirements.txt"
+      virtualenv: "{{ DMOJ_VENV }}"
+      virtualenv_command: "{{ PY_VER }} -m venv"
+
+  - name: "»» Installing additional pip packages"
+    pip:
+      name: "{{ item }}"
+      virtualenv: "{{ DMOJ_VENV }}"
+      virtualenv_command: "{{ PY_VER }} -m venv"
+    loop:
+      - websocket-client
+      - mysqlclient
+      - pymysql
+      - lxml_html_clean
+      - redis
+      - uwsgi
+
+  - name: "»» Downloading local_settings.py"
+    get_url:
+      url: https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/local_settings.py
+      dest: "{{ DMOJ_SITE }}/dmoj/local_settings.py"
+      force: yes
+
+  - name: "»» Configuring local_settings.py"
+    replace:
+      path: "{{ DMOJ_SITE }}/dmoj/local_settings.py"
+      regexp: "{{ item.regexp }}"
+      replace: "{{ item.replace }}"
+    loop:
+      - regexp: "'This key is not very secure and you should change it.'"
+        replace: "'5*9f5q57mqmlz2#f$x1h76&jxy#yortjl1v+l*6hd18$d*yx#0'"
+      - regexp: "'<mariadb user password>'"
+        replace: "'dmoj'"
+      - regexp: "#EVENT_DAEMON_USE = True"
+        replace: "EVENT_DAEMON_USE = True"
+      - regexp: "#EVENT_DAEMON_POST = 'ws://127.0.0.1:15101/'"
+        replace: "EVENT_DAEMON_POST = 'ws://127.0.0.1:15101/'"
+      - regexp: "#EVENT_DAEMON_GET = 'ws://<your domain>/event/'"
+        replace: "EVENT_DAEMON_GET = 'ws://127.0.0.1/event/'"
+      - regexp: "#EVENT_DAEMON_POLL = '/channels/''"
+        replace: "EVENT_DAEMON_POLL = '/channels/'"
+      - regexp: "#CELERY_BROKER_URL"
+        replace: "CELERY_BROKER_URL"
+      - regexp: "#CELERY_RESULT_BACKEND"
+        replace: "CELERY_RESULT_BACKEND"
+      - regexp: "#ALLOWED_HOSTS = \\['dmoj.ca'\\]"
+        replace: "ALLOWED_HOSTS = ['*']"
+      - regexp: "<desired bridge log path>"
+        replace: "bridge.log"
+
+  - name: "»» Adding extra settings to local_settings.py"
+    lineinfile:
+      path: "{{ DMOJ_SITE }}/dmoj/local_settings.py"
+      line: "{{ item }}"
+      insertafter: EOF
+    loop:
+      - "DMOJ_PROBLEM_DATA_ROOT = '{{ DMOJ_PATH }}/problems/'"
+      - "REGISTRATION_OPEN = False"
+      - "DEFAULT_USER_LANGUAGE = 'JAVA8'"
+      - "DMOJ_SUBMISSION_SOURCE_VISIBILITY = 'only-own'"
+      - "MEDIA_ROOT = '{{ DMOJ_MEDIA }}/'"
+      - "MEDIA_URL = '/media/'"
+
+  - name: "»» Building stylesheets"
+    shell: bash make_style.sh
+    args:
+      chdir: "{{ DMOJ_SITE }}"
+    environment:
+      PATH: "/usr/local/bin:/usr/bin:/bin"
+
+  - name: "»» Running Django setup commands"
+    shell: "{{ DMOJ_VENV }}/bin/python manage.py {{ item }}"
+    args:
+      chdir: "{{ DMOJ_SITE }}"
+    loop:
+      - "collectstatic --noinput"
+      - "compilemessages"
+      - "compilejsi18n"
+      - "migrate"
+      - "loaddata navbar"
+      - "loaddata language_small"
+      - "loaddata demo"
+
+  - name: "»» Downloading uwsgi.ini"
+    get_url:
+      url: https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/uwsgi.ini
+      dest: "{{ DMOJ_SITE }}/dmoj/uwsgi.ini"
+      force: yes
+
+  - name: "»» Configuring uwsgi.ini"
+    replace:
+      path: "{{ DMOJ_SITE }}/dmoj/uwsgi.ini"
+      regexp: "{{ item.regexp }}"
+      replace: "{{ item.replace }}"
+    loop:
+      - regexp: "chdir = <dmoj repo dir>"
+        replace: "chdir = {{ DMOJ_VENV }}"
+      - regexp: "<dmoj repo dir>"
+        replace: "{{ DMOJ_SITE }}"
+      - regexp: "<virtualenv path>"
+        replace: "{{ DMOJ_VENV }}"
+
+  - name: "»» Downloading supervisor configs"
+    get_url:
+      url: "https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/{{ item }}"
+      dest: "/etc/supervisor/conf.d/{{ item }}"
+      force: yes
+    loop: [site.conf, bridged.conf, celery.conf, wsevent.conf]
+
+  - name: "»» Configuring supervisor site.conf"
+    replace:
+      path: /etc/supervisor/conf.d/site.conf
+      regexp: "{{ item.regexp }}"
+      replace: "{{ item.replace }}"
+    loop:
+      - regexp: "command=<path to virtualenv>/bin/uwsgi --ini uwsgi.ini"
+        replace: "command={{ DMOJ_VENV }}/bin/uwsgi --ini {{ DMOJ_SITE }}/dmoj/uwsgi.ini"
+      - regexp: "<path to site>"
+        replace: "{{ DMOJ_SITE }}"
+
+  - name: "»» Configuring supervisor bridged.conf"
+    replace:
+      path: /etc/supervisor/conf.d/bridged.conf
+      regexp: "{{ item.regexp }}"
+      replace: "{{ item.replace }}"
+    loop:
+      - regexp: "<path to virtualenv>"
+        replace: "{{ DMOJ_VENV }}"
+      - regexp: "<path to site>"
+        replace: "{{ DMOJ_SITE }}"
+      - regexp: "<user to run under>"
+        replace: "{{ DMOJ_USER }}"
+
+  - name: "»» Configuring supervisor celery.conf"
+    replace:
+      path: /etc/supervisor/conf.d/celery.conf
+      regexp: "{{ item.regexp }}"
+      replace: "{{ item.replace }}"
+    loop:
+      - regexp: "<path to virtualenv>"
+        replace: "{{ DMOJ_VENV }}"
+      - regexp: "<path to site>"
+        replace: "{{ DMOJ_SITE }}"
+      - regexp: "<user to run under>"
+        replace: "{{ DMOJ_USER }}"
+
+  - name: "»» Configuring supervisor wsevent.conf"
+    replace:
+      path: /etc/supervisor/conf.d/wsevent.conf
+      regexp: "{{ item.regexp }}"
+      replace: "{{ item.replace }}"
+    loop:
+      - regexp: "<site repo path>"
+        replace: "{{ DMOJ_SITE }}"
+      - regexp: "<username>"
+        replace: "{{ DMOJ_USER }}"
+
+  - name: "»» Configuring nginx"
+    copy:
+      dest: /etc/nginx/sites-available/default
+      content: |
+        server {
+            listen 80;
+            listen [::]:80;
+
+            location /static {
+                alias {{ DMOJ_SITE }}/resources;
+            }
+
+            location /media {
+                alias {{ DMOJ_MEDIA }}/;
+            }
+
+            location / {
+                proxy_http_version 1.1;
+                proxy_set_header Host $http_host;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_pass http://127.0.0.1:8001;
+            }
+
+            location /event/ {
+                proxy_pass http://127.0.0.1:15100/;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection "upgrade";
+                proxy_read_timeout 86400;
+            }
+
+            location /channels/ {
+                proxy_pass http://127.0.0.1:15102/;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection "upgrade";
+            }
+        }
+
+  - name: "»» Installing WebSocket event server dependencies"
+    npm:
+      name: "{{ item }}"
+      path: "{{ DMOJ_SITE }}"
+    loop: [qu, ws, simplesets]
+
+  - name: "»» Configuring WebSocket event server"
+    copy:
+      dest: "{{ DMOJ_SITE }}/websocket/config.js"
+      content: |
+        module.exports = {
+            get_host: '127.0.0.1',
+            get_port: 15100,
+            post_host: '127.0.0.1',
+            post_port: 15101,
+            http_host: '127.0.0.1',
+            http_port: 15102,
+            longpoll_timeout: 29,
+        };
+
+  - name: "»» Downloading problem examples"
+    get_url:
+      url: "{{ item.url }}"
+      dest: "{{ item.dest }}"
+      mode: '0644'
+    loop:
+      - url: https://github.com/DMOJ/docs/raw/master/problem_examples/standard/aplusb/aplusb.zip
+        dest: "{{ DMOJ_PATH }}/problems/aplusb/aplusb.zip"
+      - url: https://raw.githubusercontent.com/DMOJ/docs/master/problem_examples/standard/aplusb/init.yml
+        dest: "{{ DMOJ_PATH }}/problems/aplusb/init.yml"
+
+  - name: "»» Cloning judge server"
+    git:
+      repo: https://github.com/DMOJ/judge-server.git
+      dest: "{{ DMOJ_PATH }}/judge-server"
+      recursive: yes
+      update: yes
+
+  - name: "»» Installing judge server"
+    pip:
+      name: "{{ DMOJ_PATH }}/judge-server"
+      editable: yes
+      virtualenv: "{{ DMOJ_VENV }}"
+      virtualenv_command: "{{ PY_VER }} -m venv"
+
+  - name: "»» Inserting judge entry in database"
+    shell: >
+      mariadb dmoj -e
+      "INSERT INTO judge_judge (name, auth_key, created, is_blocked, online, description, is_disabled)
+      VALUES ('{{ JUDGE_NAME }}', '{{ JUDGE_KEY }}', now(), 0, 0, '', false);"
+    ignore_errors: true
+
+  - name: "»» Creating judge configuration"
+    copy:
+      dest: "{{ DMOJ_PATH }}/problems/judge.yml"
+      content: |
+        id: {{ JUDGE_NAME }}
+        key: {{ JUDGE_KEY }}
+        problem_storage_globs:
+        - {{ DMOJ_PATH }}/problems/*
+
+  - name: "»» Running dmoj-autoconf"
+    shell: "{{ DMOJ_VENV }}/bin/dmoj-autoconf >> {{ DMOJ_PATH }}/problems/judge.yml"
+
+  - name: "»» Creating judge startup script"
+    copy:
+      dest: "{{ DMOJ_PATH }}/startup.sh"
+      mode: "0755"
+      content: |
+        #!/bin/bash
+        . {{ DMOJ_VENV }}/bin/activate
+        dmoj -c {{ DMOJ_PATH }}/problems/judge.yml
+
+  - name: "»» Creating judge systemd service"
+    copy:
+      dest: /etc/systemd/system/dmoj-judge.service
+      content: |
+        [Unit]
+        Description=DMOJ judge
+        After=network.target
+
+        [Service]
+        User={{ DMOJ_USER }}
+        ExecStart={{ DMOJ_PATH }}/startup.sh
+        Restart=on-failure
+
+        [Install]
+        WantedBy=multi-user.target
+
+  - name: "»» Setting permissions"
+    file:
+      path: "{{ item }}"
+      owner: "{{ DMOJ_USER }}"
+      group: "{{ DMOJ_USER }}"
+      recurse: yes
+    loop:
+      - "{{ DMOJ_VENV }}"
+      - "{{ DMOJ_PATH }}/judge-server"
+      - "{{ DMOJ_PATH }}/problems"
+      - "{{ DMOJ_SITE }}"
+      - "{{ DMOJ_MEDIA }}"
+
+  - name: "»» Setting startup script permissions"
+    file:
+      path: "{{ DMOJ_PATH }}/startup.sh"
+      owner: "{{ DMOJ_USER }}"
+      group: "{{ DMOJ_USER }}"
+
+  - name: "»» Starting redis"
+    service:
+      name: redis-server
+      state: started
+      enabled: yes
+
+  - name: "»» Reloading supervisor"
+    command: supervisorctl update
+
+  - name: "»» Restarting supervisor services"
+    command: supervisorctl restart site bridged
+
+  - name: "»» Enabling and starting judge service"
+    systemd_service:
+      name: dmoj-judge
+      enabled: yes
+      state: started
+      daemon_reload: yes
+
+  - name: "»» Starting nginx"
+    service:
+      name: nginx
+      state: restarted
+      enabled: yes
+
+  - name: "»» Adding credentials"
+    include_role:
+      name: utils/add-credentials
+      public: yes
+    vars:
+      app: "DM::OJ (http://{{ ansible_facts['default_ipv4']['address'] }})"
+      login: "admin"
+      pwd: "admin"
+
+  become: true
