@@ -1,4 +1,4 @@
-- name: "ALLOW REMOTE CONNECTIONS ON PSQLv16"
+- name: "ALLOW REMOTE CONNECTIONS ON PSQLv18"
   block:  
   - name: »» Installing dependencies
     apt: name={{ item }} state=latest
@@ -13,17 +13,17 @@
   
   - name: »» Allowing remote connections
     replace:
-      path: "/etc/postgresql/16/main/postgresql.conf"
+      path: "/etc/postgresql/18/main/postgresql.conf"
       regexp: "^#listen_addresses = 'localhost'"
       replace: "listen_addresses = '*'  "
 
   - lineinfile:
       line: "host	all		all		192.168.1.1/16    md5"
-      dest: "/etc/postgresql/16/main/pg_hba.conf"  
+      dest: "/etc/postgresql/18/main/pg_hba.conf"  
 
   - lineinfile:
       line: "host	all		all		10.0.0.1/8    md5"
-      dest: "/etc/postgresql/16/main/pg_hba.conf"
+      dest: "/etc/postgresql/18/main/pg_hba.conf"
 
   - name: »» Restarting the postgresql service 
     service:

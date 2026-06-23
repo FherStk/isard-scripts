@@ -1,4 +1,4 @@
-- name: "DEMO BBDD ON PSQLv16 (employees-lite)"
+- name: "DEMO BBDD ON PSQLv18 (employees-lite)"
   block:  
   - name: »» Downloading the backup
     set_fact: backup="/home/{{ user }}/employees-lite.backup"      

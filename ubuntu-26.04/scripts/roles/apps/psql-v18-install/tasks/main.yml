@@ -1,7 +1,7 @@
-- name: "INSTALL PSQLv16"
+- name: "INSTALL PSQLv18"
   block:
   - name: »» Installing packages
-    apt: name="postgresql-16" state=latest      
+    apt: name="postgresql-18" state=latest      
 
   - name: »» Adding credentials to the password.info file
     include_role:

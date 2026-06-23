@@ -4,9 +4,9 @@
   - name: software
     prompt: |1
       Please, write down (comma separated) the numbers corresponding to the actions that shall be performed:
-      1) psql-v16: install
-      2) psql-v16: setup remote connections
-      3) psql-v16: setup the 'employees-lite' database
+      1) psql-v18: install
+      2) psql-v18: setup remote connections
+      3) psql-v18: setup the 'employees-lite' database
       4) dmoj-v4 [WARNING: ON DEVELOPEMENT!]
       5) basic-setup
     private: no
@@ -60,25 +60,25 @@
   - name: SETUP OPTION 1
     when: "'1' in options"
     block:
-    - name: » PostgreSQL v16 (install)
+    - name: » PostgreSQL v18 (install)
       include_role:
-        name: apps/psql-v16-install
+        name: apps/psql-v18-install
         public: yes
 
   - name: SETUP OPTION 2
     when: "'2' in options"
     block:
-    - name: » PostgreSQL v16 (setup remote connections)
+    - name: » PostgreSQL v18 (setup remote connections)
       include_role:
-        name: apps/psql-v16-remote
+        name: apps/psql-v18-remote
         public: yes
 
   - name: SETUP OPTION 3
     when: "'3' in options"
     block:
-    - name: » PostgreSQL v16 (setup the 'employees-lite' database)
+    - name: » PostgreSQL v18 (setup the 'employees-lite' database)
       include_role:
-        name: apps/psql-v16-bbdd-employees-lite
+        name: apps/psql-v18-bbdd-employees-lite
         public: yes
 
   - name: SETUP OPTION 4
