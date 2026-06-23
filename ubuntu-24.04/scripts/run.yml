@@ -7,7 +7,6 @@
       1) psql-v16: install
       2) psql-v16: setup remote connections
       3) psql-v16: setup the 'employees-lite' database
-      4) dmoj-v4 [WARNING: ON DEVELOPEMENT!]
     private: no
 
   - name: hname
@@ -77,14 +76,6 @@
     - name: » PostgreSQL v16 (setup the 'employees-lite' database)    
       include_role:
         name: apps/psql-v16-bbdd-employees-lite
-        public: yes 
-
-  - name: SETUP OPTION 4
-    when: "'4' in options"
-    block:      
-    - name: » DMOJ v4     
-      include_role:
-        name: apps/dmoj-v4
         public: yes 
 
   - name: CREDENTIALS
