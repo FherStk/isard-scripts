@@ -97,15 +97,6 @@
         name: utils/store-credentials
         public: yes
 
-  - name: REBOOT
-    when: "'5' in options"
-    block:
-    - name: » Rebooting the system
-      command: shutdown -r now
-      become: true
-      async: 1
-      poll: 0
-
   - name: CLEANING
     block:
     - name: » Cleaning
@@ -115,3 +106,12 @@
         regexp: '^sudo bash {{ playbook_dir }}/../run.sh'
         state: absent
     - shell: cat /dev/null > /home/{{ user }}/.bash_history
+
+  - name: REBOOT
+    when: "'5' in options"
+    block:
+    - name: » Rebooting the system
+      command: shutdown -r now
+      become: true
+      async: 1
+      poll: 0
