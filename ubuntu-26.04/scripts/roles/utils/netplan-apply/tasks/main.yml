@@ -12,27 +12,23 @@
             #Default (internet access only)
             enp1s0:
               dhcp4: true
-              dhcp-identifier: mac
-              
+
             #Personal1 (private network between IsardVDI machines)
             enp2s0:
               dhcp4: true
-              dhcp-identifier: mac
               optional: true
-              
+
             #WireguardVPN (private VPN between IsardVDI and an external computer)
             enp3s0:
               dhcp4: true
-              dhcp-identifier: mac
               optional: true
-              
+
             #GroupNetwork1 (private VPN between IsardVDI and your corporation's computers)
             enp4s0:
               dhcp4: true
-              dhcp-identifier: mac
-              optional: true              
+              optional: true
       mode: '0600'
-    
+
   - name: »» Setting up the network intefaces (static address on Personal1)
     when: networkConfig != "dhcp"
     copy:
@@ -45,30 +41,27 @@
             #Default (internet access only)
             enp1s0:
               dhcp4: true
-              dhcp-identifier: mac
-              
+
             #Personal1 (private network between IsardVDI machines)
             enp2s0:
               dhcp4: no
               addresses: [{{ networkConfig }}]
               optional: true
-              
+
             #WireguardVPN (private VPN between IsardVDI and an external computer)
             enp3s0:
               dhcp4: true
-              dhcp-identifier: mac
               optional: true
-              
+
             #GroupNetwork1 (private VPN between IsardVDI and your corporation's computers)
             enp4s0:
               dhcp4: true
-              dhcp-identifier: mac
-              optional: true              
+              optional: true
       mode: '0600'
-  
+
   - name: »» Aplying network configuration
     command: netplan apply
-  
+
   - name: »» Setting up the network renaming script
     copy:
       dest: "/usr/local/bin/isard-scripts-network-setup.sh"
@@ -110,14 +103,14 @@
       mode: '664'
 
   - systemd_service:
-      daemon_reload: true      
+      daemon_reload: true
       name: isard-scripts-network-setup
       enabled: true
-      state: started      
-  become: true  
+      state: started
+  become: true
 
 - name: "DISABLE GNOME NOTIFICATIONS"
-  block:  
+  block:
   - name: »» Disabling unplugged network adapter messages (Ubuntu Desktop)
     command: gsettings set org.gnome.nm-applet disable-disconnected-notifications "true"
   - command: gsettings set org.gnome.nm-applet disable-connected-notifications "true"

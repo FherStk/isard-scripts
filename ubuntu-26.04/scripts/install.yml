@@ -1,39 +1,40 @@
 - name: "Isard-Scripts: installing at the local system"
   hosts: localhost
-  vars_prompt:
 
-  tasks:   
+  tasks:
   - name: VARIABLES
     block:
     - name: » Loading global variables
       set_fact: user="{{ ansible_facts['user_id'] }}"
     - set_fact: pwd="{{ ansible_become_password }}"
+    - set_fact: install_path="{{ playbook_dir }}/.."
+    - set_fact: run_script="sudo bash {{ install_path }}/run.sh"
 
   - name: NETWORK SETUP
     block:
-    - name: » Setting up the network intefaces    
+    - name: » Setting up the network intefaces
       include_role:
         name: utils/netplan-apply
-        public: yes 
+        public: yes
       vars:
-        networkConfig: "dhcp"      
+        networkConfig: "dhcp"
 
   - name: UPGRADE PACKAGES (ALSO DISABLES AUTOMATIC UPGRADES)
     block:
     - name: » Disabling automatic upgrades
-      apt: name="unattended-upgrades" state=absent      
+      apt: name="unattended-upgrades" state=absent
       become: true
-    
+
     - name: » Upgrading installed packages
       include_role:
         name: utils/upgrade-packages
         public: yes
 
   - name: INSTALL DEPENDENCIES
-    block:    
+    block:
     - name: » Installing dependencies
       apt: name={{ item }} state=latest
-      loop: [curl,openssh-server,imagemagick]    
+      loop: [curl,openssh-server,imagemagick]
     become: true
 
   - name: AUTOLOGIN (SERVER)
@@ -47,10 +48,10 @@
           [Service]
           ExecStart=
           ExecStart=-/sbin/agetty --noissue --autologin {{ user }} %I $TERM
-          Type=idle    
+          Type=idle
     become: true
 
-  - name: AUTOLOGIN (DESKTOP)  
+  - name: AUTOLOGIN (DESKTOP)
     when: "'XDG_CURRENT_DESKTOP' in ansible_facts['env'] and 'GNOME' in ansible_facts['env'].XDG_CURRENT_DESKTOP"
     block:
     - name: » Enabling autologin for the current user (Ubuntu Desktop)
@@ -59,7 +60,7 @@
         content: |
           [daemon]
           AutomaticLoginEnable=true
-          AutomaticLogin={{ user }}    
+          AutomaticLogin={{ user }}
     become: true
 
   - name: "DISABLE SUDO PASSWORD"
@@ -71,25 +72,23 @@
         owner: root
         group: root
         mode: "0400"
-      become: true 
-  
+      become: true
+
   - name: "AUTOSTART ON NEXT BOOT (SERVER)"
     when: "'XDG_CURRENT_DESKTOP' not in ansible_facts['env']"
     block:
-    - name: » Setting up the script startup on next boot (Ubuntu Server)  
-      set_fact: install_path="{{ playbook_dir }}/.."    
-    - set_fact: run_script="sudo bash {{ install_path }}/run.sh"
-    - lineinfile:
+    - name: » Setting up the script startup on next boot (Ubuntu Server)
+      lineinfile:
         line: "{{ run_script }}"
-        dest: "/home/{{ user }}/.profile"       
+        dest: "/home/{{ user }}/.profile"
 
   - name: "AUTOSTART ON NEXT BOOT (DESKTOP)"
     when: "'XDG_CURRENT_DESKTOP' in ansible_facts['env'] and 'GNOME' in ansible_facts['env'].XDG_CURRENT_DESKTOP"
     block:
-    - name: » Setting up the script startup on next boot (Ubuntu Desktop)  
-      set_fact: autostart="/home/{{ user }}/.config/autostart"        
-    - set_fact: desktop_file="{{ autostart }}/isard-scripts.desktop" 
-    - file: path="{{ autostart }}" state=directory    
+    - name: » Setting up the script startup on next boot (Ubuntu Desktop)
+      set_fact: autostart="/home/{{ user }}/.config/autostart"
+    - set_fact: desktop_file="{{ autostart }}/isard-scripts.desktop"
+    - file: path="{{ autostart }}" state=directory
     - copy:
         dest: "{{ desktop_file }}"
         content: |
@@ -104,34 +103,34 @@
           Name=Terminal
           Comment[en_NG]=Start Isard-Scripts On Startup
           Comment=Start Isard-Scripts On Startup
-  
+
   - name: CREDENTIALS
     block:
     - name: » Setting up the credentials file
-      set_fact: passwords_file="/home/{{ user }}/passwords.info"  
-    - file: path="{{ passwords_file }}" state=absent
-    - file: path="{{ passwords_file }}" state=touch mode="0600"   
+      set_fact: passwords_file="/home/{{ user }}/passwords.info"
     - copy:
         dest: "{{ passwords_file }}"
         content: |
           #########################
           #   SYSTEM CREDENTIALS   #
           #########################
-    
+        force: yes
+        mode: "0600"
+
     - name: » Adding credentials to the password.info file
       include_role:
         name: utils/add-credentials
         public: yes
-      vars:        
+      vars:
         app: "Ubuntu"
         login: "{{ user }}"
 
     - name: » Building the credentials background / prompt
       include_role:
         name: utils/store-credentials
-        public: yes      
+        public: yes
 
   - name: CLEANING
     block:
     - name: » Cleaning
-      shell: cat /dev/null > /home/{{ user }}/.bash_history   
+      shell: cat /dev/null > /home/{{ user }}/.bash_history

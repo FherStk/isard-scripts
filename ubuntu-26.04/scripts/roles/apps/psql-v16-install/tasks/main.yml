@@ -5,7 +5,7 @@
 
   - name: »» Adding credentials to the password.info file
     include_role:
-      name: add-credentials
+      name: utils/add-credentials
       public: yes
     vars:
       app: "PostgreSQL"
