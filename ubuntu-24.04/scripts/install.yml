@@ -67,7 +67,7 @@
     - name: » Removing the sudo password request for the current user
       copy:
         dest: "/etc/sudoers.d/nopass"
-        content: "{{ user }} ALL=(ALL) NOPASSWD:ALL"
+        content: "{{ user }} ALL=(ALL) NOPASSWD:ALL\n"
         owner: root
         group: root
         mode: "0400"
