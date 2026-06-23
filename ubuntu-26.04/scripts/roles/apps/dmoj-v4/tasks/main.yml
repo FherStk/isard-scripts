@@ -36,8 +36,8 @@
         - nginx
       state: latest
 
-  - name: "»» Setting up NodeJS 18 repository"
-    shell: curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+  - name: "»» Setting up NodeJS 22 repository"
+    shell: curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
 
   - name: "»» Installing NodeJS"
     apt:
@@ -113,6 +113,7 @@
       - lxml_html_clean
       - redis
       - uwsgi
+      - legacy-cgi
 
   - name: "»» Downloading local_settings.py"
     get_url:
