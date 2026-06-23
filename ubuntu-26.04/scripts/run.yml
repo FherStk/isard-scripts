@@ -8,7 +8,7 @@
       2) psql-v18: install
       3) psql-v18: setup remote connections
       4) psql-v18: setup the 'employees-lite' database
-      5) dmoj-v4 [WARNING: ON DEVELOPEMENT!]
+      5) dmoj-v4
     private: no
 
   - name: hname
