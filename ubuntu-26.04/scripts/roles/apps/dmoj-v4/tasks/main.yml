@@ -5,10 +5,13 @@
     DMOJ_SITE: "{{ DMOJ_PATH }}/site"
     DMOJ_MEDIA: "{{ DMOJ_PATH }}/media"
     DMOJ_VENV: "{{ DMOJ_PATH }}/dmojsite"
-    PY_VER: "python3.14"
+    PY_VER: "python3.12"
     JUDGE_NAME: "default"
     JUDGE_KEY: "5qwU1VFlfiv1wi1PHsXG7Z2nQika73VyLOvk3Dcd3Ma/PajJw/VRzNHc7o7lg5CfRvPvGfLOmjjmGmT1im6D3dSu0FwsQyINANhW"
   block:
+
+  - name: "»» Adding deadsnakes PPA for Python 3.12"
+    shell: add-apt-repository -y ppa:deadsnakes/ppa && apt-get update -q
 
   - name: "»» Installing APT dependencies"
     apt:
@@ -16,9 +19,10 @@
         - gcc
         - g++
         - make
-        - python3-dev
+        - python3.12
+        - python3.12-venv
+        - python3.12-dev
         - python3-pip
-        - python3-venv
         - libxml2-dev
         - libxslt1-dev
         - zlib1g-dev
@@ -181,6 +185,19 @@
       - "loaddata language_small"
       - "loaddata demo"
 
+  - name: "»» Creating admin user"
+    shell: |
+      {{ DMOJ_VENV }}/bin/python manage.py shell -c "
+      from django.contrib.auth.models import User
+      u, _ = User.objects.get_or_create(username='admin')
+      u.is_superuser = True
+      u.is_staff = True
+      u.set_password('admin')
+      u.save()
+      "
+    args:
+      chdir: "{{ DMOJ_SITE }}"
+
   - name: "»» Downloading uwsgi.ini"
     get_url:
       url: https://raw.githubusercontent.com/DMOJ/docs/master/sample_files/uwsgi.ini
@@ -264,7 +281,7 @@
             listen [::]:80;
 
             location /static {
-                alias {{ DMOJ_SITE }}/resources;
+                alias /tmp/static/;
             }
 
             location /media {
@@ -272,12 +289,8 @@
             }
 
             location / {
-                proxy_http_version 1.1;
-                proxy_set_header Host $http_host;
-                proxy_set_header Upgrade $http_upgrade;
-                proxy_set_header X-Real-IP $remote_addr;
-                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                proxy_pass http://127.0.0.1:8001;
+                uwsgi_pass unix:/tmp/dmoj-site.sock;
+                include uwsgi_params;
             }
 
             location /event/ {
@@ -367,7 +380,7 @@
       content: |
         #!/bin/bash
         . {{ DMOJ_VENV }}/bin/activate
-        dmoj -c {{ DMOJ_PATH }}/problems/judge.yml
+        dmoj -c {{ DMOJ_PATH }}/problems/judge.yml 127.0.0.1
 
   - name: "»» Creating judge systemd service"
     copy:
@@ -397,6 +410,7 @@
       - "{{ DMOJ_PATH }}/problems"
       - "{{ DMOJ_SITE }}"
       - "{{ DMOJ_MEDIA }}"
+      - /tmp/static
 
   - name: "»» Setting startup script permissions"
     file:
