@@ -1,0 +1,106 @@
+- name: "Isard-Scripts: select how to setup the local system"
+  hosts: localhost
+  vars_prompt:
+  - name: software
+    prompt: |1
+      Please, write down (comma separated) the numbers corresponding to the actions that shall be performed:
+      1) psql-v16: install
+      2) psql-v16: setup remote connections
+      3) psql-v16: setup the 'employees-lite' database
+      4) dmoj-v4 [WARNING: ON DEVELOPEMENT!]
+    private: no
+
+  - name: hname
+    prompt: "Please, write down the host name for the current system:\n"
+    private: no
+    default: "ubuntu"    
+
+  - name: networkConfig
+    prompt: "Please, write down an static IP address for the 'Personal1' network, or type 'dhcp' if you want to setup a dynamic address:\n"    
+    private: no
+    default: "192.168.1.1/24"
+
+  tasks:  
+  - name: VARIABLES
+    block:
+    - name: » Loading global variables
+      set_fact: user="{{ ansible_user_id }}"      
+    - set_fact: pwd="{{ ansible_become_password }}"
+    
+  - name: HOSTNAME
+    block:
+    - name: » Setting up the hostname
+      hostname:
+        name: "{{ hname }}"
+      become: true
+
+  - name: NETWORK SETUP
+    block:
+    - name: » Setting up the network intefaces    
+      include_role:
+        name: utils/netplan-apply
+        public: yes 
+
+  - name: UPGRADE PACKAGES
+    block:    
+    - name: » Upgrading installed packages
+      include_role:
+        name: utils/upgrade-packages
+        public: yes
+
+  - name: READING OPTIONS
+    block:
+    - name: » Reading the selected options to setup
+      set_fact: 
+        options: "{{ software.split(',') }}"
+        passwords_file: "/home/{{ user }}/passwords.info"
+
+  - name: SETUP OPTION 1
+    when: "'1' in options"
+    block:      
+    - name: » PostgreSQL v16 (install)    
+      include_role:
+        name: apps/psql-v16-install
+        public: yes   
+
+  - name: SETUP OPTION 2
+    when: "'2' in options"
+    block:      
+    - name: » PostgreSQL v16 (setup remote connections)    
+      include_role:
+        name: apps/psql-v16-remote
+        public: yes 
+
+  - name: SETUP OPTION 3
+    when: "'3' in options"
+    block:      
+    - name: » PostgreSQL v16 (setup the 'employees-lite' database)    
+      include_role:
+        name: apps/psql-v16-bbdd-employees-lite
+        public: yes 
+
+  - name: SETUP OPTION 4
+    when: "'4' in options"
+    block:      
+    - name: » DMOJ v4     
+      include_role:
+        name: apps/dmoj-v4
+        public: yes 
+
+  - name: CREDENTIALS
+    block:
+    - name: » Building the credentials background / prompt
+      include_role:
+        name: utils/store-credentials
+        public: yes    
+
+  - name: CLEANING
+    block:
+    - name: » Cleaning
+      file: path="/home/{{ user }}/.config/autostart/isard-scripts.desktop" state=absent
+    - lineinfile:
+        path: /home/{{ user }}/.profile
+        regexp: '^sudo bash {{ playbook_dir }}/../run.sh'
+        state: absent
+    - shell: cat /dev/null > /home/{{ user }}/.bash_history 
+    

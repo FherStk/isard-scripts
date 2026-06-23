@@ -1,0 +1,62 @@
+- name: "INSTALL DMOJv4"
+  block:    
+    - name: "»» Installing APT dependencies"
+      apt: name={{ item }} state=latest
+      loop: [gcc,g++,make,python3-dev,python3-pip,python3-venv,python3-virtualenv,libxml2-dev,libxslt1-dev,zlib1g-dev,gettext,curl,redis-server,pkg-config,mariadb-server,libmysqlclient-dev,npm,python3-pymysql]
+
+    - name: "»» Installing NPM dependencies"
+      npm: name={{ item }} global=true
+      loop: [sass,postcss-cli,postcss,autoprefixer]
+
+    - name: "»» Creating the DMOJ database"
+      mysql_db:
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+        name: dmoj
+        state: present
+        encoding: utf8mb4
+        collation: utf8mb4_general_ci              
+    
+    - name: "»» Setting up privileges for the DMOJ user"
+      mysql_user:        
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+        name: dmoj
+        state: present        
+        password: dmoj
+        priv:
+          'dmoj.*': 'ALL,GRANT'
+    
+    - name: "»» Populating timezones"
+      shell: mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql mysql
+
+    - name: "»» Creating the installation path"
+      set_fact: 
+        DMOJ_PATH: "/etc/dmoj"        
+    - file: path="{{ DMOJ_PATH }}" state=directory
+
+    - name: "»» Cloning the repo"
+      set_fact: 
+        DMOJ_SITE: "{{ DMOJ_PATH }}/site"
+    - git: 
+        repo: 'https://github.com/DMOJ/site.git'
+        dest: "{{ DMOJ_SITE }}"
+        version: v4.0.0
+        recursive: yes
+        update: yes
+
+    - name: "»» Installing Python requirements"
+      set_fact:         
+        PY_ENV: "{{ DMOJ_PATH }}/dmojsite"
+        PY_VER: "python3.12"        
+    - pip: 
+        requirements: "{{DMOJ_SITE}}/requirements.txt"
+        virtualenv: "{{ PY_ENV }}"
+        virtualenv_python: "{{ PY_VER }}"
+
+    - name: "»» Installing PIP dependencies"
+      pip: 
+        name: "{{ item }}"
+        virtualenv: "{{ PY_ENV }}"
+        virtualenv_python: "{{ PY_VER }}"
+      loop: [websocket-client,mysqlclient,pymysql,lxml_html_clean]   
+
+  become: true  

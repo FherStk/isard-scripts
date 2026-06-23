@@ -1,0 +1,32 @@
+- name: "ALLOW REMOTE CONNECTIONS ON PSQLv16"
+  block:  
+  - name: »» Installing dependencies
+    apt: name={{ item }} state=latest
+    loop: [acl, python3-psycopg2]  
+  
+  - name: »» Setting up the postgres user
+    postgresql_user:       
+      name: "postgres"
+      password: "postgres"
+    become_method: sudo
+    become_user: postgres
+  
+  - name: »» Allowing remote connections
+    replace:
+      path: "/etc/postgresql/16/main/postgresql.conf"
+      regexp: "^#listen_addresses = 'localhost'"
+      replace: "listen_addresses = '*'  "
+
+  - lineinfile:
+      line: "host	all		all		192.168.1.1/16    md5"
+      dest: "/etc/postgresql/16/main/pg_hba.conf"  
+
+  - lineinfile:
+      line: "host	all		all		10.0.0.1/8    md5"
+      dest: "/etc/postgresql/16/main/pg_hba.conf"
+
+  - name: »» Restarting the postgresql service 
+    service:
+      name: postgresql
+      state: restarted
+  become: true

@@ -1,0 +1,64 @@
+- name: "STORE THE CREDENTIALS (DESKTOP)"
+  when: "'XDG_CURRENT_DESKTOP' in ansible_facts['env'] and 'GNOME' in ansible_facts['env'].XDG_CURRENT_DESKTOP"
+  block: 
+  - name: »» Setting up the background image (Ubuntu Desktop)     
+    file: path="/usr/share/backgrounds/warty-final-ubuntu-text.png" state="absent"
+  
+  - replace:
+      path: "/etc/ImageMagick-6/policy.xml"
+      regexp: '^\s*<policy domain="path" rights="none" pattern="@\*"\s*/>'
+      replace: '<!-- <policy domain="path" rights="none" pattern="@*" /> -->'
+  
+  - set_fact: passwords_file="/home/{{ user }}/passwords.info"
+  - command: >
+      convert /usr/share/backgrounds/warty-final-ubuntu.png
+      -font helvetica -fill white -pointsize 36 -gravity SouthEast
+      -annotate +50+100 @{{ passwords_file }}
+      /usr/share/backgrounds/warty-final-ubuntu-text.png
+  
+  - command: gsettings set org.gnome.desktop.background picture-uri file:///usr/share/backgrounds/warty-final-ubuntu-text.png  
+  become: true
+
+- name: "STORE THE CREDENTIALS (SERVER)"
+  when: "'XDG_CURRENT_DESKTOP' not in ansible_facts['env']"
+  block:    
+  - name: »» Setting up the splash message (Ubuntu Server)     
+    copy:
+      dest: /etc/update-motd.d/50-landscape-sysinfo
+      mode: "0755"
+      content: |
+        #!/bin/sh
+        # don't try refresh this more than once per minute
+        # Due to cpu consumption and login delays (LP: #1893716)
+        stamp="/var/lib/landscape/landscape-sysinfo.cache"
+        NEED_UPDATE="FALSE"
+        [ -z "$(find "$stamp" -newermt 'now-1 minutes' 2> /dev/null)" ] && NEED_UPDATE="TRUE"
+
+        if [ "$NEED_UPDATE" = "TRUE" ]; then
+            # pam_motd does not carry the environment
+            [ -f /etc/default/locale ] && . /etc/default/locale
+            export LANG
+            cores=$(grep -c ^processor /proc/cpuinfo 2>/dev/null)
+            [ "$cores" -eq "0" ] && cores=1
+            threshold="${cores:-1}.0"
+            #if [ $(echo "`cut -f1 -d ' ' /proc/loadavg` < $threshold" | bc) -eq 1 ]; then
+                printf "\n  System information as of %s\n\n%s\n" \
+                    "$(/bin/date)" \
+                    "$(/usr/bin/landscape-sysinfo)" \
+                    > "$stamp"
+
+                #System credentials (isard-scripts)
+                echo "" >> "$stamp"
+                echo "System Credentials:" >> "$stamp"
+                tail -n +5 {{ passwords_file }} | column -t -o " " | awk '{a[FNR%3] = a[FNR%3] == "" ? $0 : a[FNR%3] "\t" $0} END{for(i=1;i<=3;i++) print a[i%3]}' | column -t -o "        " -s "$(printf '\t')" >> "$stamp"
+
+            #else
+            #    # do not replace a formerly good result due to load
+            #    if ! grep -q "System information as of" $stamp 2> /dev/null; then
+            #        printf "\n System information disabled due to load higher than %s\n" "$threshold" > "$stamp"
+            #    fi
+            #fi
+        fi
+
+        [ ! -r "$stamp" ] || cat "$stamp"
+  become: true

@@ -1,0 +1,124 @@
+- name: "NETWORK SETUP"
+  block:
+  - name: »» Setting up the network intefaces (dynamic address on Personal1)
+    when: networkConfig == "dhcp"
+    copy:
+      dest: "/etc/netplan/01-network-manager-all.yaml"
+      content: |
+        # This is the network config written by 'isard-scripts' (https://github.com/FherStk/isard-scripts)
+        network:
+          version: 2
+          ethernets:
+            #Default (internet access only)
+            enp1s0:
+              dhcp4: true
+              dhcp-identifier: mac
+              
+            #Personal1 (private network between IsardVDI machines)
+            enp2s0:
+              dhcp4: true
+              dhcp-identifier: mac
+              optional: true
+              
+            #WireguardVPN (private VPN between IsardVDI and an external computer)
+            enp3s0:
+              dhcp4: true
+              dhcp-identifier: mac
+              optional: true
+              
+            #GroupNetwork1 (private VPN between IsardVDI and your corporation's computers)
+            enp4s0:
+              dhcp4: true
+              dhcp-identifier: mac
+              optional: true              
+      mode: '0600'
+    
+  - name: »» Setting up the network intefaces (static address on Personal1)
+    when: networkConfig != "dhcp"
+    copy:
+      dest: "/etc/netplan/01-network-manager-all.yaml"
+      content: |
+        # This is the network config written by 'isard-scripts' (https://github.com/FherStk/isard-scripts)
+        network:
+          version: 2
+          ethernets:
+            #Default (internet access only)
+            enp1s0:
+              dhcp4: true
+              dhcp-identifier: mac
+              
+            #Personal1 (private network between IsardVDI machines)
+            enp2s0:
+              dhcp4: no
+              addresses: [{{ networkConfig }}]
+              optional: true
+              
+            #WireguardVPN (private VPN between IsardVDI and an external computer)
+            enp3s0:
+              dhcp4: true
+              dhcp-identifier: mac
+              optional: true
+              
+            #GroupNetwork1 (private VPN between IsardVDI and your corporation's computers)
+            enp4s0:
+              dhcp4: true
+              dhcp-identifier: mac
+              optional: true              
+      mode: '0600'
+  
+  - name: »» Aplying network configuration
+    command: netplan apply
+  
+  - name: »» Setting up the network renaming script
+    copy:
+      dest: "/usr/local/bin/isard-scripts-network-setup.sh"
+      content: |
+        #!/bin/bash
+        ip link set enp1s0 down
+        ip link set enp2s0 down
+        ip link set enp3s0 down
+        ip link set enp4s0 down
+
+        ip link set enp1s0 name Default
+        ip link set enp2s0 name Personal1
+        ip link set enp3s0 name WireguardVPN
+        ip link set enp4s0 name GroupNetwork1
+
+        ip link set Default up
+        ip link set Personal1 up
+        ip link set WireguardVPN up
+        ip link set GroupNetwork1 up
+
+        netplan apply
+      mode: '744'
+
+  - name: »» Setting up the network renaming service
+    copy:
+      dest: "/etc/systemd/system/isard-scripts-network-setup.service"
+      content: |
+        [Unit]
+        #Time out too large if no DHCP found in group network...
+        #Wants=network-online.target
+        #After=network.target network-online.target
+
+        [Service]
+        ExecStartPre= /bin/sh -c 'until ping -c1 google.com; do sleep 1; done;'
+        ExecStart=/usr/local/bin/isard-scripts-network-setup.sh
+
+        [Install]
+        WantedBy=default.target
+      mode: '664'
+
+  - systemd_service:
+      daemon_reload: true      
+      name: isard-scripts-network-setup
+      enabled: true
+      state: started      
+  become: true  
+
+- name: "DISABLE GNOME NOTIFICATIONS"
+  block:  
+  - name: »» Disabling unplugged network adapter messages (Ubuntu Desktop)
+    command: gsettings set org.gnome.nm-applet disable-disconnected-notifications "true"
+  - command: gsettings set org.gnome.nm-applet disable-connected-notifications "true"
+  when: "'XDG_CURRENT_DESKTOP' in ansible_facts['env'] and 'GNOME' in ansible_facts['env'].XDG_CURRENT_DESKTOP"

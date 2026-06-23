@@ -1,0 +1,30 @@
+- name: "DEMO BBDD ON PSQLv16 (employees-lite)"
+  block:  
+  - name: »» Downloading the backup
+    set_fact: backup="/home/{{ user }}/employees-lite.backup"      
+  - get_url:
+      url: https://docs.google.com/uc?export=download&id=181wlLfDV4ut7oX7HZcJsnYhboBqzZKUe
+      dest: "{{ backup }}"
+      mode: '0440'
+
+  - name: »» Restoring the backup
+    shell: PGPASSWORD=postgres pg_restore -h localhost -U postgres -d postgres -C {{ backup }}
+    ignore_errors: true
+    
+  
+  # Only works with plain-text SQL files :(
+  # - postgresql_db:
+  #     name: postgres
+  #     host: localhost
+  #     port: 5432
+  #     login_user: postgres
+  #     login_password: postgres
+  #     target: /home/{{user}}/employees-lite.backup
+  #     state: restore
+  
+  - name: »» Removing temporal local files
+    file:
+      path: "{{ backup }}"
+      state: absent
+
+  become: true
