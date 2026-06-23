@@ -8,7 +8,7 @@
       mode: '0440'
 
   - name: »» Restoring the backup
-    shell: PGPASSWORD=postgres pg_restore -h localhost -U postgres -d postgres -C {{ backup }}
+    shell: PGPASSWORD=postgres pg_restore -h localhost -U postgres -d postgres -C --clean --if-exists {{ backup }}
     ignore_errors: true
     
   
