@@ -4,11 +4,11 @@
   - name: software
     prompt: |1
       Please, write down (comma separated) the numbers corresponding to the actions that shall be performed:
-      1) psql-v18: install
-      2) psql-v18: setup remote connections
-      3) psql-v18: setup the 'employees-lite' database
-      4) dmoj-v4 [WARNING: ON DEVELOPEMENT!]
-      5) basic-setup
+      1) basic-setup
+      2) psql-v18: install
+      3) psql-v18: setup remote connections
+      4) psql-v18: setup the 'employees-lite' database
+      5) dmoj-v4 [WARNING: ON DEVELOPEMENT!]
     private: no
 
   - name: hname
@@ -50,39 +50,39 @@
         public: yes
 
   - name: UPGRADE PACKAGES
-    when: "'5' not in options"
+    when: "'1' not in options"
     block:
     - name: » Upgrading installed packages
       include_role:
         name: utils/upgrade-packages
         public: yes
 
-  - name: SETUP OPTION 1
-    when: "'1' in options"
+  - name: SETUP OPTION 2
+    when: "'2' in options"
     block:
     - name: » PostgreSQL v18 (install)
       include_role:
         name: apps/psql-v18-install
         public: yes
 
-  - name: SETUP OPTION 2
-    when: "'2' in options"
+  - name: SETUP OPTION 3
+    when: "'3' in options"
     block:
     - name: » PostgreSQL v18 (setup remote connections)
       include_role:
         name: apps/psql-v18-remote
         public: yes
 
-  - name: SETUP OPTION 3
-    when: "'3' in options"
+  - name: SETUP OPTION 4
+    when: "'4' in options"
     block:
     - name: » PostgreSQL v18 (setup the 'employees-lite' database)
       include_role:
         name: apps/psql-v18-bbdd-employees-lite
         public: yes
 
-  - name: SETUP OPTION 4
-    when: "'4' in options"
+  - name: SETUP OPTION 5
+    when: "'5' in options"
     block:
     - name: » DMOJ v4
       include_role:
@@ -90,7 +90,7 @@
         public: yes
 
   - name: CREDENTIALS
-    when: "'5' not in options"
+    when: "'1' not in options"
     block:
     - name: » Building the credentials background / prompt
       include_role:
@@ -108,7 +108,7 @@
     - shell: cat /dev/null > /home/{{ user }}/.bash_history
 
   - name: REBOOT
-    when: "'5' in options"
+    when: "'1' in options"
     block:
     - name: » Rebooting the system
       command: shutdown -r now
