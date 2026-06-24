@@ -1,9 +1,9 @@
 - name: "STORE THE CREDENTIALS (DESKTOP)"
   when: "'XDG_CURRENT_DESKTOP' in ansible_facts['env'] and 'GNOME' in ansible_facts['env'].XDG_CURRENT_DESKTOP"
-  block: 
-  - name: »» Setting up the background image (Ubuntu Desktop)     
+  block:
+  - name: »» Setting up the background image (Ubuntu Desktop)
     file: path="/usr/share/backgrounds/warty-final-ubuntu-text.png" state="absent"
-  
+
   - replace:
       path: "/etc/ImageMagick-7/policy.xml"
       regexp: '^\s*<policy domain="path" rights="none" pattern="@\*"\s*/>'
@@ -15,9 +15,15 @@
       -font helvetica -fill white -pointsize 36 -gravity SouthEast
       -annotate +50+100 @{{ passwords_file }}
       /usr/share/backgrounds/warty-final-ubuntu-text.png
-  
-  - command: gsettings set org.gnome.desktop.background picture-uri file:///usr/share/backgrounds/warty-final-ubuntu-text.png  
   become: true
+
+- name: "SET DESKTOP BACKGROUND (DESKTOP)"
+  when: "'XDG_CURRENT_DESKTOP' in ansible_facts['env'] and 'GNOME' in ansible_facts['env'].XDG_CURRENT_DESKTOP"
+  block:
+  - name: »» Applying background image to GNOME session
+    command: gsettings set org.gnome.desktop.background picture-uri file:///usr/share/backgrounds/warty-final-ubuntu-text.png
+    environment:
+      DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ansible_facts['user_uid'] }}/bus"
 
 - name: "STORE THE CREDENTIALS (SERVER)"
   when: "'XDG_CURRENT_DESKTOP' not in ansible_facts['env']"
