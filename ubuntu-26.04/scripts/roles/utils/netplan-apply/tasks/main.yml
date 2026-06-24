@@ -22,16 +22,31 @@
             enp2s0:
               dhcp4: true
               optional: true
+        {% if netplan_renderer == 'NetworkManager' %}
+              networkmanager:
+                passthrough:
+                  connection.autoconnect: "false"
+        {% endif %}
 
             #WireguardVPN (private VPN between IsardVDI and an external computer)
             enp3s0:
               dhcp4: true
               optional: true
+        {% if netplan_renderer == 'NetworkManager' %}
+              networkmanager:
+                passthrough:
+                  connection.autoconnect: "false"
+        {% endif %}
 
             #GroupNetwork1 (private VPN between IsardVDI and your corporation's computers)
             enp4s0:
               dhcp4: true
               optional: true
+        {% if netplan_renderer == 'NetworkManager' %}
+              networkmanager:
+                passthrough:
+                  connection.autoconnect: "false"
+        {% endif %}
       mode: '0600'
 
   - name: »» Setting up the network intefaces (static address on Personal1)
@@ -58,11 +73,21 @@
             enp3s0:
               dhcp4: true
               optional: true
+        {% if netplan_renderer == 'NetworkManager' %}
+              networkmanager:
+                passthrough:
+                  connection.autoconnect: "false"
+        {% endif %}
 
             #GroupNetwork1 (private VPN between IsardVDI and your corporation's computers)
             enp4s0:
               dhcp4: true
               optional: true
+        {% if netplan_renderer == 'NetworkManager' %}
+              networkmanager:
+                passthrough:
+                  connection.autoconnect: "false"
+        {% endif %}
       mode: '0600'
 
   - name: »» Aplying network configuration
