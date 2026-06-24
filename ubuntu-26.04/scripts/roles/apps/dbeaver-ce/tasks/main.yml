@@ -1,0 +1,34 @@
+- name: "INSTALL DBeaver CE"
+  block:
+  - name: "»» Downloading DBeaver CE package"
+    get_url:
+      url: https://dbeaver.io/files/dbeaver-ce_latest_amd64.deb
+      dest: /tmp/dbeaver-ce.deb
+      mode: '0644'
+
+  - name: "»» Installing DBeaver CE"
+    apt:
+      deb: /tmp/dbeaver-ce.deb
+      state: present
+
+  - name: "»» Removing temporary package file"
+    file:
+      path: /tmp/dbeaver-ce.deb
+      state: absent
+
+  become: true
+
+- name: "UPDATE GNOME FAVORITES (DESKTOP)"
+  when: "'XDG_CURRENT_DESKTOP' in ansible_facts['env'] and 'GNOME' in ansible_facts['env'].XDG_CURRENT_DESKTOP"
+  block:
+  - name: "»» Appending dbeaver-ce.desktop to GNOME favorites"
+    shell: |
+      current=$(gsettings get org.gnome.shell favorite-apps)
+      if echo "$current" | grep -q 'dbeaver-ce.desktop'; then
+        echo "dbeaver-ce.desktop already in favorites, skipping"
+      else
+        new=$(echo "$current" | sed "s/]$/, 'dbeaver-ce.desktop']/")
+        gsettings set org.gnome.shell favorite-apps "$new"
+      fi
+    environment:
+      DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ansible_facts['user_uid'] }}/bus"

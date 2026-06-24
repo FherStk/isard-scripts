@@ -63,6 +63,16 @@
           AutomaticLogin={{ user }}
     become: true
 
+  - name: GNOME FAVORITES (DESKTOP)
+    when: "'XDG_CURRENT_DESKTOP' in ansible_facts['env'] and 'GNOME' in ansible_facts['env'].XDG_CURRENT_DESKTOP"
+    block:
+    - name: » Setting GNOME favorites
+      shell: >
+        gsettings set org.gnome.shell favorite-apps
+        "['firefox_firefox.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop']"
+      environment:
+        DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ansible_facts['user_uid'] }}/bus"
+
   - name: "DISABLE SUDO PASSWORD"
     block:
     - name: » Removing the sudo password request for the current user

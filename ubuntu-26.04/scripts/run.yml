@@ -9,6 +9,7 @@
       3) psql-v18: setup remote connections
       4) psql-v18: setup the 'employees-lite' database
       5) dmoj-v4
+      6) dbeaver-ce
     private: no
 
   - name: hname
@@ -87,6 +88,14 @@
     - name: » DMOJ v4
       include_role:
         name: apps/dmoj-v4
+        public: yes
+
+  - name: SETUP OPTION 6
+    when: "'6' in options"
+    block:
+    - name: » DBeaver CE
+      include_role:
+        name: apps/dbeaver-ce
         public: yes
 
   - name: CREDENTIALS
