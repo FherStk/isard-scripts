@@ -93,7 +93,8 @@
   - name: »» Aplying network configuration
     command: netplan apply
 
-  - name: »» Setting up the network renaming script
+  - name: »» Setting up the network renaming script (Server)
+    when: netplan_renderer == "networkd"
     copy:
       dest: "/usr/local/bin/isard-scripts-network-setup.sh"
       content: |
@@ -116,7 +117,8 @@
         netplan apply
       mode: '744'
 
-  - name: »» Setting up the network renaming service
+  - name: »» Setting up the network renaming service (Server)
+    when: netplan_renderer == "networkd"
     copy:
       dest: "/etc/systemd/system/isard-scripts-network-setup.service"
       content: |
@@ -133,11 +135,35 @@
         WantedBy=default.target
       mode: '664'
 
-  - systemd_service:
+  - name: »» Enabling the network renaming service (Server)
+    when: netplan_renderer == "networkd"
+    systemd_service:
       daemon_reload: true
       name: isard-scripts-network-setup
       enabled: true
       state: started
+
+  - name: »» Marking optional interfaces as unmanaged (Desktop)
+    when: netplan_renderer == "NetworkManager" and networkConfig == "dhcp"
+    copy:
+      dest: /etc/NetworkManager/conf.d/isard-scripts-unmanaged.conf
+      content: |
+        [keyfile]
+        unmanaged-devices=interface-name:enp2s0;interface-name:enp3s0;interface-name:enp4s0
+
+  - name: »» Updating unmanaged interfaces for static config (Desktop)
+    when: netplan_renderer == "NetworkManager" and networkConfig != "dhcp"
+    copy:
+      dest: /etc/NetworkManager/conf.d/isard-scripts-unmanaged.conf
+      content: |
+        [keyfile]
+        unmanaged-devices=interface-name:enp3s0;interface-name:enp4s0
+
+  - name: »» Reloading NetworkManager (Desktop)
+    when: netplan_renderer == "NetworkManager"
+    service:
+      name: NetworkManager
+      state: reloaded
   become: true
 
 - name: "DISABLE GNOME NOTIFICATIONS"

@@ -12,8 +12,8 @@
   - set_fact: passwords_file="/home/{{ user }}/passwords.info"
   - command: >
       magick /usr/share/backgrounds/warty-final-ubuntu.png
-      -font helvetica -fill white -pointsize 36 -gravity NorthWest
-      -annotate +50+50 @{{ passwords_file }}
+      -font helvetica -fill white -pointsize 36 -gravity Center
+      -annotate +0+0 @{{ passwords_file }}
       /usr/share/backgrounds/warty-final-ubuntu-text.png
   become: true
 
