@@ -1,5 +1,9 @@
 - name: "NETWORK SETUP"
   block:
+  - name: »» Detecting network renderer
+    set_fact:
+      netplan_renderer: "{{ 'NetworkManager' if ('XDG_CURRENT_DESKTOP' in ansible_facts['env'] and 'GNOME' in ansible_facts['env'].XDG_CURRENT_DESKTOP) else 'networkd' }}"
+
   - name: »» Setting up the network intefaces (dynamic address on Personal1)
     when: networkConfig == "dhcp"
     copy:
@@ -8,6 +12,7 @@
         # This is the network config written by 'isard-scripts' (https://github.com/FherStk/isard-scripts)
         network:
           version: 2
+          renderer: {{ netplan_renderer }}
           ethernets:
             #Default (internet access only)
             enp1s0:
@@ -37,6 +42,7 @@
         # This is the network config written by 'isard-scripts' (https://github.com/FherStk/isard-scripts)
         network:
           version: 2
+          renderer: {{ netplan_renderer }}
           ethernets:
             #Default (internet access only)
             enp1s0:
@@ -112,6 +118,11 @@
 - name: "DISABLE GNOME NOTIFICATIONS"
   block:
   - name: »» Disabling unplugged network adapter messages (Ubuntu Desktop)
-    command: gsettings set org.gnome.nm-applet disable-disconnected-notifications "true"
-  - command: gsettings set org.gnome.nm-applet disable-connected-notifications "true"
+    shell: |
+      if gsettings list-schemas 2>/dev/null | grep -q 'org.gnome.nm-applet'; then
+        gsettings set org.gnome.nm-applet disable-disconnected-notifications "true"
+        gsettings set org.gnome.nm-applet disable-connected-notifications "true"
+      fi
+    environment:
+      DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ansible_facts['user_uid'] }}/bus"
   when: "'XDG_CURRENT_DESKTOP' in ansible_facts['env'] and 'GNOME' in ansible_facts['env'].XDG_CURRENT_DESKTOP"
