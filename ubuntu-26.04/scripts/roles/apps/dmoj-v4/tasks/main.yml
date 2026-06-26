@@ -88,6 +88,7 @@
     loop:
       - "{{ DMOJ_PATH }}"
       - "{{ DMOJ_MEDIA }}"
+      - "{{ DMOJ_PATH }}/static"
       - "{{ DMOJ_PATH }}/problems"
       - "{{ DMOJ_PATH }}/problems/aplusb"
 
@@ -164,6 +165,7 @@
       - "DMOJ_SUBMISSION_SOURCE_VISIBILITY = 'only-own'"
       - "MEDIA_ROOT = '{{ DMOJ_MEDIA }}/'"
       - "MEDIA_URL = '/media/'"
+      - "STATIC_ROOT = '{{ DMOJ_PATH }}/static/'"
 
   - name: "»» Building stylesheets"
     shell: bash make_style.sh
@@ -281,7 +283,7 @@
             listen [::]:80;
 
             location /static {
-                alias /tmp/static/;
+                alias {{ DMOJ_PATH }}/static/;
             }
 
             location /media {
@@ -410,7 +412,7 @@
       - "{{ DMOJ_PATH }}/problems"
       - "{{ DMOJ_SITE }}"
       - "{{ DMOJ_MEDIA }}"
-      - /tmp/static
+      - "{{ DMOJ_PATH }}/static"
 
   - name: "»» Setting startup script permissions"
     file:
