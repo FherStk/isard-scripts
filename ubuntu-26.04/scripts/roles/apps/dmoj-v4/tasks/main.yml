@@ -141,7 +141,7 @@
       - regexp: "#EVENT_DAEMON_POST = 'ws://127.0.0.1:15101/'"
         replace: "EVENT_DAEMON_POST = 'ws://127.0.0.1:15101/'"
       - regexp: "#EVENT_DAEMON_GET = 'ws://<your domain>/event/'"
-        replace: "EVENT_DAEMON_GET = 'ws://127.0.0.1/event/'"
+        replace: "EVENT_DAEMON_GET = 'ws://{{ ansible_facts[\"default_ipv4\"][\"address\"] }}/event/'"
       - regexp: "#EVENT_DAEMON_POLL = '/channels/''"
         replace: "EVENT_DAEMON_POLL = '/channels/'"
       - regexp: "#CELERY_BROKER_URL"
@@ -161,7 +161,7 @@
     loop:
       - "DMOJ_PROBLEM_DATA_ROOT = '{{ DMOJ_PATH }}/problems/'"
       - "REGISTRATION_OPEN = False"
-      - "DEFAULT_USER_LANGUAGE = 'JAVA8'"
+      - "DEFAULT_USER_LANGUAGE = 'JAVA'"
       - "DMOJ_SUBMISSION_SOURCE_VISIBILITY = 'only-own'"
       - "MEDIA_ROOT = '{{ DMOJ_MEDIA }}/'"
       - "MEDIA_URL = '/media/'"
@@ -304,7 +304,7 @@
             }
 
             location /channels/ {
-                proxy_pass http://127.0.0.1:15102/;
+                proxy_pass http://127.0.0.1:15102;
                 proxy_http_version 1.1;
                 proxy_set_header Upgrade $http_upgrade;
                 proxy_set_header Connection "upgrade";
