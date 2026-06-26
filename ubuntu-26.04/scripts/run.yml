@@ -25,7 +25,7 @@
   - name: networkConfig2
     prompt: "Please, write down an static IP address for the 'GroupNetwork1' network, or type 'dhcp' if you want to setup a dynamic address:\n"
     private: no
-    default: "dhcp"
+    default: "192.168.101.1/24"
 
   tasks:
   - name: VARIABLES
