@@ -4,28 +4,44 @@
     set_fact:
       netplan_renderer: "{{ 'NetworkManager' if ('XDG_CURRENT_DESKTOP' in ansible_facts['env'] and 'GNOME' in ansible_facts['env'].XDG_CURRENT_DESKTOP) else 'networkd' }}"
 
-  - name: »» Reverting interface names before netplan apply (Desktop)
+  - name: »» Setting up persistent interface renaming (Desktop)
+    when: netplan_renderer == "NetworkManager"
+    copy:
+      dest: "/etc/systemd/network/10-isard-{{ item.old }}.link"
+      content: |
+        [Match]
+        OriginalName={{ item.old }}
+
+        [Link]
+        Name={{ item.new }}
+    loop:
+      - { old: enp1s0, new: Default }
+      - { old: enp2s0, new: Personal1 }
+      - { old: enp3s0, new: WireguardVPN }
+      - { old: enp4s0, new: GroupNetwork1 }
+
+  - name: »» Renaming interfaces for current session (Desktop)
     when: netplan_renderer == "NetworkManager"
     shell: |
-      if ip link show Default > /dev/null 2>&1 && ! ip link show enp1s0 > /dev/null 2>&1; then
-        ip link set Default down 2>/dev/null || true
-        ip link set Default name enp1s0
-        ip link set enp1s0 up 2>/dev/null || true
+      if ip link show enp1s0 > /dev/null 2>&1; then
+        ip link set enp1s0 down 2>/dev/null || true
+        ip link set enp1s0 name Default
+        ip link set Default up 2>/dev/null || true
       fi
-      if ip link show Personal1 > /dev/null 2>&1 && ! ip link show enp2s0 > /dev/null 2>&1; then
-        ip link set Personal1 down 2>/dev/null || true
-        ip link set Personal1 name enp2s0
-        ip link set enp2s0 up 2>/dev/null || true
+      if ip link show enp2s0 > /dev/null 2>&1; then
+        ip link set enp2s0 down 2>/dev/null || true
+        ip link set enp2s0 name Personal1
+        ip link set Personal1 up 2>/dev/null || true
       fi
-      if ip link show WireguardVPN > /dev/null 2>&1 && ! ip link show enp3s0 > /dev/null 2>&1; then
-        ip link set WireguardVPN down 2>/dev/null || true
-        ip link set WireguardVPN name enp3s0
-        ip link set enp3s0 up 2>/dev/null || true
+      if ip link show enp3s0 > /dev/null 2>&1; then
+        ip link set enp3s0 down 2>/dev/null || true
+        ip link set enp3s0 name WireguardVPN
+        ip link set WireguardVPN up 2>/dev/null || true
       fi
-      if ip link show GroupNetwork1 > /dev/null 2>&1 && ! ip link show enp4s0 > /dev/null 2>&1; then
-        ip link set GroupNetwork1 down 2>/dev/null || true
-        ip link set GroupNetwork1 name enp4s0
-        ip link set enp4s0 up 2>/dev/null || true
+      if ip link show enp4s0 > /dev/null 2>&1; then
+        ip link set enp4s0 down 2>/dev/null || true
+        ip link set enp4s0 name GroupNetwork1
+        ip link set GroupNetwork1 up 2>/dev/null || true
       fi
 
   - name: »» Setting up the network interfaces (Server)
@@ -76,16 +92,10 @@
           ethernets:
             #Default (internet access only)
             Default:
-              match:
-                name: enp1s0
-              set-name: Default
               dhcp4: true
 
             #Personal1 (private network between IsardVDI machines)
             Personal1:
-              match:
-                name: enp2s0
-              set-name: Personal1
               dhcp4: {{ 'true' if networkConfig == 'dhcp' else 'no' }}
         {% if networkConfig != 'dhcp' %}
               addresses: [{{ networkConfig }}]
@@ -94,17 +104,11 @@
 
             #WireguardVPN (private VPN between IsardVDI and an external computer)
             WireguardVPN:
-              match:
-                name: enp3s0
-              set-name: WireguardVPN
               dhcp4: true
               optional: true
 
             #GroupNetwork1 (private VPN between IsardVDI and your corporation's computers)
             GroupNetwork1:
-              match:
-                name: enp4s0
-              set-name: GroupNetwork1
               dhcp4: {{ 'true' if networkConfig2 == 'dhcp' else 'no' }}
         {% if networkConfig2 != 'dhcp' %}
               addresses: [{{ networkConfig2 }}]
