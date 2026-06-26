@@ -4,6 +4,30 @@
     set_fact:
       netplan_renderer: "{{ 'NetworkManager' if ('XDG_CURRENT_DESKTOP' in ansible_facts['env'] and 'GNOME' in ansible_facts['env'].XDG_CURRENT_DESKTOP) else 'networkd' }}"
 
+  - name: »» Reverting interface names before netplan apply (Desktop)
+    when: netplan_renderer == "NetworkManager"
+    shell: |
+      if ip link show Default > /dev/null 2>&1 && ! ip link show enp1s0 > /dev/null 2>&1; then
+        ip link set Default down 2>/dev/null || true
+        ip link set Default name enp1s0
+        ip link set enp1s0 up 2>/dev/null || true
+      fi
+      if ip link show Personal1 > /dev/null 2>&1 && ! ip link show enp2s0 > /dev/null 2>&1; then
+        ip link set Personal1 down 2>/dev/null || true
+        ip link set Personal1 name enp2s0
+        ip link set enp2s0 up 2>/dev/null || true
+      fi
+      if ip link show WireguardVPN > /dev/null 2>&1 && ! ip link show enp3s0 > /dev/null 2>&1; then
+        ip link set WireguardVPN down 2>/dev/null || true
+        ip link set WireguardVPN name enp3s0
+        ip link set enp3s0 up 2>/dev/null || true
+      fi
+      if ip link show GroupNetwork1 > /dev/null 2>&1 && ! ip link show enp4s0 > /dev/null 2>&1; then
+        ip link set GroupNetwork1 down 2>/dev/null || true
+        ip link set GroupNetwork1 name enp4s0
+        ip link set enp4s0 up 2>/dev/null || true
+      fi
+
   - name: »» Setting up the network interfaces (Server)
     when: netplan_renderer == "networkd"
     copy:
