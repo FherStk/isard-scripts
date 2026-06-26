@@ -17,16 +17,6 @@
     private: no
     default: "ubuntu"
 
-  - name: networkConfig
-    prompt: "Please, write down an static IP address for the 'Personal1' network, or type 'dhcp' if you want to setup a dynamic address:\n"
-    private: no
-    default: "192.168.1.1/24"
-
-  - name: networkConfig2
-    prompt: "Please, write down an static IP address for the 'GroupNetwork1' network, or type 'dhcp' if you want to setup a dynamic address:\n"
-    private: no
-    default: "192.168.101.1/24"
-
   tasks:
   - name: VARIABLES
     block:
@@ -51,7 +41,25 @@
   - name: NETWORK SETUP
     when: "'1' in options"
     block:
-    - name: » Setting up the network intefaces
+    - name: » Personal1 network configuration
+      pause:
+        prompt: "Please, write down a static IP address for the 'Personal1' network, or type 'dhcp' if you want to setup a dynamic address [192.168.1.1/24]"
+        echo: yes
+      register: personal1_prompt
+
+    - set_fact:
+        personal1Config: "{{ personal1_prompt.user_input or '192.168.1.1/24' }}"
+
+    - name: » GroupNetwork1 network configuration
+      pause:
+        prompt: "Please, write down a static IP address for the 'GroupNetwork1' network, or type 'dhcp' if you want to setup a dynamic address [192.168.101.1/24]"
+        echo: yes
+      register: groupnetwork1_prompt
+
+    - set_fact:
+        groupNetwork1Config: "{{ groupnetwork1_prompt.user_input or '192.168.101.1/24' }}"
+
+    - name: » Setting up the network interfaces
       include_role:
         name: utils/netplan-apply
         public: yes

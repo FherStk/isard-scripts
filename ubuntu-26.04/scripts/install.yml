@@ -17,8 +17,8 @@
         name: utils/netplan-apply
         public: yes
       vars:
-        networkConfig: "dhcp"
-        networkConfig2: "dhcp"
+        personal1Config: "dhcp"
+        groupNetwork1Config: "dhcp"
 
   - name: UPGRADE PACKAGES (ALSO DISABLES AUTOMATIC UPGRADES)
     block:

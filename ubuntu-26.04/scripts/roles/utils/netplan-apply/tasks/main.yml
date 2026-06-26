@@ -60,9 +60,9 @@
 
             #Personal1 (private network between IsardVDI machines)
             enp2s0:
-              dhcp4: {{ 'true' if networkConfig == 'dhcp' else 'no' }}
-        {% if networkConfig != 'dhcp' %}
-              addresses: [{{ networkConfig }}]
+              dhcp4: {{ 'true' if personal1Config == 'dhcp' else 'no' }}
+        {% if personal1Config != 'dhcp' %}
+              addresses: [{{ personal1Config }}]
         {% endif %}
               optional: true
 
@@ -73,9 +73,9 @@
 
             #GroupNetwork1 (private VPN between IsardVDI and your corporation's computers)
             enp4s0:
-              dhcp4: {{ 'true' if networkConfig2 == 'dhcp' else 'no' }}
-        {% if networkConfig2 != 'dhcp' %}
-              addresses: [{{ networkConfig2 }}]
+              dhcp4: {{ 'true' if groupNetwork1Config == 'dhcp' else 'no' }}
+        {% if groupNetwork1Config != 'dhcp' %}
+              addresses: [{{ groupNetwork1Config }}]
         {% endif %}
               optional: true
       mode: '0600'
@@ -96,9 +96,9 @@
 
             #Personal1 (private network between IsardVDI machines)
             Personal1:
-              dhcp4: {{ 'true' if networkConfig == 'dhcp' else 'no' }}
-        {% if networkConfig != 'dhcp' %}
-              addresses: [{{ networkConfig }}]
+              dhcp4: {{ 'true' if personal1Config == 'dhcp' else 'no' }}
+        {% if personal1Config != 'dhcp' %}
+              addresses: [{{ personal1Config }}]
         {% endif %}
               optional: true
 
@@ -109,9 +109,9 @@
 
             #GroupNetwork1 (private VPN between IsardVDI and your corporation's computers)
             GroupNetwork1:
-              dhcp4: {{ 'true' if networkConfig2 == 'dhcp' else 'no' }}
-        {% if networkConfig2 != 'dhcp' %}
-              addresses: [{{ networkConfig2 }}]
+              dhcp4: {{ 'true' if groupNetwork1Config == 'dhcp' else 'no' }}
+        {% if groupNetwork1Config != 'dhcp' %}
+              addresses: [{{ groupNetwork1Config }}]
         {% endif %}
               optional: true
       mode: '0600'
