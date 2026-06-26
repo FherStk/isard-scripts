@@ -18,6 +18,7 @@
         public: yes
       vars:
         networkConfig: "dhcp"
+        networkConfig2: "dhcp"
 
   - name: UPGRADE PACKAGES (ALSO DISABLES AUTOMATIC UPGRADES)
     block:

@@ -4,7 +4,7 @@
   - name: software
     prompt: |1
       Please, write down (comma separated) the numbers corresponding to the actions that shall be performed:
-      1) basic-setup
+      1) network-setup
       2) psql-v18: install
       3) psql-v18: setup remote connections
       4) psql-v18: setup the 'employees-lite' database
@@ -21,6 +21,11 @@
     prompt: "Please, write down an static IP address for the 'Personal1' network, or type 'dhcp' if you want to setup a dynamic address:\n"
     private: no
     default: "192.168.1.1/24"
+
+  - name: networkConfig2
+    prompt: "Please, write down an static IP address for the 'GroupNetwork1' network, or type 'dhcp' if you want to setup a dynamic address:\n"
+    private: no
+    default: "dhcp"
 
   tasks:
   - name: VARIABLES
@@ -44,6 +49,7 @@
       become: true
 
   - name: NETWORK SETUP
+    when: "'1' in options"
     block:
     - name: » Setting up the network intefaces
       include_role:
@@ -51,7 +57,6 @@
         public: yes
 
   - name: UPGRADE PACKAGES
-    when: "'1' not in options"
     block:
     - name: » Upgrading installed packages
       include_role:
@@ -99,7 +104,6 @@
         public: yes
 
   - name: CREDENTIALS
-    when: "'1' not in options"
     block:
     - name: » Building the credentials background / prompt
       include_role:

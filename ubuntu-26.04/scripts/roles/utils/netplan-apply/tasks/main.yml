@@ -4,8 +4,8 @@
     set_fact:
       netplan_renderer: "{{ 'NetworkManager' if ('XDG_CURRENT_DESKTOP' in ansible_facts['env'] and 'GNOME' in ansible_facts['env'].XDG_CURRENT_DESKTOP) else 'networkd' }}"
 
-  - name: »» Setting up the network interfaces (dynamic, Server)
-    when: networkConfig == "dhcp" and netplan_renderer == "networkd"
+  - name: »» Setting up the network interfaces (Server)
+    when: netplan_renderer == "networkd"
     copy:
       dest: "/etc/netplan/01-network-manager-all.yaml"
       content: |
@@ -20,38 +20,10 @@
 
             #Personal1 (private network between IsardVDI machines)
             enp2s0:
-              dhcp4: true
-              optional: true
-
-            #WireguardVPN (private VPN between IsardVDI and an external computer)
-            enp3s0:
-              dhcp4: true
-              optional: true
-
-            #GroupNetwork1 (private VPN between IsardVDI and your corporation's computers)
-            enp4s0:
-              dhcp4: true
-              optional: true
-      mode: '0600'
-
-  - name: »» Setting up the network interfaces (static, Server)
-    when: networkConfig != "dhcp" and netplan_renderer == "networkd"
-    copy:
-      dest: "/etc/netplan/01-network-manager-all.yaml"
-      content: |
-        # This is the network config written by 'isard-scripts' (https://github.com/FherStk/isard-scripts)
-        network:
-          version: 2
-          renderer: networkd
-          ethernets:
-            #Default (internet access only)
-            enp1s0:
-              dhcp4: true
-
-            #Personal1 (private network between IsardVDI machines)
-            enp2s0:
-              dhcp4: no
+              dhcp4: {{ 'true' if networkConfig == 'dhcp' else 'no' }}
+        {% if networkConfig != 'dhcp' %}
               addresses: [{{ networkConfig }}]
+        {% endif %}
               optional: true
 
             #WireguardVPN (private VPN between IsardVDI and an external computer)
@@ -61,12 +33,15 @@
 
             #GroupNetwork1 (private VPN between IsardVDI and your corporation's computers)
             enp4s0:
-              dhcp4: true
+              dhcp4: {{ 'true' if networkConfig2 == 'dhcp' else 'no' }}
+        {% if networkConfig2 != 'dhcp' %}
+              addresses: [{{ networkConfig2 }}]
+        {% endif %}
               optional: true
       mode: '0600'
 
-  - name: »» Setting up the network interfaces (dynamic, Desktop)
-    when: networkConfig == "dhcp" and netplan_renderer == "NetworkManager"
+  - name: »» Setting up the network interfaces (Desktop)
+    when: netplan_renderer == "NetworkManager"
     copy:
       dest: "/etc/netplan/01-network-manager-all.yaml"
       content: |
@@ -77,52 +52,39 @@
           ethernets:
             #Default (internet access only)
             Default:
+              match:
+                name: enp1s0
+              set-name: Default
               dhcp4: true
 
             #Personal1 (private network between IsardVDI machines)
             Personal1:
-              dhcp4: true
-              optional: true
-
-            #WireguardVPN (private VPN between IsardVDI and an external computer)
-            WireguardVPN:
-              dhcp4: true
-              optional: true
-
-            #GroupNetwork1 (private VPN between IsardVDI and your corporation's computers)
-            GroupNetwork1:
-              dhcp4: true
-              optional: true
-      mode: '0600'
-
-  - name: »» Setting up the network interfaces (static, Desktop)
-    when: networkConfig != "dhcp" and netplan_renderer == "NetworkManager"
-    copy:
-      dest: "/etc/netplan/01-network-manager-all.yaml"
-      content: |
-        # This is the network config written by 'isard-scripts' (https://github.com/FherStk/isard-scripts)
-        network:
-          version: 2
-          renderer: NetworkManager
-          ethernets:
-            #Default (internet access only)
-            Default:
-              dhcp4: true
-
-            #Personal1 (private network between IsardVDI machines)
-            Personal1:
-              dhcp4: no
+              match:
+                name: enp2s0
+              set-name: Personal1
+              dhcp4: {{ 'true' if networkConfig == 'dhcp' else 'no' }}
+        {% if networkConfig != 'dhcp' %}
               addresses: [{{ networkConfig }}]
+        {% endif %}
               optional: true
 
             #WireguardVPN (private VPN between IsardVDI and an external computer)
             WireguardVPN:
+              match:
+                name: enp3s0
+              set-name: WireguardVPN
               dhcp4: true
               optional: true
 
             #GroupNetwork1 (private VPN between IsardVDI and your corporation's computers)
             GroupNetwork1:
-              dhcp4: true
+              match:
+                name: enp4s0
+              set-name: GroupNetwork1
+              dhcp4: {{ 'true' if networkConfig2 == 'dhcp' else 'no' }}
+        {% if networkConfig2 != 'dhcp' %}
+              addresses: [{{ networkConfig2 }}]
+        {% endif %}
               optional: true
       mode: '0600'
 
@@ -178,57 +140,4 @@
       name: isard-scripts-network-setup
       enabled: true
       state: started
-
-  - name: »» Setting up udev rules for interface renaming (Desktop)
-    when: netplan_renderer == "NetworkManager"
-    copy:
-      dest: "/etc/udev/rules.d/70-isard-network.rules"
-      content: |
-        SUBSYSTEM=="net", ACTION=="add", KERNELS=="0000:01:00.0", NAME="Default"
-        SUBSYSTEM=="net", ACTION=="add", KERNELS=="0000:02:00.0", NAME="Personal1"
-        SUBSYSTEM=="net", ACTION=="add", KERNELS=="0000:03:00.0", NAME="WireguardVPN"
-        SUBSYSTEM=="net", ACTION=="add", KERNELS=="0000:04:00.0", NAME="GroupNetwork1"
-
-  - name: »» Disabling network renaming service (Desktop)
-    when: netplan_renderer == "NetworkManager"
-    systemd_service:
-      name: isard-scripts-network-setup
-      enabled: false
-      state: stopped
-      daemon_reload: true
-    ignore_errors: true
-
-  - name: »» Marking optional interfaces as unmanaged (Desktop, dynamic)
-    when: netplan_renderer == "NetworkManager" and networkConfig == "dhcp"
-    copy:
-      dest: /etc/NetworkManager/conf.d/isard-scripts-unmanaged.conf
-      content: |
-        [keyfile]
-        unmanaged-devices=interface-name:Personal1;interface-name:WireguardVPN;interface-name:GroupNetwork1
-
-  - name: »» Updating unmanaged interfaces (Desktop, static)
-    when: netplan_renderer == "NetworkManager" and networkConfig != "dhcp"
-    copy:
-      dest: /etc/NetworkManager/conf.d/isard-scripts-unmanaged.conf
-      content: |
-        [keyfile]
-        unmanaged-devices=interface-name:WireguardVPN;interface-name:GroupNetwork1
-
-  - name: »» Reloading NetworkManager (Desktop)
-    when: netplan_renderer == "NetworkManager"
-    service:
-      name: NetworkManager
-      state: reloaded
   become: true
-
-- name: "DISABLE GNOME NOTIFICATIONS"
-  block:
-  - name: »» Disabling unplugged network adapter messages (Ubuntu Desktop)
-    shell: |
-      if gsettings list-schemas 2>/dev/null | grep -q 'org.gnome.nm-applet'; then
-        gsettings set org.gnome.nm-applet disable-disconnected-notifications "true"
-        gsettings set org.gnome.nm-applet disable-connected-notifications "true"
-      fi
-    environment:
-      DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ansible_facts['user_uid'] }}/bus"
-  when: "'XDG_CURRENT_DESKTOP' in ansible_facts['env'] and 'GNOME' in ansible_facts['env'].XDG_CURRENT_DESKTOP"
