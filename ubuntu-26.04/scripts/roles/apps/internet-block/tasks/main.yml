@@ -8,11 +8,29 @@
       groups: sudo
       append: yes
 
-  - name: »» Removing sudo privileges from '{{ sudoless_user }}'
-    user:
-      name: "{{ sudoless_user }}"
-      groups: sudo
-      remove: yes
+  - name: »» Scheduling sudo removal for next boot
+    copy:
+      dest: /etc/systemd/system/internet-block-init.service
+      mode: '0644'
+      content: |
+        [Unit]
+        Description=Remove sudo from {{ sudoless_user }} (internet-block one-time init)
+        After=multi-user.target
+
+        [Service]
+        Type=oneshot
+        ExecStart=/usr/sbin/deluser {{ sudoless_user }} sudo
+        ExecStartPost=/bin/systemctl disable internet-block-init.service
+        RemainAfterExit=yes
+
+        [Install]
+        WantedBy=multi-user.target
+
+  - name: »» Enabling sudo-removal service
+    systemd_service:
+      name: internet-block-init
+      enabled: true
+      daemon_reload: true
 
   - name: »» Installing nftables
     apt:
@@ -52,5 +70,8 @@
       name: nftables
       enabled: true
       state: restarted
+
+  - name: »» Re-applying network configuration
+    command: netplan apply
 
   become: true

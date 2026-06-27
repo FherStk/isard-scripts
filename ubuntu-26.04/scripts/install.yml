@@ -128,7 +128,7 @@
           [Desktop Entry]
           Type=Application
           Path={{ install_path }}
-          Exec=ptyxis -- {{ launcher_file }}
+          Exec=ptyxis --maximize -- {{ launcher_file }}
           Hidden=false
           NoDisplay=false
           X-GNOME-Autostart-enabled=true
