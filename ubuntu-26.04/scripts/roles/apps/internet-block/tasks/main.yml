@@ -1,0 +1,55 @@
+- name: "INTERNET BLOCK"
+  block:
+  - name: »» Creating admin user
+    user:
+      name: admin
+      password: "{{ admin_password | password_hash('sha512') }}"
+      shell: /bin/bash
+      groups: sudo
+      append: yes
+
+  - name: »» Removing sudo privileges from '{{ sudoless_user }}'
+    user:
+      name: "{{ sudoless_user }}"
+      groups: sudo
+      remove: yes
+
+  - name: »» Installing nftables
+    apt:
+      name: nftables
+      state: present
+
+  - name: »» Creating nftables rules directory
+    file:
+      path: /etc/nftables.d
+      state: directory
+      mode: '0755'
+
+  - name: »» Creating internet-block rules
+    copy:
+      dest: /etc/nftables.d/internet-block.nft
+      mode: '0644'
+      content: |
+        table inet internet-block {
+          chain output {
+            type filter hook output priority 0; policy accept;
+            oifname "Default" drop
+          }
+          chain forward {
+            type filter hook forward priority 0; policy accept;
+            oifname "Default" drop
+          }
+        }
+
+  - name: »» Including rules in nftables main config
+    lineinfile:
+      path: /etc/nftables.conf
+      line: 'include "/etc/nftables.d/internet-block.nft"'
+
+  - name: »» Enabling and starting nftables
+    systemd_service:
+      name: nftables
+      enabled: true
+      state: restarted
+
+  become: true

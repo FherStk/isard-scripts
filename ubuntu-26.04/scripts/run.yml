@@ -13,6 +13,7 @@
       7) dhcp-server
       8) obs: install
       9) obs: supervisor
+      10) internet-block
     private: no
 
   - name: hname
@@ -181,6 +182,32 @@
     - name: » OBS (supervisor)
       include_role:
         name: apps/obs-supervisor
+        public: yes
+
+  - name: SETUP OPTION 10
+    when: "'10' in options"
+    block:
+    - name: » Username to remove sudo from
+      pause:
+        prompt: "Please, write down the username to remove sudo privileges from [{{ user }}]"
+        echo: yes
+      register: sudoless_user_prompt
+
+    - set_fact:
+        sudoless_user: "{{ sudoless_user_prompt.user_input or user }}"
+
+    - name: » Admin password
+      pause:
+        prompt: "Please, write down the password for the new 'admin' user"
+        echo: no
+      register: admin_password_prompt
+
+    - set_fact:
+        admin_password: "{{ admin_password_prompt.user_input }}"
+
+    - name: » Internet block
+      include_role:
+        name: apps/internet-block
         public: yes
 
   - name: CREDENTIALS
