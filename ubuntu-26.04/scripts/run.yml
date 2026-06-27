@@ -98,6 +98,15 @@
   - name: SETUP OPTION 5
     when: "'5' in options"
     block:
+    - name: » DMOJ hostname configuration
+      pause:
+        prompt: "Please, write down the hostname for DMOJ [dmoj-isard.com]"
+        echo: yes
+      register: dmoj_hostname_prompt
+
+    - set_fact:
+        dmoj_hostname: "{{ dmoj_hostname_prompt.user_input or 'dmoj-isard.com' }}"
+
     - name: » DMOJ v4
       include_role:
         name: apps/dmoj-v4
