@@ -1,0 +1,22 @@
+- name: "INSTALL OBS Studio"
+  block:
+  - name: "»» Installing OBS Studio"
+    apt:
+      name: obs-studio
+      state: latest
+  become: true
+
+- name: "UPDATE GNOME FAVORITES (DESKTOP)"
+  when: "'XDG_CURRENT_DESKTOP' in ansible_facts['env'] and 'GNOME' in ansible_facts['env'].XDG_CURRENT_DESKTOP"
+  block:
+  - name: "»» Appending com.obsproject.Studio.desktop to GNOME favorites"
+    shell: |
+      current=$(gsettings get org.gnome.shell favorite-apps)
+      if echo "$current" | grep -q 'com.obsproject.Studio.desktop'; then
+        echo "com.obsproject.Studio.desktop already in favorites, skipping"
+      else
+        new=$(echo "$current" | sed "s/]$/, 'com.obsproject.Studio.desktop']/")
+        gsettings set org.gnome.shell favorite-apps "$new"
+      fi
+    environment:
+      DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ansible_facts['user_uid'] }}/bus"

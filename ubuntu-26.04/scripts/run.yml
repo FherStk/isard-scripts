@@ -11,6 +11,8 @@
       5) dmoj-v4
       6) dbeaver-ce
       7) dhcp-server
+      8) obs: install
+      9) obs: supervisor
     private: no
 
   - name: hname
@@ -163,6 +165,22 @@
     - name: » DHCP server (Kea)
       include_role:
         name: apps/dhcp-server
+        public: yes
+
+  - name: SETUP OPTION 8
+    when: "'8' in options"
+    block:
+    - name: » OBS Studio (install)
+      include_role:
+        name: apps/obs-install
+        public: yes
+
+  - name: SETUP OPTION 9
+    when: "'9' in options"
+    block:
+    - name: » OBS (supervisor)
+      include_role:
+        name: apps/obs-supervisor
         public: yes
 
   - name: CREDENTIALS
