@@ -127,6 +127,22 @@
         - /etc/systemd/system/isard-scripts-network-setup.service
         - /usr/local/bin/isard-scripts-network-setup.sh
 
+  - name: »» Setting up the network info splash (Server)
+    when: netplan_renderer == "networkd"
+    copy:
+      dest: /etc/update-motd.d/60-isard-network
+      mode: "0755"
+      content: |
+        #!/bin/sh
+        echo ""
+        echo "Network addresses:"
+        for iface in Default Personal1 WireguardVPN GroupNetwork1; do
+            ip=$(ip -4 addr show "$iface" 2>/dev/null | awk '/inet / {print $2}')
+            if [ -n "$ip" ]; then
+                printf "  %-15s %s\n" "$iface" "$ip"
+            fi
+        done
+
   - name: »» Applying network configuration
     command: netplan apply
 
