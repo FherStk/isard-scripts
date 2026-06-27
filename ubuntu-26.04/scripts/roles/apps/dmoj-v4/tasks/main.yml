@@ -151,7 +151,7 @@
       - regexp: "#ALLOWED_HOSTS = \\['dmoj.ca'\\]"
         replace: "ALLOWED_HOSTS = ['*']"
       - regexp: "<desired bridge log path>"
-        replace: "bridge.log"
+        replace: "{{ DMOJ_PATH }}/bridge.log"
 
   - name: "»» Adding extra settings to local_settings.py"
     lineinfile:

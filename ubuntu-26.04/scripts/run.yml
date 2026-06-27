@@ -16,10 +16,6 @@
       10) internet-block
     private: no
 
-  - name: hname
-    prompt: "Please, write down the host name for the current system:\n"
-    private: no
-    default: "ubuntu"
 
   tasks:
   - name: VARIABLES
@@ -37,6 +33,15 @@
 
   - name: HOSTNAME
     block:
+    - name: » Hostname prompt
+      pause:
+        prompt: "Please, write down the host name for the current system [{{ ansible_hostname }}]"
+        echo: yes
+      register: hname_prompt
+
+    - set_fact:
+        hname: "{{ hname_prompt.user_input or ansible_hostname }}"
+
     - name: » Setting up the hostname
       hostname:
         name: "{{ hname }}"
