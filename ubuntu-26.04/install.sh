@@ -12,7 +12,12 @@ mkdir -p /etc/sudoers.d
 echo "$SUDO_USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/nopass
 chmod 0400 /etc/sudoers.d/nopass
 
-sudo -Hu $SUDO_USER ANSIBLE_CONFIG=$SCRIPT_PATH/scripts/ansible.cfg ANSIBLE_STDOUT_CALLBACK=unixy ansible-playbook -i localhost, -c local --ask-become-pass $SCRIPT_PATH/scripts/install.yml
+echo ""
+echo -e "${YELLOW}Please, write down the password for the current user ($SUDO_USER):$NC"
+read -s USER_PASSWORD
+echo ""
+
+sudo -Hu $SUDO_USER ANSIBLE_CONFIG=$SCRIPT_PATH/scripts/ansible.cfg ANSIBLE_STDOUT_CALLBACK=unixy ansible-playbook -i localhost, -c local -e "ansible_become_password=$USER_PASSWORD" $SCRIPT_PATH/scripts/install.yml
 
 echo ""
 echo -e "${GREEN}Installation completed!$NC"
