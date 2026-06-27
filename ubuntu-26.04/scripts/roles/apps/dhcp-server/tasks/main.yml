@@ -37,7 +37,7 @@
 
   - name: »» Enabling and starting the Kea DHCPv4 service
     systemd_service:
-      name: kea-dhcp4
+      name: kea-dhcp4-server
       enabled: true
       state: restarted
   become: true
