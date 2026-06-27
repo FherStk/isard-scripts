@@ -117,11 +117,7 @@
   - name: »» Removing legacy renaming service (Server)
     when: netplan_renderer == "networkd"
     block:
-    - systemd_service:
-        name: isard-scripts-network-setup
-        enabled: false
-        state: stopped
-      ignore_errors: true
+    - shell: systemctl disable --now isard-scripts-network-setup 2>/dev/null || true
     - file: path="{{ item }}" state=absent
       loop:
         - /etc/systemd/system/isard-scripts-network-setup.service
