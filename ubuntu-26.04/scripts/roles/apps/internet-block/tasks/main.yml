@@ -33,6 +33,7 @@
         table inet internet-block {
           chain output {
             type filter hook output priority 0; policy accept;
+            meta skuid { root, admin } oifname "Default" accept
             oifname "Default" drop
           }
           chain forward {
