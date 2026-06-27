@@ -35,6 +35,14 @@
       owner: root
       group: _kea
 
+  - name: »» Ensuring Kea state directory exists with correct permissions
+    file:
+      path: /var/lib/kea
+      state: directory
+      owner: _kea
+      group: _kea
+      mode: '0750'
+
   - name: »» Enabling and starting the Kea DHCPv4 service
     systemd_service:
       name: kea-dhcp4-server
