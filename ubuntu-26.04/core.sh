@@ -113,26 +113,6 @@ apt-install()
   fi
 }
 
-request-data()
-{
-  ####################################################################################
-  #Description: Displays a graphical prompt and requests some data.
-  #Input:  $1 => The title prompt.
-  #Input:  $2 => The caption to display.
-  #Input:  $3 => If empty values are allowed.
-  #Input:  $4 => The default value.
-  #Output: DATA => The read data.
-  #################################################################################### 
-
-  DATA=$(dialog --nocancel --title "$1" --inputbox "\n$2" 8 50 "$4" --output-fd 1)  
-  if [ $3 = false ] && [ -z "$DATA" ];    
-  then
-    request-data "$1" "$2" "$3" "$4"
-  else
-    clear
-  fi
-}
-
 abort()
 { 
   ####################################################################################
@@ -195,6 +175,5 @@ startup(){
   echo ""
   title "Installing requirements:"
   apt update
-  apt-install "dialog"  #for requesting information
   apt-install "ansible"  #for setting up apps and config
 }

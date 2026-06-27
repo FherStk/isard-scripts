@@ -8,6 +8,21 @@
       set_fact: user="{{ ansible_facts['user_id'] }}"
     - set_fact: pwd="{{ ansible_become_password }}"
     - set_fact: install_path="{{ playbook_dir }}/.."
+    - name: » Creating config directory
+      file:
+        path: /etc/isard-scripts/config
+        state: directory
+        mode: '0755'
+      become: true
+    - name: » Storing main password
+      copy:
+        content: "{{ ansible_become_password }}"
+        dest: /etc/isard-scripts/config/main-password
+        mode: '0600'
+        owner: root
+        group: root
+      become: true
+      no_log: true
     - set_fact: run_script="sudo bash {{ install_path }}/run.sh"
 
   - name: NETWORK SETUP
