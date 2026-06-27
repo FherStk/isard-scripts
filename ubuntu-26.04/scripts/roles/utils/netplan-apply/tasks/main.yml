@@ -42,6 +42,10 @@
         ip link set GroupNetwork1 up 2>/dev/null || true
       fi
 
+  - name: »» Removing pre-existing netplan configs
+    shell: find /etc/netplan/ -name "*.yaml" -not -name "01-network-manager-all.yaml" -delete
+    changed_when: false
+
   - name: »» Setting up the network interfaces (Server)
     when: netplan_renderer == "networkd"
     copy:
