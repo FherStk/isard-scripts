@@ -61,12 +61,12 @@
 
     - name: » GroupNetwork1 network configuration
       pause:
-        prompt: "Please, write down a static IP address for the 'GroupNetwork1' network, or type 'dhcp' if you want to setup a dynamic address [192.168.101.1/24]"
+        prompt: "Please, write down a static IP address for the 'GroupNetwork1' network, or type 'dhcp' if you want to setup a dynamic address [192.168.100.1/24]"
         echo: yes
       register: groupnetwork1_prompt
 
     - set_fact:
-        groupNetwork1Config: "{{ groupnetwork1_prompt.user_input or '192.168.101.1/24' }}"
+        groupNetwork1Config: "{{ groupnetwork1_prompt.user_input or '192.168.100.1/24' }}"
 
     - name: » Setting up the network interfaces
       include_role:
@@ -141,32 +141,41 @@
     - set_fact:
         dhcp_interface: "{{ dhcp_iface_prompt.user_input or 'Personal1' }}"
 
+    - name: » Reading current network configuration for selected interface
+      set_fact:
+        _iface_info: "{{ ansible_facts[dhcp_interface] | default({}) }}"
+
+    - set_fact:
+        dhcp_default_subnet: "{{ (_iface_info.ipv4.network + '/' + _iface_info.ipv4.prefix) if 'ipv4' in _iface_info else '192.168.1.0/24' }}"
+        dhcp_default_range_start: "{{ (_iface_info.ipv4.network.split('.')[:3] | join('.') + '.100') if 'ipv4' in _iface_info else '192.168.1.100' }}"
+        dhcp_default_range_end: "{{ (_iface_info.ipv4.network.split('.')[:3] | join('.') + '.250') if 'ipv4' in _iface_info else '192.168.1.250' }}"
+
     - name: » DHCP subnet (CIDR)
       pause:
-        prompt: "Please, write down the subnet in CIDR notation [192.168.1.0/24]"
+        prompt: "Please, write down the subnet in CIDR notation [{{ dhcp_default_subnet }}]"
         echo: yes
       register: dhcp_subnet_prompt
 
     - set_fact:
-        dhcp_subnet: "{{ dhcp_subnet_prompt.user_input or '192.168.1.0/24' }}"
+        dhcp_subnet: "{{ dhcp_subnet_prompt.user_input or dhcp_default_subnet }}"
 
     - name: » DHCP range start
       pause:
-        prompt: "Please, write down the first IP of the DHCP range [192.168.1.100]"
+        prompt: "Please, write down the first IP of the DHCP range [{{ dhcp_default_range_start }}]"
         echo: yes
       register: dhcp_start_prompt
 
     - set_fact:
-        dhcp_range_start: "{{ dhcp_start_prompt.user_input or '192.168.1.100' }}"
+        dhcp_range_start: "{{ dhcp_start_prompt.user_input or dhcp_default_range_start }}"
 
     - name: » DHCP range end
       pause:
-        prompt: "Please, write down the last IP of the DHCP range [192.168.1.250]"
+        prompt: "Please, write down the last IP of the DHCP range [{{ dhcp_default_range_end }}]"
         echo: yes
       register: dhcp_end_prompt
 
     - set_fact:
-        dhcp_range_end: "{{ dhcp_end_prompt.user_input or '192.168.1.250' }}"
+        dhcp_range_end: "{{ dhcp_end_prompt.user_input or dhcp_default_range_end }}"
 
     - name: » DHCP server (Kea)
       include_role:

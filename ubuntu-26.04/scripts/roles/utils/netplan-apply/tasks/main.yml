@@ -4,8 +4,7 @@
     set_fact:
       netplan_renderer: "{{ 'NetworkManager' if ('XDG_CURRENT_DESKTOP' in ansible_facts['env'] and 'GNOME' in ansible_facts['env'].XDG_CURRENT_DESKTOP) else 'networkd' }}"
 
-  - name: »» Setting up persistent interface renaming (Desktop)
-    when: netplan_renderer == "NetworkManager"
+  - name: »» Setting up persistent interface renaming
     copy:
       dest: "/etc/systemd/network/10-isard-{{ item.old }}.link"
       content: |
@@ -20,8 +19,7 @@
       - { old: enp3s0, new: WireguardVPN }
       - { old: enp4s0, new: GroupNetwork1 }
 
-  - name: »» Renaming interfaces for current session (Desktop)
-    when: netplan_renderer == "NetworkManager"
+  - name: »» Renaming interfaces for current session
     shell: |
       if ip link show enp1s0 > /dev/null 2>&1; then
         ip link set enp1s0 down 2>/dev/null || true
@@ -55,11 +53,11 @@
           renderer: networkd
           ethernets:
             #Default (internet access only)
-            enp1s0:
+            Default:
               dhcp4: true
 
             #Personal1 (private network between IsardVDI machines)
-            enp2s0:
+            Personal1:
               dhcp4: {{ 'true' if personal1Config == 'dhcp' else 'no' }}
         {% if personal1Config != 'dhcp' %}
               addresses: [{{ personal1Config }}]
@@ -67,12 +65,12 @@
               optional: true
 
             #WireguardVPN (private VPN between IsardVDI and an external computer)
-            enp3s0:
+            WireguardVPN:
               dhcp4: true
               optional: true
 
             #GroupNetwork1 (private VPN between IsardVDI and your corporation's computers)
-            enp4s0:
+            GroupNetwork1:
               dhcp4: {{ 'true' if groupNetwork1Config == 'dhcp' else 'no' }}
         {% if groupNetwork1Config != 'dhcp' %}
               addresses: [{{ groupNetwork1Config }}]
@@ -116,56 +114,20 @@
               optional: true
       mode: '0600'
 
+  - name: »» Removing legacy renaming service (Server)
+    when: netplan_renderer == "networkd"
+    block:
+    - systemd_service:
+        name: isard-scripts-network-setup
+        enabled: false
+        state: stopped
+      ignore_errors: true
+    - file: path="{{ item }}" state=absent
+      loop:
+        - /etc/systemd/system/isard-scripts-network-setup.service
+        - /usr/local/bin/isard-scripts-network-setup.sh
+
   - name: »» Applying network configuration
     command: netplan apply
 
-  - name: »» Setting up the network renaming script (Server)
-    when: netplan_renderer == "networkd"
-    copy:
-      dest: "/usr/local/bin/isard-scripts-network-setup.sh"
-      content: |
-        #!/bin/bash
-        ip link set enp1s0 down
-        ip link set enp2s0 down
-        ip link set enp3s0 down
-        ip link set enp4s0 down
-
-        ip link set enp1s0 name Default
-        ip link set enp2s0 name Personal1
-        ip link set enp3s0 name WireguardVPN
-        ip link set enp4s0 name GroupNetwork1
-
-        ip link set Default up
-        ip link set Personal1 up
-        ip link set WireguardVPN up
-        ip link set GroupNetwork1 up
-
-        netplan apply
-      mode: '744'
-
-  - name: »» Setting up the network renaming service (Server)
-    when: netplan_renderer == "networkd"
-    copy:
-      dest: "/etc/systemd/system/isard-scripts-network-setup.service"
-      content: |
-        [Unit]
-        #Time out too large if no DHCP found in group network...
-        #Wants=network-online.target
-        #After=network.target network-online.target
-
-        [Service]
-        ExecStartPre= /bin/sh -c 'until ping -c1 google.com; do sleep 1; done;'
-        ExecStart=/usr/local/bin/isard-scripts-network-setup.sh
-
-        [Install]
-        WantedBy=default.target
-      mode: '664'
-
-  - name: »» Enabling the network renaming service (Server)
-    when: netplan_renderer == "networkd"
-    systemd_service:
-      daemon_reload: true
-      name: isard-scripts-network-setup
-      enabled: true
-      state: started
   become: true
