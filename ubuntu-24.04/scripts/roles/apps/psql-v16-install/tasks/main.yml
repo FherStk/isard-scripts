@@ -1,0 +1,14 @@
+- name: "INSTALL PSQLv16"
+  block:
+  - name: »» Installing packages
+    apt: name="postgresql-16" state=latest      
+
+  - name: »» Adding credentials to the password.info file
+    include_role:
+      name: add-credentials
+      public: yes
+    vars:
+      app: "PostgreSQL"
+      login: "postgres"
+      pwd: "postgres"
+  become: true    

@@ -1,41 +1,24 @@
 #!/bin/bash
-SCRIPT_VERSION="1.0.0"
+SCRIPT_VERSION="2.0.0"
 SCRIPT_NAME="App Install"
 
 SCRIPT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SCRIPT_FILE=$(basename $BASH_SOURCE)
-source $SCRIPT_PATH/utils/core.sh
+DEFAULT_PWD="pirineus"
+source $SCRIPT_PATH/core.sh
 
 startup
-apt-upgrade
+
+request-data "Main user's credentials" "Please, write the password of the current user ($SUDO_USER) in order to automate the setup:" true $DEFAULT_PWD
+MAIN_PASSWORD=$DATA
+
+mkdir -p $CONFIG_PATH
+echo $MAIN_PASSWORD > $MAIN_PWD_FILE
+
+sudo -Hu $SUDO_USER ANSIBLE_STDOUT_CALLBACK=unixy ansible-playbook -i localhost, -c local -e "ansible_become_password=$MAIN_PASSWORD" $SCRIPT_PATH/scripts/install.yml
 
 echo ""
-title "Installing into $INSTALL_PATH:"
-rm -rf $INSTALL_PATH
-
-get-branch
-git clone https://github.com/FherStk/isard-scripts.git --branch $CURRENT_BRANCH $INSTALL_PATH
-
-sudo-password-disable
-auto-login-enable
-
-echo ""
-title "Setting up the first launch after user logon (just once):"
-if [ $IS_DESKTOP -eq 1 ];
-then     
-    #Ubuntu Desktop
-    echo "Setting up the $DESKTOPFILE entry..."
-    mkdir -p $AUTOSTART
-    cp $BASE_PATH/install/isard-scripts.desktop $DESKTOPFILE
-    sed -i "s|<INSTALL_PATH>|$INSTALL_PATH|g" $DESKTOPFILE
-    sed -i "s|<RUN_SCRIPT>|$RUN_SCRIPT|g" $DESKTOPFILE    
-else
-    #Ubuntu Server
-    echo "Setting up the $PROFILE entry..."
-    append-no-repeat "$RUN_SCRIPT" "$PROFILE"
-fi
-
-main-password-setup
-done-no-reboot
-
+echo -e "${GREEN}Installation completed!$NC"
 echo -e "${YELLOW}You can now proceed with additional customizations or just shutdown the computer and template it.$NC"
+
+trap : 0

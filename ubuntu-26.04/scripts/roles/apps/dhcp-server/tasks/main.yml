@@ -1,0 +1,51 @@
+- name: "INSTALL DHCP SERVER (Kea)"
+  block:
+  - name: »» Installing packages
+    apt: name="kea-dhcp4-server" state=latest
+
+  - name: »» Deploying Kea DHCPv4 configuration
+    copy:
+      dest: "/etc/kea/kea-dhcp4.conf"
+      content: |
+        {
+          "Dhcp4": {
+            "interfaces-config": {
+              "interfaces": ["{{ dhcp_interface }}"],
+              "dhcp-socket-type": "raw"
+            },
+            "valid-lifetime": 600,
+            "max-valid-lifetime": 7200,
+            "lease-database": {
+              "type": "memfile",
+              "persist": true,
+              "name": "/var/lib/kea/kea-leases4.csv"
+            },
+            "subnet4": [
+              {
+                "id": 1,
+                "subnet": "{{ dhcp_subnet }}",
+                "pools": [
+                  { "pool": "{{ dhcp_range_start }} - {{ dhcp_range_end }}" }
+                ]
+              }
+            ]
+          }
+        }
+      mode: '0640'
+      owner: root
+      group: _kea
+
+  - name: »» Ensuring Kea state directory exists with correct permissions
+    file:
+      path: /var/lib/kea
+      state: directory
+      owner: _kea
+      group: _kea
+      mode: '0750'
+
+  - name: »» Enabling and starting the Kea DHCPv4 service
+    systemd_service:
+      name: kea-dhcp4-server
+      enabled: true
+      state: restarted
+  become: true

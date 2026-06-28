@@ -1,0 +1,12 @@
+- name: "ADD CREDENTIALS TO THE PASSWORD FILE"
+  block:
+  - set_fact: passwords_file="/home/{{ user }}/passwords.info"    
+  - lineinfile:
+      path: "{{ passwords_file }}"
+      line: "{{ item }}"
+      insertafter: EOF
+    loop:
+    - ""
+    - "{{ app }}"
+    - "Username: {{ login }}"
+    - "Password: {{ pwd }}"

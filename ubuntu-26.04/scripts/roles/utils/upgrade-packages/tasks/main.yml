@@ -1,0 +1,14 @@
+- name: "UPGRADE PACKAGES"
+  block:
+  - package_facts:  
+  - name: »» Upgrading APT packages
+    apt:       
+      upgrade: dist
+      update_cache: yes
+      autoremove: true    
+  - name: »» Upgrading SNAP packages
+    command: snap refresh  
+  - name: »» Upgrading FLATPAK packages    
+    command: flatpak update -y
+    when: "'flatpak' in ansible_facts.packages"    
+  become: true

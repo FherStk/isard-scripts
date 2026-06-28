@@ -1,0 +1,77 @@
+- name: "INTERNET BLOCK"
+  block:
+  - name: »» Creating admin user
+    user:
+      name: admin
+      password: "{{ admin_password | password_hash('sha512') }}"
+      shell: /bin/bash
+      groups: sudo
+      append: yes
+
+  - name: »» Scheduling sudo removal for next boot
+    copy:
+      dest: /etc/systemd/system/internet-block-init.service
+      mode: '0644'
+      content: |
+        [Unit]
+        Description=Remove sudo from {{ sudoless_user }} (internet-block one-time init)
+        After=multi-user.target
+
+        [Service]
+        Type=oneshot
+        ExecStart=/usr/sbin/deluser {{ sudoless_user }} sudo
+        ExecStartPost=/bin/systemctl disable internet-block-init.service
+        RemainAfterExit=yes
+
+        [Install]
+        WantedBy=multi-user.target
+
+  - name: »» Enabling sudo-removal service
+    systemd_service:
+      name: internet-block-init
+      enabled: true
+      daemon_reload: true
+
+  - name: »» Installing nftables
+    apt:
+      name: nftables
+      state: present
+
+  - name: »» Creating nftables rules directory
+    file:
+      path: /etc/nftables.d
+      state: directory
+      mode: '0755'
+
+  - name: »» Creating internet-block rules
+    copy:
+      dest: /etc/nftables.d/internet-block.nft
+      mode: '0644'
+      content: |
+        table inet internet-block {
+          chain output {
+            type filter hook output priority 0; policy accept;
+            meta skuid { root, admin } oifname "Default" accept
+            oifname "Default" drop
+          }
+          chain forward {
+            type filter hook forward priority 0; policy accept;
+            oifname "Default" drop
+          }
+        }
+
+  - name: »» Including rules in nftables main config
+    lineinfile:
+      path: /etc/nftables.conf
+      line: 'include "/etc/nftables.d/internet-block.nft"'
+
+  - name: »» Enabling and starting nftables
+    systemd_service:
+      name: nftables
+      enabled: true
+      state: restarted
+
+  - name: »» Re-applying network configuration
+    command: netplan apply
+
+  become: true

@@ -1,0 +1,259 @@
+- name: "Isard-Scripts: select how to setup the local system"
+  hosts: localhost
+  vars_prompt:
+  - name: software
+    prompt: |1
+      Please, write down (comma separated) the numbers corresponding to the actions that shall be performed:
+      1) network-setup
+      2) psql-v18: install
+      3) psql-v18: setup remote connections
+      4) psql-v18: setup the 'employees-lite' database
+      5) dmoj-v4
+      6) dbeaver-ce
+      7) dhcp-server
+      8) obs: install
+      9) obs: supervisor
+      10) internet-block
+      11) autocheck
+    private: no
+
+
+  tasks:
+  - name: VARIABLES
+    block:
+    - name: » Loading global variables
+      set_fact: user="{{ ansible_facts['user_id'] }}"
+    - set_fact: pwd="{{ ansible_become_password }}"
+
+  - name: READING OPTIONS
+    block:
+    - name: » Reading the selected options to setup
+      set_fact:
+        options: "{{ software.split(',') }}"
+        passwords_file: "/home/{{ user }}/passwords.info"
+
+  - name: HOSTNAME
+    block:
+    - name: » Hostname prompt
+      pause:
+        prompt: "Please, write down the host name for the current system [{{ ansible_hostname }}]"
+        echo: yes
+      register: hname_prompt
+
+    - set_fact:
+        hname: "{{ hname_prompt.user_input or ansible_hostname }}"
+
+    - name: » Setting up the hostname
+      hostname:
+        name: "{{ hname }}"
+      become: true
+
+  - name: NETWORK SETUP
+    when: "'1' in options"
+    block:
+    - name: » Personal1 network configuration
+      pause:
+        prompt: "Please, write down a static IP address for the 'Personal1' network, or type 'dhcp' if you want to setup a dynamic address [192.168.1.1/24]"
+        echo: yes
+      register: personal1_prompt
+
+    - set_fact:
+        personal1Config: "{{ personal1_prompt.user_input or '192.168.1.1/24' }}"
+
+    - name: » GroupNetwork1 network configuration
+      pause:
+        prompt: "Please, write down a static IP address for the 'GroupNetwork1' network, or type 'dhcp' if you want to setup a dynamic address [192.168.100.1/24]"
+        echo: yes
+      register: groupnetwork1_prompt
+
+    - set_fact:
+        groupNetwork1Config: "{{ groupnetwork1_prompt.user_input or '192.168.100.1/24' }}"
+
+    - name: » Setting up the network interfaces
+      include_role:
+        name: utils/netplan-apply
+        public: yes
+
+  - name: UPGRADE PACKAGES
+    block:
+    - name: » Upgrading installed packages
+      include_role:
+        name: utils/upgrade-packages
+        public: yes
+
+  - name: SETUP OPTION 2
+    when: "'2' in options"
+    block:
+    - name: » PostgreSQL v18 (install)
+      include_role:
+        name: apps/psql-v18-install
+        public: yes
+
+  - name: SETUP OPTION 3
+    when: "'3' in options"
+    block:
+    - name: » PostgreSQL v18 (setup remote connections)
+      include_role:
+        name: apps/psql-v18-remote
+        public: yes
+
+  - name: SETUP OPTION 4
+    when: "'4' in options"
+    block:
+    - name: » PostgreSQL v18 (setup the 'employees-lite' database)
+      include_role:
+        name: apps/psql-v18-bbdd-employees-lite
+        public: yes
+
+  - name: SETUP OPTION 5
+    when: "'5' in options"
+    block:
+    - name: » DMOJ hostname configuration
+      pause:
+        prompt: "Please, write down the hostname for DMOJ [dmoj-isard.com]"
+        echo: yes
+      register: dmoj_hostname_prompt
+
+    - set_fact:
+        dmoj_hostname: "{{ dmoj_hostname_prompt.user_input or 'dmoj-isard.com' }}"
+
+    - name: » DMOJ v4
+      include_role:
+        name: apps/dmoj-v4
+        public: yes
+
+  - name: SETUP OPTION 6
+    when: "'6' in options"
+    block:
+    - name: » DBeaver CE
+      include_role:
+        name: apps/dbeaver-ce
+        public: yes
+
+  - name: SETUP OPTION 7
+    when: "'7' in options"
+    block:
+    - name: » DHCP server interface
+      pause:
+        prompt: "Please, write down the network interface for the DHCP server [Personal1]"
+        echo: yes
+      register: dhcp_iface_prompt
+
+    - set_fact:
+        dhcp_interface: "{{ dhcp_iface_prompt.user_input or 'Personal1' }}"
+
+    - name: » Reading current network configuration for selected interface
+      set_fact:
+        _iface_info: "{{ ansible_facts[dhcp_interface] | default({}) }}"
+
+    - set_fact:
+        dhcp_default_subnet: "{{ (_iface_info.ipv4.network + '/' + _iface_info.ipv4.prefix) if 'ipv4' in _iface_info else '192.168.1.0/24' }}"
+        dhcp_default_range_start: "{{ (_iface_info.ipv4.network.split('.')[:3] | join('.') + '.100') if 'ipv4' in _iface_info else '192.168.1.100' }}"
+        dhcp_default_range_end: "{{ (_iface_info.ipv4.network.split('.')[:3] | join('.') + '.250') if 'ipv4' in _iface_info else '192.168.1.250' }}"
+
+    - name: » DHCP subnet (CIDR)
+      pause:
+        prompt: "Please, write down the subnet in CIDR notation [{{ dhcp_default_subnet }}]"
+        echo: yes
+      register: dhcp_subnet_prompt
+
+    - set_fact:
+        dhcp_subnet: "{{ dhcp_subnet_prompt.user_input or dhcp_default_subnet }}"
+
+    - name: » DHCP range start
+      pause:
+        prompt: "Please, write down the first IP of the DHCP range [{{ dhcp_default_range_start }}]"
+        echo: yes
+      register: dhcp_start_prompt
+
+    - set_fact:
+        dhcp_range_start: "{{ dhcp_start_prompt.user_input or dhcp_default_range_start }}"
+
+    - name: » DHCP range end
+      pause:
+        prompt: "Please, write down the last IP of the DHCP range [{{ dhcp_default_range_end }}]"
+        echo: yes
+      register: dhcp_end_prompt
+
+    - set_fact:
+        dhcp_range_end: "{{ dhcp_end_prompt.user_input or dhcp_default_range_end }}"
+
+    - name: » DHCP server (Kea)
+      include_role:
+        name: apps/dhcp-server
+        public: yes
+
+  - name: SETUP OPTION 8
+    when: "'8' in options"
+    block:
+    - name: » OBS Studio (install)
+      include_role:
+        name: apps/obs-install
+        public: yes
+
+  - name: SETUP OPTION 9
+    when: "'9' in options"
+    block:
+    - name: » OBS (supervisor)
+      include_role:
+        name: apps/obs-supervisor
+        public: yes
+
+  - name: SETUP OPTION 10
+    when: "'10' in options"
+    block:
+    - name: » Username to remove sudo from
+      pause:
+        prompt: "Please, write down the username to remove sudo privileges from [{{ user }}]"
+        echo: yes
+      register: sudoless_user_prompt
+
+    - set_fact:
+        sudoless_user: "{{ sudoless_user_prompt.user_input or user }}"
+
+    - name: » Admin password
+      pause:
+        prompt: "Please, write down the password for the new 'admin' user"
+        echo: no
+      register: admin_password_prompt
+
+    - set_fact:
+        admin_password: "{{ admin_password_prompt.user_input }}"
+
+    - name: » Internet block
+      include_role:
+        name: apps/internet-block
+        public: yes
+
+  - name: SETUP OPTION 11
+    when: "'11' in options"
+    block:
+    - name: » AutoCheck
+      include_role:
+        name: apps/autocheck
+        public: yes
+
+  - name: CREDENTIALS
+    block:
+    - name: » Building the credentials background / prompt
+      include_role:
+        name: utils/store-credentials
+        public: yes
+
+  - name: CLEANING
+    block:
+    - name: » Cleaning
+      file: path="/home/{{ user }}/.config/autostart/isard-scripts.desktop" state=absent
+    - lineinfile:
+        path: /home/{{ user }}/.profile
+        regexp: '^sudo bash {{ playbook_dir }}/../run.sh'
+        state: absent
+    - shell: cat /dev/null > /home/{{ user }}/.bash_history
+
+  - name: REBOOT
+    block:
+    - name: » Rebooting the system
+      command: shutdown -r now
+      become: true
+      async: 1
+      poll: 0

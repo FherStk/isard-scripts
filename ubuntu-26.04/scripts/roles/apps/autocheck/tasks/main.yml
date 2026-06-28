@@ -1,0 +1,85 @@
+- name: "INSTALL AUTOCHECK"
+  vars:
+    AC_USER: "autocheck"
+    AC_PATH: "/opt/autocheck"
+    AC_WEB: "{{ AC_PATH }}/web"
+    AC_DLL: "{{ AC_WEB }}/bin/Release/net10.0/AutoCheck.Web.dll"
+    AC_SERVICE: "autocheck"
+    AC_REPO: "https://github.com/FherStk/AutoCheck"
+  block:
+
+  - name: "»» Checking if AutoCheck is already installed"
+    stat:
+      path: "{{ AC_PATH }}"
+    register: ac_stat
+
+  - name: "»» Installing .NET 10 SDK"
+    apt:
+      name: dotnet-sdk-10.0
+      state: latest
+
+  - name: "»» Installing Java 25 JDK"
+    apt:
+      name: openjdk-25-jdk
+      state: latest
+
+  - name: "»» Creating AutoCheck system user"
+    user:
+      name: "{{ AC_USER }}"
+      system: yes
+      create_home: no
+      shell: /usr/sbin/nologin
+    when: not ac_stat.stat.exists
+
+  - name: "»» Cloning AutoCheck repository"
+    git:
+      repo: "{{ AC_REPO }}"
+      dest: "{{ AC_PATH }}"
+      clone: yes
+      update: no
+    when: not ac_stat.stat.exists
+
+  - name: "»» Building AutoCheck web project (Release)"
+    command: dotnet build "{{ AC_WEB }}" -c Release
+    when: not ac_stat.stat.exists
+
+  - name: "»» Setting ownership"
+    file:
+      path: "{{ AC_PATH }}"
+      owner: "{{ AC_USER }}"
+      group: "{{ AC_USER }}"
+      recurse: yes
+    when: not ac_stat.stat.exists
+
+  - name: "»» Creating AutoCheck systemd service"
+    copy:
+      dest: /etc/systemd/system/{{ AC_SERVICE }}.service
+      content: |
+        [Unit]
+        Description=AutoCheck web client
+        After=network.target
+
+        [Service]
+        User={{ AC_USER }}
+        WorkingDirectory={{ AC_WEB }}
+        ExecStart=/usr/bin/dotnet {{ AC_DLL }} --urls=http://0.0.0.0:80/
+        Restart=on-failure
+        AmbientCapabilities=CAP_NET_BIND_SERVICE
+
+        [Install]
+        WantedBy=multi-user.target
+
+  - name: "»» Adding autocheck to main user group"
+    user:
+      name: "{{ AC_USER }}"
+      groups: "{{ user }}"
+      append: yes
+
+  - name: "»» Enabling and starting AutoCheck service"
+    systemd_service:
+      name: "{{ AC_SERVICE }}"
+      enabled: yes
+      state: started
+      daemon_reload: yes
+
+  become: true

@@ -1,0 +1,169 @@
+- name: "REMOVE FROM GNOME FAVORITES (DESKTOP)"
+  when: "'XDG_CURRENT_DESKTOP' in ansible_facts['env'] and 'GNOME' in ansible_facts['env'].XDG_CURRENT_DESKTOP"
+  block:
+  - name: "»» Removing com.obsproject.Studio.desktop from GNOME favorites"
+    shell: |
+      current=$(gsettings get org.gnome.shell favorite-apps)
+      new=$(echo "$current" | sed "s/, 'com.obsproject.Studio.desktop'//;s/'com.obsproject.Studio.desktop', //;s/'com.obsproject.Studio.desktop'//")
+      gsettings set org.gnome.shell favorite-apps "$new"
+    environment:
+      DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ansible_facts['user_uid'] }}/bus"
+
+- name: "CONFIGURE OBS SUPERVISOR"
+  block:
+  - name: "»» Creating OBS directories"
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: "{{ user }}"
+      group: "{{ user }}"
+    loop:
+      - "/home/{{ user }}/.config/obs-studio/basic/profiles/Supervisor"
+      - "/home/{{ user }}/.config/obs-studio/basic/scenes"
+      - "/home/{{ user }}/Videos"
+
+  - name: "»» Writing OBS Supervisor recording profile"
+    copy:
+      dest: "/home/{{ user }}/.config/obs-studio/basic/profiles/Supervisor/basic.ini"
+      owner: "{{ user }}"
+      group: "{{ user }}"
+      content: |
+        [Video]
+        BaseCX=1280
+        BaseCY=720
+        OutputCX=1280
+        OutputCY=720
+        FPSType=1
+        FPSInt=1
+
+        [Output]
+        Mode=Advanced
+
+        [AdvOut]
+        RecType=Standard
+        RecPath=/home/{{ user }}/Videos
+        RecFormat2=mkv
+        RecEncoder=obs_x264
+        RecTracks=0
+
+        [Audio]
+        SampleRate=44100
+        DesktopAudioDevice1=disabled
+        AuxAudioDevice1=disabled
+
+  - name: "»» Writing OBS Supervisor scene collection"
+    copy:
+      dest: "/home/{{ user }}/.config/obs-studio/basic/scenes/Supervisor.json"
+      owner: "{{ user }}"
+      group: "{{ user }}"
+      content: |
+        {
+            "current_program_scene": "Desktop",
+            "current_scene": "Desktop",
+            "name": "Supervisor",
+            "scene_order": [
+                {"name": "Desktop"}
+            ],
+            "sources": [
+                {
+                    "id": "pipewire-desktop-capture-source",
+                    "versioned_id": "pipewire-desktop-capture-source",
+                    "name": "Screen",
+                    "settings": {
+                        "capture_type": 0,
+                        "show_cursor": true
+                    },
+                    "muted": true,
+                    "mixers": 0,
+                    "monitoring_type": 0,
+                    "volume": 1.0,
+                    "enabled": true,
+                    "flags": 0,
+                    "sync": 0,
+                    "balance": 0.5,
+                    "deinterlace_field_order": 0,
+                    "deinterlace_mode": 0,
+                    "prev_ver": 0,
+                    "private_settings": {},
+                    "hotkeys": {}
+                },
+                {
+                    "id": "scene",
+                    "versioned_id": "scene",
+                    "name": "Desktop",
+                    "settings": {
+                        "custom_size": false,
+                        "id_counter": 1,
+                        "items": [
+                            {
+                                "id": 1,
+                                "name": "Screen",
+                                "visible": true,
+                                "locked": false,
+                                "pos": {"x": 0.0, "y": 0.0},
+                                "rot": 0.0,
+                                "scale": {"x": 1.0, "y": 1.0},
+                                "align": 5,
+                                "bounds_type": 0,
+                                "bounds_align": 0,
+                                "bounds": {"x": 0.0, "y": 0.0},
+                                "crop_top": 0,
+                                "crop_right": 0,
+                                "crop_bottom": 0,
+                                "crop_left": 0,
+                                "scale_filter": 0,
+                                "showing": true,
+                                "selected": false,
+                                "private_settings": {},
+                                "show_transition": {},
+                                "hide_transition": {}
+                            }
+                        ]
+                    },
+                    "muted": false,
+                    "mixers": 0,
+                    "monitoring_type": 0,
+                    "volume": 1.0,
+                    "enabled": true,
+                    "flags": 0,
+                    "sync": 0,
+                    "balance": 0.5,
+                    "deinterlace_field_order": 0,
+                    "deinterlace_mode": 0,
+                    "prev_ver": 0,
+                    "private_settings": {},
+                    "hotkeys": {}
+                }
+            ]
+        }
+
+  - name: "»» Setting active OBS profile and scene collection"
+    ini_file:
+      path: "/home/{{ user }}/.config/obs-studio/global.ini"
+      section: General
+      option: "{{ item.key }}"
+      value: "{{ item.value }}"
+      owner: "{{ user }}"
+      group: "{{ user }}"
+    loop:
+      - {key: CurrentProfile, value: Supervisor}
+      - {key: CurrentSceneCollection, value: Supervisor}
+
+  become: true
+
+- name: "AUTOSTART OBS ON LOGIN (DESKTOP)"
+  when: "'XDG_CURRENT_DESKTOP' in ansible_facts['env'] and 'GNOME' in ansible_facts['env'].XDG_CURRENT_DESKTOP"
+  block:
+  - name: "»» Creating OBS Supervisor autostart entry"
+    copy:
+      dest: "/home/{{ user }}/.config/autostart/obs-supervisor.desktop"
+      owner: "{{ user }}"
+      group: "{{ user }}"
+      content: |
+        [Desktop Entry]
+        Type=Application
+        Name=OBS Supervisor
+        Exec=obs --minimize-to-tray --startrecording --profile Supervisor --collection Supervisor
+        Hidden=false
+        NoDisplay=false
+        X-GNOME-Autostart-enabled=true
