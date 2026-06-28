@@ -69,6 +69,12 @@
         [Install]
         WantedBy=multi-user.target
 
+  - name: "»» Adding autocheck to main user group"
+    user:
+      name: "{{ AC_USER }}"
+      groups: "{{ user }}"
+      append: yes
+
   - name: "»» Enabling and starting AutoCheck service"
     systemd_service:
       name: "{{ AC_SERVICE }}"
