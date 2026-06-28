@@ -14,6 +14,7 @@
       8) obs: install
       9) obs: supervisor
       10) internet-block
+      11) autocheck
     private: no
 
 
@@ -222,6 +223,14 @@
     - name: » Internet block
       include_role:
         name: apps/internet-block
+        public: yes
+
+  - name: SETUP OPTION 11
+    when: "'11' in options"
+    block:
+    - name: » AutoCheck
+      include_role:
+        name: apps/autocheck
         public: yes
 
   - name: CREDENTIALS
