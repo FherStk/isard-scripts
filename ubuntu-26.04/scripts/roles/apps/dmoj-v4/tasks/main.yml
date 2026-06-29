@@ -11,7 +11,10 @@
   block:
 
   - name: "»» Adding deadsnakes PPA for Python 3.12"
-    shell: add-apt-repository -y ppa:deadsnakes/ppa && apt-get update -q
+    apt_repository:
+      repo: ppa:deadsnakes/ppa
+      state: present
+      update_cache: yes
 
   - name: "»» Installing APT dependencies"
     apt:
@@ -40,8 +43,14 @@
         - nginx
       state: latest
 
+  - name: "»» Checking NodeJS 22 repository"
+    stat:
+      path: /etc/apt/sources.list.d/nodesource.list
+    register: nodesource_list
+
   - name: "»» Setting up NodeJS 22 repository"
     shell: curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+    when: not nodesource_list.stat.exists
 
   - name: "»» Installing NodeJS"
     apt:
@@ -60,6 +69,12 @@
       password: "{{ DMOJ_USER | password_hash('sha512') }}"
       create_home: true
       shell: /bin/bash
+
+  - name: "»» Starting MariaDB service"
+    service:
+      name: mariadb
+      state: started
+      enabled: yes
 
   - name: "»» Creating DMOJ database"
     mysql_db:
@@ -80,6 +95,7 @@
 
   - name: "»» Populating timezones"
     shell: mariadb-tzinfo-to-sql /usr/share/zoneinfo | mariadb mysql
+    changed_when: false
 
   - name: "»» Creating installation directories"
     file:
@@ -183,9 +199,16 @@
       - "compilemessages"
       - "compilejsi18n"
       - "migrate"
-      - "loaddata navbar"
-      - "loaddata language_small"
-      - "loaddata demo"
+
+  - name: "»» Loading Django fixtures"
+    shell: "{{ DMOJ_VENV }}/bin/python manage.py loaddata {{ item }}"
+    args:
+      chdir: "{{ DMOJ_SITE }}"
+    ignore_errors: true
+    loop:
+      - navbar
+      - language_small
+      - demo
 
   - name: "»» Setting up Django site domain"
     shell: |
@@ -368,9 +391,13 @@
   - name: "»» Inserting judge entry in database"
     shell: >
       mariadb dmoj -e
-      "INSERT INTO judge_judge (name, auth_key, created, is_blocked, online, description, is_disabled)
+      "INSERT IGNORE INTO judge_judge (name, auth_key, created, is_blocked, online, description, is_disabled)
       VALUES ('{{ JUDGE_NAME }}', '{{ JUDGE_KEY }}', now(), 0, 0, '', false);"
-    ignore_errors: true
+
+  - name: "»» Check judge configuration"
+    stat:
+      path: "{{ DMOJ_PATH }}/problems/judge.yml"
+    register: judge_yml_stat
 
   - name: "»» Creating judge configuration"
     copy:
@@ -380,9 +407,11 @@
         key: {{ JUDGE_KEY }}
         problem_storage_globs:
         - {{ DMOJ_PATH }}/problems/*
+    when: not judge_yml_stat.stat.exists
 
   - name: "»» Running dmoj-autoconf"
     shell: "{{ DMOJ_VENV }}/bin/dmoj-autoconf >> {{ DMOJ_PATH }}/problems/judge.yml"
+    when: not judge_yml_stat.stat.exists
 
   - name: "»» Creating judge startup script"
     copy:
