@@ -108,6 +108,12 @@
       - "{{ DMOJ_PATH }}/problems"
       - "{{ DMOJ_PATH }}/problems/aplusb"
 
+  - name: "»» Configuring git safe directories"
+    shell: |
+      git config --global --add safe.directory {{ DMOJ_SITE }}
+      git config --global --add safe.directory {{ DMOJ_PATH }}/judge-server
+    changed_when: false
+
   - name: "»» Cloning DMOJ site"
     git:
       repo: https://github.com/DMOJ/site.git
