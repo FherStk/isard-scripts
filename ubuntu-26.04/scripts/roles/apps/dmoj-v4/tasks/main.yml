@@ -10,8 +10,15 @@
     JUDGE_KEY: "5qwU1VFlfiv1wi1PHsXG7Z2nQika73VyLOvk3Dcd3Ma/PajJw/VRzNHc7o7lg5CfRvPvGfLOmjjmGmT1im6D3dSu0FwsQyINANhW"
   block:
 
+  - name: "»» Checking deadsnakes PPA"
+    find:
+      paths: /etc/apt/sources.list.d
+      patterns: "deadsnakes*"
+    register: deadsnakes_ppa
+
   - name: "»» Adding deadsnakes PPA for Python 3.12"
     shell: add-apt-repository -y ppa:deadsnakes/ppa && apt-get update -q
+    when: deadsnakes_ppa.matched == 0
 
   - name: "»» Installing APT dependencies"
     apt:
@@ -40,8 +47,14 @@
         - nginx
       state: latest
 
+  - name: "»» Checking NodeJS 22 repository"
+    stat:
+      path: /etc/apt/sources.list.d/nodesource.list
+    register: nodesource_list
+
   - name: "»» Setting up NodeJS 22 repository"
     shell: curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+    when: not nodesource_list.stat.exists
 
   - name: "»» Installing NodeJS"
     apt:
@@ -60,6 +73,12 @@
       password: "{{ DMOJ_USER | password_hash('sha512') }}"
       create_home: true
       shell: /bin/bash
+
+  - name: "»» Starting MariaDB service"
+    service:
+      name: mariadb
+      state: started
+      enabled: yes
 
   - name: "»» Creating DMOJ database"
     mysql_db:
@@ -80,6 +99,7 @@
 
   - name: "»» Populating timezones"
     shell: mariadb-tzinfo-to-sql /usr/share/zoneinfo | mariadb mysql
+    changed_when: false
 
   - name: "»» Creating installation directories"
     file:
@@ -91,6 +111,12 @@
       - "{{ DMOJ_PATH }}/static"
       - "{{ DMOJ_PATH }}/problems"
       - "{{ DMOJ_PATH }}/problems/aplusb"
+
+  - name: "»» Configuring git safe directories"
+    shell: |
+      git config --global --add safe.directory {{ DMOJ_SITE }}
+      git config --global --add safe.directory {{ DMOJ_PATH }}/judge-server
+    changed_when: false
 
   - name: "»» Cloning DMOJ site"
     git:
@@ -183,9 +209,16 @@
       - "compilemessages"
       - "compilejsi18n"
       - "migrate"
-      - "loaddata navbar"
-      - "loaddata language_small"
-      - "loaddata demo"
+
+  - name: "»» Loading Django fixtures"
+    shell: "{{ DMOJ_VENV }}/bin/python manage.py loaddata {{ item }}"
+    args:
+      chdir: "{{ DMOJ_SITE }}"
+    ignore_errors: true
+    loop:
+      - navbar
+      - language_small
+      - demo
 
   - name: "»» Setting up Django site domain"
     shell: |
@@ -368,9 +401,13 @@
   - name: "»» Inserting judge entry in database"
     shell: >
       mariadb dmoj -e
-      "INSERT INTO judge_judge (name, auth_key, created, is_blocked, online, description, is_disabled)
+      "INSERT IGNORE INTO judge_judge (name, auth_key, created, is_blocked, online, description, is_disabled)
       VALUES ('{{ JUDGE_NAME }}', '{{ JUDGE_KEY }}', now(), 0, 0, '', false);"
-    ignore_errors: true
+
+  - name: "»» Check judge configuration"
+    stat:
+      path: "{{ DMOJ_PATH }}/problems/judge.yml"
+    register: judge_yml_stat
 
   - name: "»» Creating judge configuration"
     copy:
@@ -380,9 +417,11 @@
         key: {{ JUDGE_KEY }}
         problem_storage_globs:
         - {{ DMOJ_PATH }}/problems/*
+    when: not judge_yml_stat.stat.exists
 
   - name: "»» Running dmoj-autoconf"
     shell: "{{ DMOJ_VENV }}/bin/dmoj-autoconf >> {{ DMOJ_PATH }}/problems/judge.yml"
+    when: not judge_yml_stat.stat.exists
 
   - name: "»» Creating judge startup script"
     copy:
@@ -440,6 +479,7 @@
 
   - name: "»» Restarting supervisor services"
     command: supervisorctl restart site bridged
+    ignore_errors: true
 
   - name: "»» Enabling and starting judge service"
     systemd_service:
