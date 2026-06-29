@@ -479,6 +479,7 @@
 
   - name: "»» Restarting supervisor services"
     command: supervisorctl restart site bridged
+    ignore_errors: true
 
   - name: "»» Enabling and starting judge service"
     systemd_service:
