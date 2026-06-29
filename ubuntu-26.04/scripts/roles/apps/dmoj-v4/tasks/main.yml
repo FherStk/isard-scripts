@@ -10,11 +10,15 @@
     JUDGE_KEY: "5qwU1VFlfiv1wi1PHsXG7Z2nQika73VyLOvk3Dcd3Ma/PajJw/VRzNHc7o7lg5CfRvPvGfLOmjjmGmT1im6D3dSu0FwsQyINANhW"
   block:
 
+  - name: "»» Checking deadsnakes PPA"
+    find:
+      paths: /etc/apt/sources.list.d
+      patterns: "deadsnakes*"
+    register: deadsnakes_ppa
+
   - name: "»» Adding deadsnakes PPA for Python 3.12"
-    apt_repository:
-      repo: ppa:deadsnakes/ppa
-      state: present
-      update_cache: yes
+    shell: add-apt-repository -y ppa:deadsnakes/ppa && apt-get update -q
+    when: deadsnakes_ppa.matched == 0
 
   - name: "»» Installing APT dependencies"
     apt:
